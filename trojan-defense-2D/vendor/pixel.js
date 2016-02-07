@@ -26,10 +26,10 @@ var PixelJS = {
     Sprite: function () { },
     SpriteSheet: function () { },
     Tile: function () { },
-    
+
     _assetCache: [],
     assetPath: 'assets',
-    
+
     existsInArray: function (item, arrayToSearch) {
         var i = arrayToSearch.length;
         while (i--) {
@@ -39,12 +39,12 @@ var PixelJS = {
         }
         return false;
     },
-    
+
     extend: function (childClass, parentClass) {
         childClass.prototype = new parentClass();
         childClass.prototype.constructor = childClass;
     },
-    
+
     proxy: function (callback, context, additionalArguments) {
         if (additionalArguments !== undefined) {
             callback.apply(context);
@@ -53,7 +53,7 @@ var PixelJS = {
             callback.apply(context, additionalArguments);
         }
     },
-    
+
     Keys: {
         Space: 32,
         Backspace: 8,
@@ -157,14 +157,14 @@ var PixelJS = {
         Tilde: 222,
         Hash: 222
     },
-    
+
     Directions: {
         Left: 1,
         Right: 2,
         Up: 4,
         Down: 8
     },
-    
+
     Buttons: {
         Left: 1,
         Right: 2,
@@ -195,10 +195,10 @@ PixelJS.Asset.prototype.prepare = function (info) {
 };
 
 Object.defineProperty(PixelJS.Asset.prototype, "loaded", {
-    get: function () { 
-        return this._loaded; 
+    get: function () {
+        return this._loaded;
     },
-    set: function (val) { 
+    set: function (val) {
         this._loaded = val;
         if (this._onLoad !== undefined) {
             this._onLoad(this);
@@ -416,7 +416,7 @@ PixelJS.Engine.prototype.init = function (info) {
     if (info.maxDeltaTime !== undefined) {
         this.maxDeltaTime = info.maxDeltaTime;
     }
-    
+
     var self = this;
     this._inputLayer = document.createElement('div');
     this._inputLayer.width = this.scene.width;
@@ -437,7 +437,7 @@ PixelJS.Engine.prototype.init = function (info) {
             });
         }
     };
-    
+
     this._inputLayer.onmousedown = function (e) {
         var listeners = self._events.mousedown;
         if (listeners.length > 0) {
@@ -445,13 +445,13 @@ PixelJS.Engine.prototype.init = function (info) {
             // as 4 to allow bitwise operations in the future.
             var button = e.button == 1 ? 4 : e.button == 0 ? 1 : 2;
             var point = self._inputLayer.relMouseCoords(e);
-            
+
             listeners.forEach(function(listener) {
                 listener(point, button);
             });
         }
     };
-    
+
     this._inputLayer.onmouseup = function (e) {
         var listeners = self._events.mouseup;
         if (listeners.length > 0) {
@@ -459,13 +459,13 @@ PixelJS.Engine.prototype.init = function (info) {
             // as 4 to allow bitwise operations in the future.
             var button = e.button == 1 ? 4 : e.button == 0 ? 1 : 2;
             var point = self._inputLayer.relMouseCoords(e);
-            
+
             listeners.forEach(function(listener) {
                 listener(point, button);
             });
         }
     };
-    
+
     this.scene.container.appendChild(this._inputLayer);
     return this;
 };
@@ -477,7 +477,7 @@ PixelJS.Engine.prototype.loadAndRun = function (gameLoop) {
             self.run(gameLoop);
         });
     });
-    
+
     return this;
 };
 
@@ -491,7 +491,7 @@ PixelJS.Engine.prototype.loadScene = function (callback) {
             }
         });
     }
-    
+
     return this;
 };
 
@@ -519,7 +519,7 @@ PixelJS.Engine.prototype.loadSounds = function (callback) {
             }
         }
     }
-    
+
     return this;
 };
 
@@ -553,7 +553,7 @@ PixelJS.Engine.prototype.run = function (gameLoop) {
             for (var i = 0; i < self._layerKeys.length; i++) {
                 self._layers[self._layerKeys[i]].update(elapsedTime, self._deltaTime);
             }
-            
+
             for (var i = 0; i < self._gameLoopCallbacks.length; i++) {
                 self._gameLoopCallbacks[i](elapsedTime, self._deltaTime);
             }
@@ -569,7 +569,7 @@ PixelJS.Engine.prototype.run = function (gameLoop) {
 
         self._previousElapsedTime = elapsedTime;
     }());
-    
+
     return this;
 };
 
@@ -606,7 +606,7 @@ Object.defineProperty(PixelJS.Engine.prototype, "fullscreen", {
 
 PixelJS.Entity = function (layer) {
     "use strict";
-    
+
     this._dragAnchorPoint = { x: 0, y: 0 };
     this.asset = undefined;
     this.layer = layer;
@@ -647,13 +647,13 @@ PixelJS.Entity.prototype._onDrop = function (point) {
 
 PixelJS.Entity.prototype._onMouseDown = function (point, button) {
     if (point.x >= this.pos.x && point.x <= this.pos.x + this.size.width) {
-        if (point.y >= this.pos.y && point.y <= this.pos.y + this.size.height) {            
+        if (point.y >= this.pos.y && point.y <= this.pos.y + this.size.height) {
             if (this._isDraggable && button == this.dragButton) {
                 this._dragAnchorPoint.x = point.x - this.pos.x;
                 this._dragAnchorPoint.y = point.y - this.pos.y;
                 this._isDragging = true;
             }
-            
+
             if (this._isClickable) {
                 this._isMouseDown = true;
                 this._onMouseDownCallback(point, button);
@@ -677,7 +677,7 @@ PixelJS.Entity.prototype._onMouseUp = function (point, button) {
         this._isDragging = false;
         this._onDrop(this.pos);
     }
-    
+
     if (this._isClickable && this._isMouseDown) {
         this._isMouseDown = false;
         this._onMouseUpCallback(point, button);
@@ -688,7 +688,7 @@ PixelJS.Entity.prototype._setIsClickable = function (val) {
     this._isClickable = val;
     if (val) {
         var self = this;
-           
+
         // If the entity is already registered as a draggable, the mouse event
         // hooks will already be in place and don't need to be re-added.
         if (!this._isDraggable) {
@@ -714,7 +714,7 @@ PixelJS.Entity.prototype._setIsDraggable = function (val) {
     this._isDraggable = val;
     if (val) {
         var self = this;
-        
+
         // If the entity is already registered as a clickable, the mouse event
         // hooks will already be in place and don't need to be re-added.
         if (!this._isClickable) {
@@ -723,7 +723,7 @@ PixelJS.Entity.prototype._setIsDraggable = function (val) {
             this.layer.engine.on('mousedown', this._mousedownHook);
             this.layer.engine.on('mouseup', this.mouseupHook);
         }
-        
+
         this.layer._registerDraggable(this);
     }
 };
@@ -744,16 +744,16 @@ PixelJS.Entity.prototype.collidesWith = function (entity) {
 
 PixelJS.Entity.prototype.dispose = function () {
     this.layer.removeComponent(this);
-    
+
     if (this._isHoverable) {
         this.layer.engine.off('mousemove', this._mousemoveHook);
     }
-    
+
     if (this.isClickable || this.isDraggable) {
         this.layer.engine.off('mousedown', this._mousedownHook);
         this.layer.engine.off('mouseup', this._mouseupHook);
     }
-    
+
     return this;
 };
 
@@ -768,21 +768,21 @@ PixelJS.Entity.prototype.fadeTo = function (opacity, duration, callback) {
     var animationSpeed = (this.opacity - opacity) / duration;
     var increasingOpacity = this.opacity < opacity;
     var self = this;
-    
+
     if (self._animateOpacity !== undefined) {
         self.layer.engine._unregisterGameLoopCallback(self._animateOpacity);
     }
-    
+
     this._animateOpacity = function (elapsedTime, dt) {
         dt = dt * 1000; // Convert into milliseconds from fractional seconds.
-        
+
         if (increasingOpacity) {
             self.opacity += animationSpeed * dt;
         }
         else {
             self.opacity -= animationSpeed * dt;
         }
-        
+
         if ((self.opacity >= opacity && increasingOpacity) || (self.opacity <= opacity && !increasingOpacity)) {
             self.opacity = opacity;
             self.layer.engine._unregisterGameLoopCallback(self._animateOpacity);
@@ -792,7 +792,7 @@ PixelJS.Entity.prototype.fadeTo = function (opacity, duration, callback) {
             }
         }
     };
-    
+
     this.layer.engine._registerGameLoopCallback(this._animateOpacity);
     return this;
 };
@@ -801,39 +801,39 @@ PixelJS.Entity.prototype.moveLeft = function () {
     if (this.canMoveLeft) {
         this.pos.x -= this.velocity.x * this.layer.engine._deltaTime;
     }
-    
+
     return this;
 };
-    
+
 PixelJS.Entity.prototype.moveRight = function () {
     if (this.canMoveRight) {
         this.pos.x += this.velocity.x * this.layer.engine._deltaTime;
     }
-    
+
     return this;
 };
-    
+
 PixelJS.Entity.prototype.moveDown = function () {
     if (this.canMoveDown) {
         this.pos.y += this.velocity.y * this.layer.engine._deltaTime;
     }
-    
+
     return this;
 };
 
 PixelJS.Entity.prototype.moveTo = function (x, y, duration, callback) {
     duration = duration === undefined ? 1 : duration;
-    
+
     var velocityX = (this.pos.x - x) / duration;
     var velocityY = (this.pos.y - y) / duration;
     var targetIsToTheLeft = x < this.pos.x;
     var targetIsAbove = y < this.pos.y;
     var self = this;
-    
+
     if (this._animateMovement !== undefined) {
         self.layer.engine._unregisterGameLoopCallback(self._animateMovement);
     }
-    
+
     this._animateMovement = function (elapsedTime, dt) {
         dt = dt * 1000; // Convert into milliseconds from fractional seconds.
         if (targetIsToTheLeft) {
@@ -842,14 +842,14 @@ PixelJS.Entity.prototype.moveTo = function (x, y, duration, callback) {
         else {
             self.pos.x += (velocityX * -1) * dt;
         }
-        
+
         if (targetIsAbove) {
             self.pos.y -= velocityY * dt;
         }
         else {
             self.pos.y += (velocityY * -1) * dt;
         }
-        
+
         if (((targetIsToTheLeft && self.pos.x <= x) || (!targetIsToTheLeft && self.pos.x >= x)) && ((targetIsAbove && self.pos.y <= y) || (!targetIsAbove && self.pos.y >= y))) {
             self.pos.x = x;
             self.pos.y = y;
@@ -860,7 +860,7 @@ PixelJS.Entity.prototype.moveTo = function (x, y, duration, callback) {
             }
         }
     };
-    
+
     this.layer.engine._registerGameLoopCallback(this._animateMovement);
     return this;
 };
@@ -869,7 +869,7 @@ PixelJS.Entity.prototype.moveUp = function () {
     if (this.canMoveUp) {
         this.pos.y -= this.velocity.y * this.layer.engine._deltaTime;
     }
-    
+
     return this;
 };
 
@@ -877,16 +877,16 @@ PixelJS.Entity.prototype.onCollide = function (callback) {
     if (!this.isCollidable) {
         this.isCollidable = true;
     }
-    
+
     this._onCollide = callback;
-    return this;    
+    return this;
 };
 
 PixelJS.Entity.prototype.onDrag = function (callback) {
     if (!this.isDraggable) {
         this.isDraggable = true;
     }
-    
+
     this._onDragCallback = callback;
     return this;
 };
@@ -895,7 +895,7 @@ PixelJS.Entity.prototype.onDrop = function (callback) {
     if (!this.isDraggable) {
         this.isDraggable = true;
     }
-    
+
     this._onDrop = callback;
     return this;
 };
@@ -904,7 +904,7 @@ PixelJS.Entity.prototype.onMouseDown = function (callback) {
     if (!this.isClickable) {
         this.isClickable = true;
     }
-    
+
     this._onMouseDownCallback = callback;
     return this;
 };
@@ -934,11 +934,11 @@ PixelJS.Entity.prototype.onMouseHover = function (callback) {
                 self._isHovered = false;
             }
         };
-        
+
         this.layer.engine.on('mousemove', this._mousemoveHook);
         this._isHoverable = true;
     }
-    
+
     this._onMouseHover = callback;
     return this;
 };
@@ -947,7 +947,7 @@ PixelJS.Entity.prototype.onMouseUp = function (callback) {
     if (!this.isClickable) {
         this.isClickable = true;
     }
-    
+
     this._onMouseUpCallback = callback;
     return this;
 };
@@ -999,20 +999,20 @@ PixelJS.FPSCounter.prototype.update = function (elapsedTime, dt) {
         this._lastUpdate = 0;
     }
     else {
-        this._lastUpdate += dt;   
+        this._lastUpdate += dt;
     }
-    
+
     return this;
 };
 
 PixelJS.FPSCounter.prototype.draw = function () {
-    this.layer.drawText('FPS: ' + Math.round(this.fps, 2), 
-        this.pos.x, 
-        this.pos.y, 
+    this.layer.drawText('FPS: ' + Math.round(this.fps, 2),
+        this.pos.x,
+        this.pos.y,
         '18px "Courier New", Courier, monospace',
         '#00FF00'
     );
-    
+
     return this;
 };
 
@@ -1020,7 +1020,7 @@ PixelJS.FPSCounter.prototype.draw = function () {
 
 PixelJS.Layer = function (engine) {
     "use strict";
-    
+
     this._backBuffer = undefined;
     this._backBufferCtx = undefined;
     this._canvas = undefined;
@@ -1029,7 +1029,7 @@ PixelJS.Layer = function (engine) {
     this._collidables = [];
     this._draggables = [];
     this.engine = engine;
-    
+
     this._insertIntoDom();
 };
 
@@ -1050,7 +1050,7 @@ PixelJS.Layer.prototype._insertIntoDom = function() {
     this._canvas.className = 'scene-layer';
     this._ctx = this._canvas.getContext('2d');
     container.appendChild(this._canvas);
-    
+
     this._backBuffer = document.createElement('canvas');
     this._backBuffer.width = this._canvas.width;
     this._backBuffer.height = this._canvas.height;
@@ -1068,11 +1068,11 @@ PixelJS.Layer.prototype._registerDraggable = function (draggable) {
             }
         });
     }
-    
+
     if (!PixelJS.existsInArray(draggable, this._draggables)) {
         this._draggables.push(draggable);
     }
-    
+
     return this;
 };
 
@@ -1082,7 +1082,7 @@ PixelJS.Layer.prototype._unregisterDraggable = function (draggable) {
             this._draggables.splice(i, 1);
         }
     }
-    
+
     return this;
 };
 
@@ -1094,7 +1094,7 @@ PixelJS.Layer.prototype.addComponent = function (component) {
 PixelJS.Layer.prototype.createEntity = function () {
     var entity = new PixelJS.Entity(this);
     this._components.push(entity);
-    
+
     return entity;
 };
 
@@ -1105,27 +1105,27 @@ PixelJS.Layer.prototype.draw = function () {
                 this._components[i].draw();
             }
         }
-        
+
         this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
         this._ctx.drawImage(this._backBuffer, 0, 0);
         this._backBufferCtx.clearRect(0, 0, this._backBuffer.width, this._backBuffer.height);
-        
+
         if (this.static) {
             this.redraw = false;
         }
     }
-    
+
     return this;
 };
 
 PixelJS.Layer.prototype.drawImage = function (img, x, y, rotation, opacity) {
     if (rotation == undefined || rotation == 0) {
         this._backBufferCtx.save();
-        
+
         if (opacity < 1) {
             this._backBufferCtx.globalAlpha = opacity;
         }
-        
+
         this._backBufferCtx.drawImage(img, x, y);
         this._backBufferCtx.restore();
     }
@@ -1139,7 +1139,7 @@ PixelJS.Layer.prototype.drawImage = function (img, x, y, rotation, opacity) {
         this._backBufferCtx.drawImage(img, (img.width / 2) * -1, (img.height / 2) * -1);
         this._backBufferCtx.restore();
     }
-    
+
     return this;
 };
 
@@ -1152,17 +1152,17 @@ PixelJS.Layer.prototype.drawRectangle = function (x, y, width, height, style) {
     this._backBufferCtx.save();
     this._backBufferCtx.beginPath();
     this._backBufferCtx.rect(x, y, width, height);
-    
+
     if (style.fill !== undefined) {
         this._backBufferCtx.fillStyle = style.fill;
         this._backBufferCtx.fill();
     }
-    
+
     if (style.stroke !== undefined) {
         this._backBufferCtx.strokeStyle = style.stroke;
         this._backBufferCtx.stroke();
     }
-    
+
     this._backBufferCtx.closePath();
     this._backBufferCtx.restore();
     return this;
@@ -1209,7 +1209,7 @@ PixelJS.Layer.prototype.registerCollidable = function (collidable) {
     if (!PixelJS.existsInArray(collidable, this._collidables)) {
         this._collidables.push(collidable);
     }
-    
+
     return this;
 };
 
@@ -1217,17 +1217,17 @@ PixelJS.Layer.prototype.removeComponent = function (component) {
   for (var i = this._components.length - 1; i >= 0; i--) {
         if (this._components[i] == component) {
             this._components.splice(i, 1);
-            
+
             if (component.isCollidable) {
                 this.unregisterCollidable(component);
             }
-            
+
             if (component.isDraggable) {
                 this._unregisterDraggable(component);
             }
         }
     }
-    
+
     return this;
 };
 
@@ -1237,7 +1237,7 @@ PixelJS.Layer.prototype.unregisterCollidable = function (collidable) {
             this._collidables.splice(i, 1);
         }
     }
-    
+
     return this;
 };
 
@@ -1245,7 +1245,7 @@ PixelJS.Layer.prototype.update = function(elapsedTime, dt) {
     for (var i = 0; i < this._components.length; i++) {
         this._components[i].update(elapsedTime, dt);
     }
-    
+
     return this;
 };
 
@@ -1265,7 +1265,7 @@ PixelJS.Player = function () {
         right: 2,
         up: 3
     };
-    
+
     this.direction = 0;
     this.allowDiagonalMovement = false;
 };
@@ -1277,51 +1277,51 @@ PixelJS.Player.prototype.addToLayer = function (layer) {
     var self = this;
     layer.addComponent(this);
     this.layer = layer;
-    
+
     this.layer.engine.on('keydown', function (keyCode) {
         switch (keyCode) {
             case PixelJS.Keys.Left:
                 self.direction |= PixelJS.Directions.Left;
                 break;
-                
+
             case PixelJS.Keys.Up:
                 self.direction |= PixelJS.Directions.Up;
                 break;
-                
+
             case PixelJS.Keys.Right:
                 self.direction |= PixelJS.Directions.Right;
                 break;
-                
+
             case PixelJS.Keys.Down:
                 self.direction |= PixelJS.Directions.Down;
                 break;
         }
-        
+
         self.layer.requiresDraw = true;
     });
-        
+
     this.layer.engine.on('keyup', function (keyCode) {
         switch (keyCode) {
             case PixelJS.Keys.Left:
                 self.direction &= ~PixelJS.Directions.Left;
                 break;
-                
+
             case PixelJS.Keys.Up:
                 self.direction &= ~PixelJS.Directions.Up;
                 break;
-                
+
             case PixelJS.Keys.Right:
                 self.direction &= ~PixelJS.Directions.Right;
                 break;
-                
+
             case PixelJS.Keys.Down:
                 self.direction &= ~PixelJS.Directions.Down;
                 break;
         }
-        
+
         self.layer.requiresDraw = true;
     });
-    
+
     return this;
 }
 
@@ -1330,15 +1330,15 @@ PixelJS.Player.prototype.update = function (elapsedTime, dt) {
         if ((this.direction & PixelJS.Directions.Right) != 0) {
             this.moveRight();
         }
-        
+
         if ((this.direction & PixelJS.Directions.Left) != 0) {
             this.moveLeft();
         }
-        
+
         if ((this.direction & PixelJS.Directions.Up) != 0) {
             this.moveUp();
         }
-        
+
         if ((this.direction & PixelJS.Directions.Down) != 0) {
             this.moveDown();
         }
@@ -1378,7 +1378,7 @@ PixelJS.Player.prototype.update = function (elapsedTime, dt) {
             }
         }
     }
-    
+
     return this;
 };
 
@@ -1411,21 +1411,21 @@ PixelJS.Player.prototype.update = function (elapsedTime, dt) {
  * Provides requestAnimationFrame in a cross browser way.
  * @author paulirish / http://paulirish.com/
  */
- 
+
 if ( !window.requestAnimationFrame ) {
- 
+
     window.requestAnimationFrame = ( function() {
- 
+
         return window.webkitRequestAnimationFrame ||
         window.mozRequestAnimationFrame ||
         window.oRequestAnimationFrame ||
         window.msRequestAnimationFrame ||
         function( /* function FrameRequestCallback */ callback, /* DOMElement Element */ element ) {
- 
+
             window.setTimeout( callback, 1000 / 60 );
- 
+
         };
- 
+
     } )();
 }
 
@@ -1471,7 +1471,7 @@ PixelJS.Sound.prototype.load = function (info, callback) {
         }
     }, true);
     this._element.load();
-    
+
     return this;
 };
 
@@ -1479,7 +1479,7 @@ PixelJS.Sound.prototype.pause = function () {
     if (this._canPlay) {
         this._element.pause();
     }
-    
+
     return this;
 };
 
@@ -1487,7 +1487,7 @@ PixelJS.Sound.prototype.play = function () {
     if (this._canPlay) {
         this._element.play();
     }
-    
+
     return this;
 };
 
@@ -1500,7 +1500,7 @@ PixelJS.Sound.prototype.seek = function (time) {
     if (this._canPlay) {
         this._element.currentTime = time;
     }
-    
+
     return this;
 };
 
@@ -1559,68 +1559,68 @@ PixelJS.Sprite.prototype._applyTransparencyKey = function (img, transparencyKey)
     var canvas = document.createElement('canvas');
     canvas.width = img.width;
     canvas.height = img.height;
-    
+
     var ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0);
-    
+
     var pixels = ctx.getImageData(0, 0, img.width, img.height);
     var pixelData = pixels.data;
-    
+
     // Each pixel consists of 4 integers to represent the RGBA value, hence stepping by 4.
     for (var i = 0, len = pixels.data.length; i < len; i += 4) {
         var r = pixelData[i];
         var g = pixelData[i + 1];
         var b = pixelData[i + 2];
-        
+
         // If the RGB values match, set the alpha pixel to zero (i.e. transparent).
         if (r === transparencyKey.r && g === transparencyKey.g && b === transparencyKey.b) {
             pixelData[i + 3] = 0;
         }
-        
+
         // Data is supposed to be read only and thus this line will fail
         // in strict mode. A work around for this needs to be looked at.
         pixels.data = pixelData;
     }
-    
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.putImageData(pixels, 0, 0);
-    
+
     img.src = canvas.toDataURL();
 };
 
 PixelJS.Sprite.prototype.load = function (info, callback) {
     "use strict";
     var self = this;
-    
+
     if (info !== undefined) {
         if (info.name !== undefined) {
             this.name = info.name;
         }
-        
+
         if (info.transparencyKey !== undefined) {
             this.transparencyKey = info.transparencyKey;
         }
-        
+
         if (info.callback !== undefined) {
             this.onLoad(info.callback);
         }
     }
-    
+
     if (callback !== undefined) {
         this.onLoad(callback);
     }
-    
+
     this.image.src = PixelJS.assetPath + '/sprites/' + this.name;
     this.image.onload = function () {
         self.image.onload = undefined;
-        
+
         if (self.transparencyKey !== undefined) {
             self._applyTransparencyKey(self.image, self.transparencyKey);
         }
-        
+
         self.loaded = true;
     };
-    
+
     return this;
 };
 
@@ -1628,7 +1628,7 @@ PixelJS.Sprite.prototype.draw = function (entity) {
     if (this.loaded && entity.visible) {
         entity.layer.drawImage(this.image, entity.pos.x, entity.pos.y, undefined, entity.opacity);
     }
-    
+
     return this;
 };
 
@@ -1668,44 +1668,44 @@ PixelJS.AnimatedSprite.prototype.stopAnimating = function () {
 PixelJS.AnimatedSprite.prototype.load = function (info, callback) {
     "use strict";
     var self = this;
-    
+
     if (info !== undefined) {
         if (info.name !== undefined) {
             this.name = info.name;
         }
-        
+
         if (info.transparencyKey !== undefined) {
             this.transparencyKey = info.transparencyKey;
         }
-        
+
         if (info.defaultFrame !== undefined) {
             this.defaultFrame = info.defaultFrame;
         }
-        
+
         if (info.speed !== undefined) {
             this.speed = info.speed;
         }
-        
+
         if (info.callback !== undefined) {
             this.onLoad(info.callback);
         }
     }
-    
+
     if (callback !== undefined) {
         this.onLoad(callback);
     }
-    
+
     this.spriteSheet = new PixelJS.SpriteSheet();
     this.spriteSheet.load(info, function () {
         self.loaded = true;
     });
-    
+
     return this;
 };
-                          
+
 PixelJS.AnimatedSprite.prototype.draw = function (entity) {
     "use strict";
-    
+
     if (this.loaded) {
         if (this.speed > 0 && this._isAnimating) {
             if (!isNaN(entity.layer.engine._deltaTime)) {
@@ -1722,12 +1722,12 @@ PixelJS.AnimatedSprite.prototype.draw = function (entity) {
             }
         }
         else {
-            this._currentFrame = this.defaultFrame;   
+            this._currentFrame = this.defaultFrame;
         }
-        
+
         entity.layer.drawImage(this.spriteSheet._frameImages[this.row][this._currentFrame], entity.pos.x, entity.pos.y, undefined, entity.opacity);
     }
-    
+
     return this;
 };
 
@@ -1736,7 +1736,7 @@ PixelJS.AnimatedSprite.prototype.draw = function (entity) {
 PixelJS.SpriteSheet = function () {
     "use strict";
     this.image = new Image();
-    
+
     this._frameImages = [];
     this._frameSize = { width: 0, height: 0 };
     this._frameCount = 0;
@@ -1770,40 +1770,40 @@ PixelJS.SpriteSheet.prototype._getFrameData = function (row, frame, transparency
 
     var ctx = canvas.getContext('2d');
     ctx.drawImage(
-        this.image, 
+        this.image,
         0 + Math.ceil(this._frameSize.width * frame),
         0 + Math.ceil(this._frameSize.height * row),
         this._frameSize.width, this._frameSize.height,
-        0, 
-        0, 
+        0,
+        0,
         this._frameSize.width, this._frameSize.height
     );
-    
+
     var pixels = ctx.getImageData(0, 0, this._frameSize.width, this._frameSize.height);
     if (transparencyKey !== undefined) {
         // Each pixel consists of 4 integers to represent the RGBA value, hence stepping by 4.
         var pixelData = pixels.data;
-        
+
         for (var i = 0, len = pixels.data.length; i < len; i += 4) {
             var r = pixelData[i];
             var g = pixelData[i + 1];
             var b = pixelData[i + 2];
-            
+
             // If the RGB values match, set the alpha pixel to zero (i.e. transparent).
             if (r === transparencyKey.r && g === transparencyKey.g && b === transparencyKey.b) {
                 pixelData[i + 3] = 0;
             }
         }
-        
+
         pixels.data = pixelData;
     }
-    
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.putImageData(pixels, 0, 0);
-    
+
     var retval = new Image();
     retval.src = canvas.toDataURL();
-    
+
     return retval;
 };
 
@@ -1813,28 +1813,28 @@ PixelJS.SpriteSheet.prototype.load = function (info, callback) {
     var rows = info.rows != undefined ? info.rows : 1;
     this._rowCount = rows;
     this._frameCount = info.frames;
-    
+
     if (info !== undefined) {
         if (info.name !== undefined) {
             this.name = info.name;
         }
     }
-    
+
     this.image.src = PixelJS.assetPath + '/sprite_sheets/' + this.name;
     this.image.onload = function () {
         self._frameSize.width = Math.floor(self.image.width / info.frames);
         self._frameSize.height = Math.floor(self.image.height / rows);
-        
+
         for (var r = 0; r < rows; r++) {
             self._frameImages[r] = [];
             for (var f = 0; f < info.frames; f++) {
                 self._frameImages[r][f] = self._getFrameData(r, f, info.transparencyKey);
             }
         }
-        
+
         callback(self);
     };
-    
+
     return this;
 };
 
@@ -1846,29 +1846,30 @@ PixelJS.Tile = function () {
 };
 
 PixelJS.extend(PixelJS.Tile, PixelJS.Asset);
-    
+
 PixelJS.Tile.prototype.load = function (info, callback) {
     var self = this;
-    
+
     if (info !== undefined) {
         if (info.name !== undefined) {
             this.name = info.name;
         }
-        
+
         if (info.size !== undefined) {
             this.size = info.size;
         }
-        
+
         if (info.callback !== undefined) {
             this.onLoad(info.callback);
         }
     }
-    
+
     if (callback !== undefined) {
         this.onLoad(callback);
     }
-    
+
     var img = new Image();
+
     img.onload = function () {
         var buffer = document.createElement('canvas');
         var ctx = buffer.getContext('2d');
@@ -1878,26 +1879,26 @@ PixelJS.Tile.prototype.load = function (info, callback) {
         buffer.height = self.size.height;
         ctx.fillStyle = pattern;
         ctx.fillRect(0, 0, self.size.width, self.size.height);
-        
+
         self._scaledTile.onload = function () {
             self.loaded = true;
         };
-        
+
         self._scaledTile.src = buffer.toDataURL();
     };
-    
+
     img.src = PixelJS.assetPath + '/tiles/' + this.name;
+
     return this;
 };
 
 PixelJS.Tile.prototype.update = function (elapsedTime, dt) {
 };
-    
+
 PixelJS.Tile.prototype.draw = function (entity) {
     if (this.loaded) {
         entity.layer.drawImage(this._scaledTile, entity.pos.x, entity.pos.y, undefined, entity.opacity);
     }
-    
+
     return this;
 };
-
