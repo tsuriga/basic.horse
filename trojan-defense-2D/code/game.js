@@ -15,18 +15,18 @@ document.onreadystatechange = function () {
         var map1 = [
             [1, 1, 1, 1, 1],
             [1, 0, 0, 0, 1],
-            [1, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1],
             [1, 0, 0, 0, 1],
             [1, 1, 1, 1, 1],
         ];
 
-        var mapBlockSizeX = 46;
-        var mapBlockSizeY = 19;
+        var mapBlockSizeX = 27;
+        var mapBlockSizeY = 37;
 
         var itemLayer = game.createLayer('items');
 
-        var currentBlockSizeX = mapBlockSizeX;
-        var currentBlockSizeY = mapBlockSizeY;
+        var currentBlockPosX = mapBlockSizeX;
+        var currentBlockPosY = mapBlockSizeY;
 
         for(var i = 0; i < map1.length; i++) {
             var mapBlock = map1[i];
@@ -36,18 +36,19 @@ document.onreadystatechange = function () {
                     var wall = itemLayer.createEntity();
                     wall.size = { width: 47, height: 37 };
 
-                    wall.pos["x"] = currentBlockSizeX;
-                    wall.pos["y"] = currentBlockSizeY;
+                    // Isometric conversion
+                    wall.pos["x"] = 165 + currentBlockPosX - currentBlockPosY;
+                    wall.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
 
                     wall.asset = new PixelJS.Sprite();
                     wall.asset.prepare({
                         name: 'wall.png',
                     });
                 }
-                currentBlockSizeX = currentBlockSizeX + mapBlockSizeX;
+                currentBlockPosX = currentBlockPosX + mapBlockSizeX;
             }
-            currentBlockSizeY = currentBlockSizeY + mapBlockSizeY;
-            currentBlockSizeX = mapBlockSizeX;
+            currentBlockPosY = currentBlockPosY + mapBlockSizeY;
+            currentBlockPosX = mapBlockSizeX;
         }
 
         // Game loop
