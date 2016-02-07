@@ -15,14 +15,14 @@ document.onreadystatechange = function () {
 
         var map1 = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 1, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 1, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ];
 
@@ -68,6 +68,34 @@ document.onreadystatechange = function () {
             currentBlockPosY = currentBlockPosY + mapBlockSizeY;
             currentBlockPosX = mapBlockSizeX;
         }
+
+        var playerLayer = game.createLayer("players");
+        var player = new PixelJS.Player();
+
+        player.addToLayer(playerLayer);
+
+        player.pos = { x: 100, y: 100 };
+        player.size = { width: 32, height: 32 };
+        player.velocity = { x: 100, y: 100 };
+        player.asset = new PixelJS.AnimatedSprite();
+        player.asset.prepare({
+            name: 'char.png',
+            frames: 3,
+            rows: 4,
+            speed: 100,
+            defaultFrame: 1
+        });
+
+        player.onCollide(function (entity) {
+            if (entity === wall) {
+
+            } else {
+
+            }
+        });
+
+        playerLayer.registerCollidable(player);
+        itemLayer.registerCollidable(wall);
 
         // Game loop
         game.loadAndRun(function (elapsedTime, dt) {
