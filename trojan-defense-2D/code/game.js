@@ -15,21 +15,26 @@ document.onreadystatechange = function () {
 
         var map1 = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-            [1, 0, 1, 1, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 1, 0, 0, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 1, 0, 1, 1],
+            [1, 0, 0, 0, 0, 0, 1, 0, 1, 1],
+            [1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ];
 
         var mapBlockSizeX = 16;
         var mapBlockSizeY = 16;
+        var blockRange = 2;
+        var playerRange = 16;
 
         var itemLayer = game.createLayer('items');
+
+        var wallArray = [];
+        var floorArray = [];
 
         var currentBlockPosX = mapBlockSizeX;
         var currentBlockPosY = mapBlockSizeY;
@@ -40,7 +45,8 @@ document.onreadystatechange = function () {
             for(var j = 0; j < mapBlock.length; j++) {
                 if (map1[i][j] == 1) {
                     var wall = itemLayer.createEntity();
-                    wall.size = { width: 32, height: 32 };
+                    wall.size["width"] = blockRange;
+                    wall.size["height"] = blockRange;
 
                     // Isometric conversion
                     wall.pos["x"] = gridOffset + currentBlockPosX - currentBlockPosY;
@@ -50,9 +56,12 @@ document.onreadystatechange = function () {
                     wall.asset.prepare({
                         name: 'wall.png',
                     });
+
+                    wallArray.push(wall);
                 } else {
                     var floor = itemLayer.createEntity();
-                    floor.size = { width: 32, height: 32 };
+                    floor.size["width"] = blockRange;
+                    floor.size["height"] = blockRange;
 
                     // Isometric conversion
                     floor.pos["x"] = gridOffset + currentBlockPosX - currentBlockPosY;
@@ -62,6 +71,8 @@ document.onreadystatechange = function () {
                     floor.asset.prepare({
                         name: 'floor.png',
                     });
+
+                    floorArray.push(floor);
                 }
                 currentBlockPosX = currentBlockPosX + mapBlockSizeX;
             }
@@ -75,7 +86,8 @@ document.onreadystatechange = function () {
         player.addToLayer(playerLayer);
 
         player.pos = { x: 100, y: 100 };
-        player.size = { width: 32, height: 32 };
+        player.size["width"] = playerRange;
+        player.size["height"] = playerRange;
         player.velocity = { x: 100, y: 100 };
         player.asset = new PixelJS.AnimatedSprite();
         player.asset.prepare({
@@ -87,15 +99,50 @@ document.onreadystatechange = function () {
         });
 
         player.onCollide(function (entity) {
-            if (entity === wall) {
+            // @todo This is way too heavy, implement better later
+            wallArray.forEach(function(entry) {
+                if (entity === entry) {
+                    player.canMoveLeft = true;
+                    player.canMoveRight = true;
+                    player.canMoveDown = true;
+                    player.canMoveUp = true;
 
-            } else {
+                    if (player.direction === 8) {
+                        player.canMoveDown = false;
+                        player.canMoveUp = true;
+                        player.canMoveLeft = true;
+                        player.canMoveRight = true;
+                    }
 
-            }
+                    if (player.direction === 4) {
+                        player.canMoveUp = false;
+                        player.canMoveDown = true;
+                        player.canMoveLeft = true;
+                        player.canMoveRight = true;
+                    }
+
+                    if (player.direction === 2) {
+                        player.canMoveRight = false;
+                        player.canMoveLeft = true;
+                        player.canMoveDown = true;
+                        player.canMoveUp = true;
+                    }
+
+                    if (player.direction === 1) {
+                        player.canMoveLeft = false;
+                        player.canMoveRight = true;
+                        player.canMoveDown = true;
+                        player.canMoveUp = true;
+                    }
+                }
+            });
         });
 
         playerLayer.registerCollidable(player);
-        itemLayer.registerCollidable(wall);
+
+        wallArray.forEach(function(entry) {
+            itemLayer.registerCollidable(entry);
+        });
 
         // Game loop
         game.loadAndRun(function (elapsedTime, dt) {
