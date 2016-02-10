@@ -37,6 +37,7 @@ document.onreadystatechange = function () {
         var mapBlockSizeY = 16;
         var blockRange = 2;
         var playerRange = 16;
+        var currentlyStandingOn = null;
 
         var itemLayer = game.createLayer('items');
 
@@ -152,14 +153,13 @@ document.onreadystatechange = function () {
         player.onCollide(function (entity) {
             floorArray.forEach(function(entry) {
                 if (entity === entry) {
+                    currentlyStandingOn = entry;
                 }
             });
 
             // @todo This is way too heavy, implement better later
             wallArray.forEach(function(entry) {
                 if (entity === entry) {
-                    console.log(player.direction)
-
                     // north
                     if (player.direction == 4) {
                         player.pos["y"] = player.pos["y"] + 5;
@@ -215,6 +215,15 @@ document.onreadystatechange = function () {
 
         wallArray.forEach(function(entry) {
             itemLayer.registerCollidable(entry);
+        });
+
+        game.on('keyDown', function (keyCode) {
+            if (keyCode === PixelJS.Keys.Space) {
+                var posX = currentlyStandingOn.pos["x"] - currentlyStandingOn.pos["y"];
+                var posY = (currentlyStandingOn.pos["x"] + currentlyStandingOn.pos["y"]) / 2;
+
+                console.log("Adding block on: " + posX + " " + posY);
+            }
         });
 
         // Game loop
