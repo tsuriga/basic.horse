@@ -36,7 +36,7 @@ document.onreadystatechange = function () {
         var mapBlockSizeX = 16;
         var mapBlockSizeY = 16;
         var blockRange = 2;
-        var playerRange = 14;
+        var playerRange = 16;
 
         var itemLayer = game.createLayer('items');
 
@@ -167,8 +167,8 @@ document.onreadystatechange = function () {
 
                     // north-east
                     if (player.direction == 6) {
-                        player.pos["x"] = player.pos["x"] - 2.5;
-                        player.pos["y"] = player.pos["y"] + 2.5;
+                        player.pos["x"] = player.pos["x"] - 3;
+                        player.pos["y"] = player.pos["y"] + 3;
                     }
 
                     // east
@@ -178,8 +178,8 @@ document.onreadystatechange = function () {
 
                     // east-south
                     if (player.direction == 10) {
-                        player.pos["x"] = player.pos["x"] - 2.5;
-                        player.pos["y"] = player.pos["y"] - 2.5;
+                        player.pos["x"] = player.pos["x"] - 3;
+                        player.pos["y"] = player.pos["y"] - 3;
                     }
 
                     // south
@@ -189,8 +189,8 @@ document.onreadystatechange = function () {
 
                     // south-west
                     if (player.direction == 9) {
-                        player.pos["x"] = player.pos["x"] + 2.5;
-                        player.pos["y"] = player.pos["y"] - 2.5;
+                        player.pos["x"] = player.pos["x"] + 3;
+                        player.pos["y"] = player.pos["y"] - 3;
                     }
 
                     // west
@@ -200,8 +200,8 @@ document.onreadystatechange = function () {
 
                     // west-north
                     if (player.direction == 5) {
-                        player.pos["x"] = player.pos["x"] + 2.5;
-                        player.pos["y"] = player.pos["y"] + 2.5;
+                        player.pos["x"] = player.pos["x"] + 3;
+                        player.pos["y"] = player.pos["y"] + 3;
                     }
                 }
             });
