@@ -36,7 +36,7 @@ document.onreadystatechange = function () {
         var mapBlockSizeX = 16;
         var mapBlockSizeY = 16;
         var blockRange = 2;
-        var playerRange = 16;
+        var playerRange = 14;
 
         var itemLayer = game.createLayer('items');
 
@@ -152,45 +152,56 @@ document.onreadystatechange = function () {
         player.onCollide(function (entity) {
             floorArray.forEach(function(entry) {
                 if (entity === entry) {
-                    console.log("player: " + player.zIndex);
-                    console.log("entry: " + entry.zIndex);
                 }
             });
 
             // @todo This is way too heavy, implement better later
             wallArray.forEach(function(entry) {
                 if (entity === entry) {
-                    player.canMoveLeft = true;
-                    player.canMoveRight = true;
-                    player.canMoveDown = true;
-                    player.canMoveUp = true;
+                    console.log(player.direction)
 
-                    if (player.direction === 8) {
-                        player.canMoveDown = false;
-                        player.canMoveUp = true;
-                        player.canMoveLeft = true;
-                        player.canMoveRight = true;
+                    // north
+                    if (player.direction == 4) {
+                        player.pos["y"] = player.pos["y"] + 5;
                     }
 
-                    if (player.direction === 4) {
-                        player.canMoveUp = false;
-                        player.canMoveDown = true;
-                        player.canMoveLeft = true;
-                        player.canMoveRight = true;
+                    // north-east
+                    if (player.direction == 6) {
+                        player.pos["x"] = player.pos["x"] - 2.5;
+                        player.pos["y"] = player.pos["y"] + 2.5;
                     }
 
-                    if (player.direction === 2) {
-                        player.canMoveRight = false;
-                        player.canMoveLeft = true;
-                        player.canMoveDown = true;
-                        player.canMoveUp = true;
+                    // east
+                    if (player.direction == 2) {
+                        player.pos["x"] = player.pos["x"] - 5;
                     }
 
-                    if (player.direction === 1) {
-                        player.canMoveLeft = false;
-                        player.canMoveRight = true;
-                        player.canMoveDown = true;
-                        player.canMoveUp = true;
+                    // east-south
+                    if (player.direction == 10) {
+                        player.pos["x"] = player.pos["x"] - 2.5;
+                        player.pos["y"] = player.pos["y"] - 2.5;
+                    }
+
+                    // south
+                    if (player.direction == 8) {
+                        player.pos["y"] = player.pos["y"] - 5;
+                    }
+
+                    // south-west
+                    if (player.direction == 9) {
+                        player.pos["x"] = player.pos["x"] + 2.5;
+                        player.pos["y"] = player.pos["y"] - 2.5;
+                    }
+
+                    // west
+                    if (player.direction == 1) {
+                        player.pos["x"] = player.pos["x"] + 5;
+                    }
+
+                    // west-north
+                    if (player.direction == 5) {
+                        player.pos["x"] = player.pos["x"] + 2.5;
+                        player.pos["y"] = player.pos["y"] + 2.5;
                     }
                 }
             });

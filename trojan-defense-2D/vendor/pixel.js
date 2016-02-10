@@ -1267,7 +1267,7 @@ PixelJS.Player = function () {
     };
 
     this.direction = 0;
-    this.allowDiagonalMovement = false;
+    this.allowDiagonalMovement = true;
 };
 
 PixelJS.extend(PixelJS.Player, PixelJS.Entity);
