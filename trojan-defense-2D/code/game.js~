@@ -40,7 +40,7 @@ document.onreadystatechange = function () {
         var currentlyStandingOn = null;
 
         var itemLayer = game.createLayer('items');
-        itemLayer.zIndex=3;
+
         var wallArray = [];
         var floorArray = [];
         var backdoorArray = [];
@@ -64,7 +64,7 @@ document.onreadystatechange = function () {
                     wall.pos["x"] = gridOffset + currentBlockPosX - currentBlockPosY;
                     wall.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
 
-                    wall.zIndex = 2;
+                    wall.zIndex = zIndex;
 
                     wall.asset = new PixelJS.Sprite();
                     wall.asset.prepare({
@@ -131,11 +131,10 @@ document.onreadystatechange = function () {
             currentBlockPosX = mapBlockSizeX;
         }
 
-        var playerLayer = game.createLayer('players');
+        var playerLayer = game.createLayer("players");
         var player = new PixelJS.Player();
 
         player.addToLayer(playerLayer);
-
 
         player.pos = { x: 150, y: 100 };
         player.size["width"] = playerRange;
