@@ -40,8 +40,11 @@ document.onreadystatechange = function () {
         var currentlyStandingOn = null;
 
         var itemLayer = game.createLayer('items');
-        itemLayer.zIndex=3;
+        itemLayer.zIndex=0;
+        var frontLayer = game.createLayer('front of player');
+        frontLayer.zIndex=2;
         var wallArray = [];
+        var wallFrontArray = [];
         var floorArray = [];
         var backdoorArray = [];
         var fileArray = [];
@@ -72,7 +75,25 @@ document.onreadystatechange = function () {
                     });
 
                     wallArray.push(wall);
+                
 
+                    var wallFront = frontLayer.createEntity();
+                    wallFront.size["width"] = blockRange;
+                    wallFront.size["height"] = blockRange;
+
+                    // Isometric conversion
+                    wallFront.pos["x"] = gridOffset + currentBlockPosX - currentBlockPosY;
+                    wallFront.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
+                    wallFront.opacity = 1;
+                    wallFront.zIndex = 2;
+
+                    wallFront.asset = new PixelJS.Sprite();
+                    wallFront.asset.prepare({
+                        name: 'wall.png',
+                    });
+
+                    wallFrontArray.push(wallFront);
+                    
                 } else if (map1[i][j] == 3) {
                     var backdoor = itemLayer.createEntity();
                     backdoor.size["width"] = blockRange;
@@ -142,7 +163,7 @@ document.onreadystatechange = function () {
         player.size["height"] = playerRange;
         player.velocity = { x: 100, y: 100 };
         player.asset = new PixelJS.AnimatedSprite();
-        player.zIndex = 1;
+        playerLayer.zIndex = 1;
         player.asset.prepare({
             name: 'char.png',
             frames: 3,
@@ -150,6 +171,7 @@ document.onreadystatechange = function () {
             speed: 100,
             defaultFrame: 1
         });
+
 
         player.onCollide(function (entity) {
             floorArray.forEach(function(entry) {
@@ -197,6 +219,8 @@ document.onreadystatechange = function () {
                     // west
                     if (player.direction == 1) {
                         player.pos["x"] = player.pos["x"] + 5;
+                        wallArray[30].pos["x"] = 5;
+                        wallArray[30].pos["y"] = 5;
                     }
 
                     // west-north
@@ -225,7 +249,18 @@ document.onreadystatechange = function () {
 
                 console.log("Adding block on: " + posX + " " + posY);
             }
+
+            for(var i = 0; i < wallFrontArray.length; i++) {
+                if(player.pos["y"] + mapBlockSizeY / 2 < wallFrontArray[i].pos["y"]){
+                    wallFrontArray[i].visible = true;
+                }
+                else{
+                    wallFrontArray[i].visible = false;                
+                }         
+            }
+
         });
+
 
         // Game loop
         game.loadAndRun(function (elapsedTime, dt) {
