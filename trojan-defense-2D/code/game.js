@@ -219,8 +219,6 @@ document.onreadystatechange = function () {
                     // west
                     if (player.direction == 1) {
                         player.pos["x"] = player.pos["x"] + 5;
-                        wallArray[30].pos["x"] = 5;
-                        wallArray[30].pos["y"] = 5;
                     }
 
                     // west-north
