@@ -15,6 +15,15 @@ document.onreadystatechange = function () {
         game.fullscreen = true;
         var gridOffset = 260;
 
+        var shadowLayer = game.createLayer('background shadow');
+        var shadow = shadowLayer.createEntity();
+        shadow.pos["x"] = 35;
+        shadow.pos["y"] = 10;
+        shadow.asset = new PixelJS.Sprite();
+        shadow.asset.prepare({
+            name: 'shadow.png',
+        });
+
         // 0 = floor, 1 = wall, 3 = backdoor, 4 = file
         var map1 = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -161,7 +170,7 @@ document.onreadystatechange = function () {
         player.pos = { x: 150, y: 100 };
         player.size["width"] = playerRange;
         player.size["height"] = playerRange;
-        player.velocity = { x: 100, y: 100 };
+        player.velocity = { x: 100, y: 50 };
         player.asset = new PixelJS.AnimatedSprite();
         playerLayer.zIndex = 1;
         player.asset.prepare({
