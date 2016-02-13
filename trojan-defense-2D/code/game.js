@@ -28,9 +28,11 @@ const PLAYER_RANGE = 16;
 
 function countPositionInArray(posX, posY) {
     var pos = {};
+    var mapX = (posX - GRID_OFFSET + posY * 2);
+    var mapY = (posY - ((posX - GRID_OFFSET) / 2 ));
 
-    pos["X"] = Math.round(posX / ACTUAL_BLOCK_SIZE);
-    pos["Y"] = Math.round(posY / ACTUAL_BLOCK_SIZE);
+    pos["X"] = Math.round(mapX / ACTUAL_BLOCK_SIZE);
+    pos["Y"] = Math.round(mapY / (ACTUAL_BLOCK_SIZE / 2));
 
     return pos;
 }
