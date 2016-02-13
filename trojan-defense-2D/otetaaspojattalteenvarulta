@@ -1,0 +1,314 @@
+diff --git a/trojan-defense-2D/code/game.js b/trojan-defense-2D/code/game.js
+index 23d4e46..f0ded23 100755
+--- a/trojan-defense-2D/code/game.js
++++ b/trojan-defense-2D/code/game.js
+@@ -1,11 +1,49 @@
+ // Copyright Pandatom 2016
+ 
++// 0 = floor, 1 = wall, 3 = backdoor, 4 = file
++var map1 = [
++    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
++    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
++    [1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1],
++    [1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1],
++    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1],
++    [1, 0, 0, 0, 0, 0, 1, 0, 0, 4, 0, 1, 0, 1, 1],
++    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
++    [1, 0, 0, 0, 4, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
++    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
++    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
++    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
++    [1, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1],
++    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
++    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
++];
++
++// consts
++const GRID_OFFSET = 260;
++const ACTUAL_BLOCK_SIZE = 32;
++const MAP_BLOCK_SIZE_X = 16;
++const MAP_BLOCK_SIZE_Y = 16;
++const BLOCK_RANGE = 2;
++const PLAYER_RANGE = 16;
++
++function countPositionInArray(posX, posY) {
++    var pos = {};
++
++    pos["X"] = Math.round(posX / ACTUAL_BLOCK_SIZE);
++    pos["Y"] = Math.round(posY / ACTUAL_BLOCK_SIZE);
++
++    return pos;
++}
++
++function setItemInMap(posX, posY, map, type) {
++    map[posX][posY] = type;
++}
++
+ document.onreadystatechange = function () {
+     if (document.readyState == "complete") {
+-
+         var game = new PixelJS.Engine();
+ 
+-        // Init settings
++        // Init game container settings
+         game.init({
+             container: 'game_container',
+             width: 640,
+@@ -13,55 +51,43 @@ document.onreadystatechange = function () {
+         });
+ 
+         game.fullscreen = true;
+-        var gridOffset = 260;
+-
+-        var shadowLayer = game.createLayer('background shadow');
+-        var shadow = shadowLayer.createEntity();
+-        shadow.pos["x"] = 35;
+-        shadow.pos["y"] = 10;
+-        shadow.asset = new PixelJS.Sprite();
+-        shadow.asset.prepare({
+-            name: 'shadow.png',
+-        });
+ 
+-        // 0 = floor, 1 = wall, 3 = backdoor, 4 = file
+-        var map1 = [
+-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+-            [1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1],
+-            [1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1],
+-            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1],
+-            [1, 0, 0, 0, 0, 0, 1, 0, 0, 4, 0, 1, 0, 1, 1],
+-            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
+-            [1, 0, 0, 0, 4, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
+-            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
+-            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
+-            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
+-            [1, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1],
+-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+-        ];
+-
+-        var mapBlockSizeX = 16;
+-        var mapBlockSizeY = 16;
+-        var blockRange = 2;
+-        var playerRange = 16;
++        // Init game variables
+         var currentlyStandingOn = null;
+ 
+-        var itemLayer = game.createLayer('items');
+-        itemLayer.zIndex=0;
+-        var frontLayer = game.createLayer('front of player');
+-        frontLayer.zIndex=2;
++        var currentBlockPosX = MAP_BLOCK_SIZE_X;
++        var currentBlockPosY = MAP_BLOCK_SIZE_Y;
++
+         var wallArray = [];
+         var wallFrontArray = [];
++
+         var floorArray = [];
+         var backdoorArray = [];
+         var fileArray = [];
+ 
+-        var currentBlockPosX = mapBlockSizeX;
+-        var currentBlockPosY = mapBlockSizeY;
+         var zIndex = 0;
+ 
++
++        // Init layers
++        var itemLayer = game.createLayer('items');
++        var frontLayer = game.createLayer('front of player');
++        var shadowLayer = game.createLayer('background shadow');
++        var shadow = shadowLayer.createEntity();
++
++        shadow.asset = new PixelJS.Sprite();
++        shadow.asset.prepare({
++            name: 'shadow.png',
++        });
++
++        shadow.pos["x"] = 35;
++        shadow.pos["y"] = 10;
++
++        // Set zIndexes
++        itemLayer.zIndex = 1;
++        frontLayer.zIndex = 3;
++        shadowLayer.zIndex = 0;
++
++        // Level generation
+         for(var i = 0; i < map1.length; i++) {
+             var mapBlock = map1[i];
+             zIndex++;
+@@ -69,32 +95,28 @@ document.onreadystatechange = function () {
+             for(var j = 0; j < mapBlock.length; j++) {
+                 if (map1[i][j] == 1) {
+                     var wall = itemLayer.createEntity();
+-                    wall.size["width"] = blockRange;
+-                    wall.size["height"] = blockRange;
++                    wall.size["width"] = BLOCK_RANGE;
++                    wall.size["height"] = BLOCK_RANGE;
+ 
+                     // Isometric conversion
+-                    wall.pos["x"] = gridOffset + currentBlockPosX - currentBlockPosY;
++                    wall.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
+                     wall.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
+ 
+-                    wall.zIndex = 2;
+-
+                     wall.asset = new PixelJS.Sprite();
+                     wall.asset.prepare({
+                         name: 'wall.png',
+                     });
+ 
+                     wallArray.push(wall);
+-                
+ 
+                     var wallFront = frontLayer.createEntity();
+-                    wallFront.size["width"] = blockRange;
+-                    wallFront.size["height"] = blockRange;
++                    wallFront.size["width"] = BLOCK_RANGE;
++                    wallFront.size["height"] = BLOCK_RANGE;
+ 
+                     // Isometric conversion
+-                    wallFront.pos["x"] = gridOffset + currentBlockPosX - currentBlockPosY;
++                    wallFront.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
+                     wallFront.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
+                     wallFront.opacity = 1;
+-                    wallFront.zIndex = 2;
+ 
+                     wallFront.asset = new PixelJS.Sprite();
+                     wallFront.asset.prepare({
+@@ -102,14 +124,14 @@ document.onreadystatechange = function () {
+                     });
+ 
+                     wallFrontArray.push(wallFront);
+-                    
++
+                 } else if (map1[i][j] == 3) {
+                     var backdoor = itemLayer.createEntity();
+-                    backdoor.size["width"] = blockRange;
+-                    backdoor.size["height"] = blockRange;
++                    backdoor.size["width"] = BLOCK_RANGE;
++                    backdoor.size["height"] = BLOCK_RANGE;
+ 
+                     // Isometric conversion
+-                    backdoor.pos["x"] = gridOffset + currentBlockPosX - currentBlockPosY;
++                    backdoor.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
+                     backdoor.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
+ 
+                     backdoor.zIndex = zIndex;
+@@ -122,11 +144,11 @@ document.onreadystatechange = function () {
+                     backdoorArray.push(backdoor);
+                 } else if (map1[i][j] == 4) {
+                     var file = itemLayer.createEntity();
+-                    file.size["width"] = blockRange;
+-                    file.size["height"] = blockRange;
++                    file.size["width"] = BLOCK_RANGE;
++                    file.size["height"] = BLOCK_RANGE;
+ 
+                     // Isometric conversion
+-                    file.pos["x"] = gridOffset + currentBlockPosX - currentBlockPosY;
++                    file.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
+                     file.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
+ 
+                     file.zIndex = zIndex;
+@@ -139,11 +161,11 @@ document.onreadystatechange = function () {
+                     fileArray.push(file);
+                 } else {
+                     var floor = itemLayer.createEntity();
+-                    floor.size["width"] = blockRange;
+-                    floor.size["height"] = blockRange;
++                    floor.size["width"] = BLOCK_RANGE;
++                    floor.size["height"] = BLOCK_RANGE;
+ 
+                     // Isometric conversion
+-                    floor.pos["x"] = gridOffset + currentBlockPosX - currentBlockPosY;
++                    floor.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
+                     floor.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
+ 
+                     floor.zIndex = zIndex;
+@@ -155,24 +177,25 @@ document.onreadystatechange = function () {
+ 
+                     floorArray.push(floor);
+                 }
+-                currentBlockPosX = currentBlockPosX + mapBlockSizeX;
++                currentBlockPosX = currentBlockPosX + MAP_BLOCK_SIZE_X;
+             }
+-            currentBlockPosY = currentBlockPosY + mapBlockSizeY;
+-            currentBlockPosX = mapBlockSizeX;
++            currentBlockPosY = currentBlockPosY + MAP_BLOCK_SIZE_Y;
++            currentBlockPosX = MAP_BLOCK_SIZE_X;
+         }
+ 
++        // Create players
+         var playerLayer = game.createLayer('players');
+         var player = new PixelJS.Player();
+ 
+         player.addToLayer(playerLayer);
+ 
+-
+         player.pos = { x: 150, y: 100 };
+-        player.size["width"] = playerRange;
+-        player.size["height"] = playerRange;
++        player.size["width"] = PLAYER_RANGE;
++        player.size["height"] = PLAYER_RANGE;
+         player.velocity = { x: 100, y: 50 };
+         player.asset = new PixelJS.AnimatedSprite();
+-        playerLayer.zIndex = 1;
++        playerLayer.zIndex = 2;
++
+         player.asset.prepare({
+             name: 'char.png',
+             frames: 3,
+@@ -181,7 +204,7 @@ document.onreadystatechange = function () {
+             defaultFrame: 1
+         });
+ 
+-
++        // Handle collisions
+         player.onCollide(function (entity) {
+             floorArray.forEach(function(entry) {
+                 if (entity === entry) {
+@@ -239,6 +262,8 @@ document.onreadystatechange = function () {
+             });
+         });
+ 
++
++        // Register collidable layers
+         playerLayer.registerCollidable(player);
+ 
+         floorArray.forEach(function(entry) {
+@@ -249,28 +274,28 @@ document.onreadystatechange = function () {
+             itemLayer.registerCollidable(entry);
+         });
+ 
++        // Handle key events
+         game.on('keyDown', function (keyCode) {
+             if (keyCode === PixelJS.Keys.Space) {
+                 var posX = currentlyStandingOn.pos["x"] - currentlyStandingOn.pos["y"];
+                 var posY = (currentlyStandingOn.pos["x"] + currentlyStandingOn.pos["y"]) / 2;
+ 
+-                console.log("Adding block on: " + posX + " " + posY);
++                var posInArray = countPositionInArray(posX, posY);
++                setItemInMap(posInArray["X"], posInArray["Y"], map1, 1);
+             }
+ 
+             for(var i = 0; i < wallFrontArray.length; i++) {
+-                if(player.pos["y"] + mapBlockSizeY / 2 < wallFrontArray[i].pos["y"]){
++                if(player.pos["y"] + MAP_BLOCK_SIZE_Y / 2 < wallFrontArray[i].pos["y"]){
+                     wallFrontArray[i].visible = true;
+                 }
+                 else{
+-                    wallFrontArray[i].visible = false;                
+-                }         
++                    wallFrontArray[i].visible = false;
++                }
+             }
+-
+         });
+ 
+-
+         // Game loop
+         game.loadAndRun(function (elapsedTime, dt) {
+         });
+     }
+-}
++}
+\ No newline at end of file
