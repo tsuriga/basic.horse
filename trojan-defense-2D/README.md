@@ -11,7 +11,7 @@ Screenshot of current status:
 |---------|---------|
 | philpanda (project lead) |  Extending diagonal movement features in Pixel.js ? making animations work again |
 | Firzenizer | ? |
-| saarelaine | ? |
+| saarelaine | Implementing visible area for player functionality |
 | molsky | ? |
 
 ## Workload
