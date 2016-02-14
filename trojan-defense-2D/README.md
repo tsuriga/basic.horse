@@ -6,5 +6,7 @@ Screenshot of current status:
 
 ![alt tag](https://github.com/PHILPANDA/pandatom/blob/master/trojan-defense-2D/screenshots/current.png?raw=true)
 
-
 This game is in development.
+
+## Key combinations
+**CTRL + F:** Toggle between fullscreen mode.

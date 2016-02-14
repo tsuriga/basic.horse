@@ -52,7 +52,7 @@ document.onreadystatechange = function () {
             height: 480
         });
 
-        game.fullscreen = true;
+        game.fullscreen = false;
 
         // Init game variables
         var currentlyStandingOn = null;
