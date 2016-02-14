@@ -28,11 +28,12 @@ const PLAYER_RANGE = 16;
 
 function countPositionInArray(posX, posY) {
     var pos = {};
+    // Calculate real coordinates on map
     var mapX = (posX - GRID_OFFSET + posY * 2);
-    var mapY = (posY - ((posX - GRID_OFFSET) / 2 ));
-
+    var mapY = ((posY - ((posX - GRID_OFFSET) / 2 )) * 2);
+    // Convert coordinates to block format
     pos["X"] = Math.round(mapX / ACTUAL_BLOCK_SIZE);
-    pos["Y"] = Math.round(mapY / (ACTUAL_BLOCK_SIZE / 2));
+    pos["Y"] = Math.round(mapY / ACTUAL_BLOCK_SIZE);
 
     return pos;
 }
@@ -40,6 +41,7 @@ function countPositionInArray(posX, posY) {
 function setItemInMap(posX, posY, map, type) {
     map[posX][posY] = type;
 }
+
 
 document.onreadystatechange = function () {
     if (document.readyState == "complete") {
@@ -62,12 +64,10 @@ document.onreadystatechange = function () {
 
         var wallArray = [];
         var wallFrontArray = [];
-
         var floorArray = [];
         var backdoorArray = [];
         var fileArray = [];
-
-        var zIndex = 0;
+        var fogArray = [];
 
 
         // Init layers
@@ -75,7 +75,8 @@ document.onreadystatechange = function () {
         var frontLayer = game.createLayer('front of player');
         var shadowLayer = game.createLayer('background shadow');
         var shadow = shadowLayer.createEntity();
-
+        var fogLayer = game.createLayer('invisible area')
+        var floorLayer = game.createLayer('floor')
         shadow.asset = new PixelJS.Sprite();
         shadow.asset.prepare({
             name: 'shadow.png',
@@ -85,14 +86,16 @@ document.onreadystatechange = function () {
         shadow.pos["y"] = 10;
 
         // Set zIndexes
-        itemLayer.zIndex = 1;
-        frontLayer.zIndex = 3;
+        itemLayer.zIndex = 3;
+        frontLayer.zIndex = 5;
         shadowLayer.zIndex = 0;
+        fogLayer.zIndex = 2;
+        floorLayer.zIndex = 1;
 
         // Level generation
         for(var i = 0; i < map1.length; i++) {
             var mapBlock = map1[i];
-            zIndex++;
+
 
             for(var j = 0; j < mapBlock.length; j++) {
                 if (map1[i][j] == 1) {
@@ -136,7 +139,6 @@ document.onreadystatechange = function () {
                     backdoor.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
                     backdoor.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
 
-                    backdoor.zIndex = zIndex;
 
                     backdoor.asset = new PixelJS.Sprite();
                     backdoor.asset.prepare({
@@ -153,7 +155,6 @@ document.onreadystatechange = function () {
                     file.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
                     file.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
 
-                    file.zIndex = zIndex;
 
                     file.asset = new PixelJS.Sprite();
                     file.asset.prepare({
@@ -161,24 +162,41 @@ document.onreadystatechange = function () {
                     });
 
                     fileArray.push(file);
-                } else {
-                    var floor = itemLayer.createEntity();
-                    floor.size["width"] = BLOCK_RANGE;
-                    floor.size["height"] = BLOCK_RANGE;
 
-                    // Isometric conversion
-                    floor.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
-                    floor.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
-
-                    floor.zIndex = zIndex;
-
-                    floor.asset = new PixelJS.Sprite();
-                    floor.asset.prepare({
-                        name: 'floor.png',
-                    });
-
-                    floorArray.push(floor);
                 }
+
+                var fog = fogLayer.createEntity();
+                fog.size["width"] = BLOCK_RANGE;
+                fog.size["height"] = BLOCK_RANGE;
+
+                // Isometric conversion
+                fog.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
+                fog.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
+
+                fog.visible = false; // WIP, fog disabled at the moment
+                fog.opacity = 0.4;
+                fog.asset = new PixelJS.Sprite();
+                fog.asset.prepare({
+                    name: 'fog.png',
+                });
+                fogArray.push(fog);
+
+                var floor = floorLayer.createEntity();
+                floor.size["width"] = BLOCK_RANGE;
+                floor.size["height"] = BLOCK_RANGE;
+
+                // Isometric conversion
+                floor.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
+                floor.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
+
+
+                floor.asset = new PixelJS.Sprite();
+                floor.asset.prepare({
+                    name: 'floor.png',
+                });
+                floorArray.push(floor);
+
+
                 currentBlockPosX = currentBlockPosX + MAP_BLOCK_SIZE_X;
             }
             currentBlockPosY = currentBlockPosY + MAP_BLOCK_SIZE_Y;
@@ -196,7 +214,7 @@ document.onreadystatechange = function () {
         player.size["height"] = PLAYER_RANGE;
         player.velocity = { x: 100, y: 50 };
         player.asset = new PixelJS.AnimatedSprite();
-        playerLayer.zIndex = 2;
+        playerLayer.zIndex = 3;
 
         player.asset.prepare({
             name: 'char.png',
@@ -282,7 +300,7 @@ document.onreadystatechange = function () {
                 var posX = currentlyStandingOn.pos["x"] - currentlyStandingOn.pos["y"];
                 var posY = (currentlyStandingOn.pos["x"] + currentlyStandingOn.pos["y"]) / 2;
 
-                var posInArray = countPositionInArray(posX, posY);
+                var posInArray = countPositionInArray(player.pos["x"], player.pos["y"]);
                 setItemInMap(posInArray["X"], posInArray["Y"], map1, 1);
             }
 
