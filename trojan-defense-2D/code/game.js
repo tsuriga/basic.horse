@@ -32,8 +32,8 @@ function countPositionInArray(posX, posY) {
     var mapX = (posX - GRID_OFFSET + posY * 2);
     var mapY = ((posY - ((posX - GRID_OFFSET) / 2 )) * 2);
     // Convert coordinates to block format
-    pos["X"] = Math.round(mapX / ACTUAL_BLOCK_SIZE);
     pos["Y"] = Math.round(mapY / ACTUAL_BLOCK_SIZE);
+    pos["X"] = Math.round(mapX / ACTUAL_BLOCK_SIZE);
 
     return pos;
 }
@@ -68,7 +68,7 @@ document.onreadystatechange = function () {
         var backdoorArray = [];
         var fileArray = [];
         var fogArray = [];
-
+        var visiblityMap = map1;
 
         // Init layers
         var itemLayer = game.createLayer('items');
@@ -310,6 +310,29 @@ document.onreadystatechange = function () {
                 }
                 else{
                     wallFrontArray[i].visible = false;
+                }
+            }
+
+            //Visiblity map debug
+            if (keyCode === PixelJS.Keys.M) {
+                visiblityMap = map1;
+                var playerPosition = countPositionInArray(player.pos["x"], player.pos["y"]);
+
+                visiblityMap[playerPosition["Y"]][playerPosition["X"]] = 'P';
+                console.log(visiblityMap);
+
+                for(var i = -1 ; i < 2; i = i + 2) {
+                    var checkBlock = playerPosition;
+                    var findWall = 0;
+                    console.log(i);
+                    while (findWall != 1) {
+                        findWall = (visiblityMap[checkBlock.Y][playerPosition.X]);
+                        if (findWall != 1){
+                             visiblityMap[checkBlock["Y"]][playerPosition["X"]] = 'V';
+                        checkBlock["Y"] = checkBlock["Y"] + i;
+                        }
+                        console.log(checkBlock["Y"]);
+                    }
                 }
             }
         });
