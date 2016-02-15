@@ -68,7 +68,7 @@ document.onreadystatechange = function () {
         var backdoorArray = [];
         var fileArray = [];
         var fogArray = [];
-        var visiblityMap = map1;
+        var visibilityMap = map1;
 
         // Init layers
         var itemLayer = game.createLayer('items');
@@ -313,22 +313,22 @@ document.onreadystatechange = function () {
                 }
             }
 
-            //Visiblity map debug
+            //Visibility map debug
             if (keyCode === PixelJS.Keys.M) {
-                visiblityMap = map1;
+                visibilityMap = map1;
                 var playerPosition = countPositionInArray(player.pos["x"], player.pos["y"]);
 
-                visiblityMap[playerPosition["Y"]][playerPosition["X"]] = 'P';
-                console.log(visiblityMap);
+                visibilityMap[playerPosition["Y"]][playerPosition["X"]] = 'P';
+                console.log(visibilityMap);
 
                 for(var i = -1 ; i < 2; i = i + 2) {
                     var checkBlock = playerPosition;
                     var findWall = 0;
                     console.log(i);
                     while (findWall != 1) {
-                        findWall = (visiblityMap[checkBlock.Y][playerPosition.X]);
+                        findWall = (visibilityMap[checkBlock.Y][playerPosition.X]);
                         if (findWall != 1){
-                             visiblityMap[checkBlock["Y"]][playerPosition["X"]] = 'V';
+                             visibilityMap[checkBlock["Y"]][playerPosition["X"]] = 'V';
                         checkBlock["Y"] = checkBlock["Y"] + i;
                         }
                         console.log(checkBlock["Y"]);
