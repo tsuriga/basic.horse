@@ -96,7 +96,6 @@ document.onreadystatechange = function () {
         for(var i = 0; i < map1.length; i++) {
             var mapBlock = map1[i];
 
-
             for(var j = 0; j < mapBlock.length; j++) {
                 if (map1[i][j] == 1) {
                     var wall = itemLayer.createEntity();
@@ -321,19 +320,30 @@ document.onreadystatechange = function () {
                 visibilityMap[playerPosition["Y"]][playerPosition["X"]] = 'P';
                 console.log(visibilityMap);
 
-                for(var i = -1 ; i < 2; i = i + 2) {
-                    var checkBlock = playerPosition;
-                    var findWall = 0;
-                    console.log(i);
-                    while (findWall != 1) {
-                        findWall = (visibilityMap[checkBlock.Y][playerPosition.X]);
-                        if (findWall != 1){
-                             visibilityMap[checkBlock["Y"]][playerPosition["X"]] = 'V';
-                        checkBlock["Y"] = checkBlock["Y"] + i;
+
+                for(var i = 0 ; i < 2; i++) {
+                    for(var j = -1 ; j < 2; j = j + 2) {
+                        var checkBlock = {X: 0, Y: 0};
+                        checkBlock.Y = playerPosition.Y;
+                        checkBlock.X = playerPosition.X;
+                        var findWall = 0;
+                        //console.log(i);
+                        while (findWall != 1) {
+                            findWall = (visibilityMap[checkBlock.Y][checkBlock.X]);
+                            if (findWall != 1) {
+                                visibilityMap[checkBlock.Y][checkBlock.X] = 'V';
+                                console.log(checkBlock.Y, checkBlock.X);
+                                if(i == 0) {
+                                    checkBlock.Y = checkBlock.Y + j;
+                                }
+                                if(i == 1) {
+                                    checkBlock.X = checkBlock.X + j;
+                                }
+                            }
                         }
-                        console.log(checkBlock["Y"]);
                     }
                 }
+
             }
         });
 
