@@ -315,35 +315,12 @@ document.onreadystatechange = function () {
             //Visibility map debug
             if (keyCode === PixelJS.Keys.M) {
                 visibilityMap = map1;
-                var playerPosition = countPositionInArray(player.pos["x"], player.pos["y"]);
+                var scanResolution = 10;
+                var xMultipler;
+                var xMultipler;
 
-                visibilityMap[playerPosition["Y"]][playerPosition["X"]] = 'P';
-                console.log(visibilityMap);
-
-
-                for(var i = 0 ; i < 2; i++) {
-                    for(var j = -1 ; j < 2; j = j + 2) {
-                        var checkBlock = {X: 0, Y: 0};
-                        checkBlock.Y = playerPosition.Y;
-                        checkBlock.X = playerPosition.X;
-                        var findWall = 0;
-                        //console.log(i);
-                        while (findWall != 1) {
-                            findWall = (visibilityMap[checkBlock.Y][checkBlock.X]);
-                            if (findWall != 1) {
-                                visibilityMap[checkBlock.Y][checkBlock.X] = 'V';
-                                console.log(checkBlock.Y, checkBlock.X);
-                                if(i == 0) {
-                                    checkBlock.Y = checkBlock.Y + j;
-                                }
-                                if(i == 1) {
-                                    checkBlock.X = checkBlock.X + j;
-                                }
-                            }
-                        }
-                    }
+                for(var angle = 0; angle < 360; angle = angle + scanResolution ) {
                 }
-
             }
         });
 
