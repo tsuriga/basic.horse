@@ -312,12 +312,14 @@ document.onreadystatechange = function () {
                 }
             }
 
+            drawLine(player.pos.x, player.pos.y);
+
             //Visibility map debug
             if (keyCode === PixelJS.Keys.M) {
                 visibilityMap = map1;
                 var scanResolution = 10;
                 var xMultipler;
-                var xMultipler;
+                var yMultipler;
 
                 for(var angle = 0; angle < 360; angle = angle + scanResolution ) {
                 }
@@ -327,5 +329,54 @@ document.onreadystatechange = function () {
         // Game loop
         game.loadAndRun(function (elapsedTime, dt) {
         });
+    }
+}
+
+// SVG code starts here
+var aSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+aSvg.setAttribute('width', 640);
+aSvg.setAttribute('height', 480);
+var radar = document.getElementById('radar_container');
+document.getElementById("radar_container").style.zIndex = "6";
+radar.appendChild(aSvg);
+
+
+var SVGline = function (l) {
+    this.l = l;
+}
+
+var Line
+Line = new SVGline(Line);
+
+SVGline.prototype.createLine = function (x1, y1, x2, y2, color, w) {
+    var aLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+
+    aLine.setAttribute('id', "LINE");
+    aLine.setAttribute('x1', x1);
+    aLine.setAttribute('y1', y1);
+    aLine.setAttribute('x2', x2);
+    aLine.setAttribute('y2', y2);
+    aLine.setAttribute('stroke', color);
+    aLine.setAttribute('stroke-width', w);
+    return aLine;
+}
+
+function drawLine(posX, posY) {
+
+    if(document.getElementById("LINE")) {
+        document.getElementById("LINE").remove();
+    }
+    var xx = Line.createLine(posX, posY , 500, 500, 'rgb(100,200,200)', 5);
+    aSvg.appendChild(xx);
+}
+
+Element.prototype.remove = function() {
+    this.parentElement.removeChild(this);
+}
+NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
+    for(var i = this.length - 1; i >= 0; i--) {
+        if(this[i] && this[i].parentElement) {
+            this[i].parentElement.removeChild(this[i]);
+        }
     }
 }
