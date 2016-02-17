@@ -312,7 +312,6 @@ document.onreadystatechange = function () {
                 }
             }
 
-            drawLine(player.pos.x, player.pos.y);
 
             //Visibility map debug
             if (keyCode === PixelJS.Keys.M) {
@@ -328,6 +327,7 @@ document.onreadystatechange = function () {
 
         // Game loop
         game.loadAndRun(function (elapsedTime, dt) {
+            drawLine(player.pos.x, player.pos.y);
         });
     }
 }
