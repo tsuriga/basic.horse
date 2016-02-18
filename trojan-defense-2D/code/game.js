@@ -70,6 +70,12 @@ document.onreadystatechange = function () {
         var fogArray = [];
         var visibilityMap = map1;
 
+        // Scan / radar variables
+        var scanResolution = 10;
+        var xMultipler = 0;
+        var yMultipler = 0;
+        var scanAngle = 0;
+
         // Init layers
         var itemLayer = game.createLayer('items');
         var frontLayer = game.createLayer('front of player');
@@ -77,6 +83,7 @@ document.onreadystatechange = function () {
         var shadow = shadowLayer.createEntity();
         var fogLayer = game.createLayer('invisible area')
         var floorLayer = game.createLayer('floor')
+        var scanLayer = game.createLayer('scan visible area')
         shadow.asset = new PixelJS.Sprite();
         shadow.asset.prepare({
             name: 'shadow.png',
@@ -86,6 +93,7 @@ document.onreadystatechange = function () {
         shadow.pos["y"] = 10;
 
         // Set zIndexes
+        scanLayer.zIndex = 6;
         itemLayer.zIndex = 3;
         frontLayer.zIndex = 5;
         shadowLayer.zIndex = 0;
@@ -172,7 +180,7 @@ document.onreadystatechange = function () {
                 fog.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
                 fog.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
 
-                fog.visible = false; // WIP, fog disabled at the moment
+                fog.visible = true; // WIP, fog disabled at the moment
                 fog.opacity = 0.4;
                 fog.asset = new PixelJS.Sprite();
                 fog.asset.prepare({
@@ -208,7 +216,7 @@ document.onreadystatechange = function () {
 
         player.addToLayer(playerLayer);
 
-        player.pos = { x: 150, y: 100 };
+        player.pos = { x: 200, y: 100 };
         player.size["width"] = PLAYER_RANGE;
         player.size["height"] = PLAYER_RANGE;
         player.velocity = { x: 100, y: 50 };
@@ -222,6 +230,19 @@ document.onreadystatechange = function () {
             speed: 100,
             defaultFrame: 1
         });
+
+        var scan = scanLayer.createEntity();
+        scan.pos.x = player.pos.x;
+        scan.pos.y = player.pos.y;
+        scan.size["width"] = 20;
+        scan.size["height"] = 20;
+
+        scan.visible = false;
+        scan.asset = new PixelJS.Sprite();
+        scan.asset.prepare({
+            name: 'scan.png',
+        });
+
 
         // Handle collisions
         player.onCollide(function (entity) {
@@ -282,8 +303,24 @@ document.onreadystatechange = function () {
         });
 
 
+        scan.onCollide(function (entity) {
+            wallArray.forEach(function(entry) {
+                if (entity === entry) {
+                    scan.pos.x = player.pos.x;
+                    scan.pos.y = player.pos.y;
+                    console.log(entry);
+                    scanAngle = scanAngle + scanResolution;
+                }
+             });
+            fogArray.forEach(function(entry) {
+                if (entity === entry) {
+                    entry.visible = false;
+                }
+             });
+        });
         // Register collidable layers
         playerLayer.registerCollidable(player);
+        scanLayer.registerCollidable(scan);
 
         floorArray.forEach(function(entry) {
             itemLayer.registerCollidable(entry);
@@ -291,6 +328,10 @@ document.onreadystatechange = function () {
 
         wallArray.forEach(function(entry) {
             itemLayer.registerCollidable(entry);
+        });
+
+        fogArray.forEach(function(entry) {
+            fogLayer.registerCollidable(entry);
         });
 
         // Handle key events
@@ -313,21 +354,20 @@ document.onreadystatechange = function () {
             }
 
 
-            //Visibility map debug
-            if (keyCode === PixelJS.Keys.M) {
-                visibilityMap = map1;
-                var scanResolution = 10;
-                var xMultipler;
-                var yMultipler;
-
-                for(var angle = 0; angle < 360; angle = angle + scanResolution ) {
-                }
-            }
         });
 
         // Game loop
         game.loadAndRun(function (elapsedTime, dt) {
-            drawLine(player.pos.x, player.pos.y);
+
+            scanResolution = 15;
+            xMultipler = Math.cos(scanAngle * Math.PI / 180);
+            yMultipler = Math.sin(scanAngle * Math.PI / 180);
+            scan.pos.x = scan.pos.x + 15 * xMultipler;
+            scan.pos.y = scan.pos.y + 15 * yMultipler;
+
+            if(scanAngle >= 360) {
+                scanAngle = scanAngle - 360;
+            }
         });
     }
 }
@@ -361,12 +401,12 @@ SVGline.prototype.createLine = function (x1, y1, x2, y2, color, w) {
     return aLine;
 }
 
-function drawLine(posX, posY) {
+function drawLine(posX, posY, scanX, scanY) {
 
     if(document.getElementById("LINE")) {
         document.getElementById("LINE").remove();
     }
-    var xx = Line.createLine(posX, posY , 500, 500, 'rgb(100,200,200)', 5);
+    var xx = Line.createLine(posX, posY , scanX, scanY, 'rgb(100,200,200)', 5);
     aSvg.appendChild(xx);
 }
 
