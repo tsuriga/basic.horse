@@ -20,3 +20,10 @@ body {
     margin-right: auto;
     margin-top: 10%;
 }
+
+#radar_container {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+}
+
