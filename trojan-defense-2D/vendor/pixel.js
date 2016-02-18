@@ -14,6 +14,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
+//
+// -------------------------------------------------------------------
+// Engine is modified/extended by Pandatom as stated below:
+//   - Support for diagonal movements improved.
 
 var PixelJS = {
     AnimatedSprite: function () { },
@@ -159,10 +163,14 @@ var PixelJS = {
     },
 
     Directions: {
-        Left: 1,
-        Right: 2,
         Up: 4,
-        Down: 8
+        UpRight: 6,
+        Right: 2,
+        DownRight: 10,
+        Down: 8,
+        DownLeft: 9,
+        Left: 1,
+        UpLeft: 5
     },
 
     Buttons: {
@@ -623,10 +631,15 @@ PixelJS.Entity.prototype._isDragging = false;
 PixelJS.Entity.prototype._isMouseDown = false;
 PixelJS.Entity.prototype._isHoverable = false;
 PixelJS.Entity.prototype._isHovered = false;
+
 PixelJS.Entity.prototype.canMoveLeft = true;
+PixelJS.Entity.prototype.canMoveUpLeft = true;
 PixelJS.Entity.prototype.canMoveUp = true;
+PixelJS.Entity.prototype.canMoveUpRight = true;
 PixelJS.Entity.prototype.canMoveRight = true;
+PixelJS.Entity.prototype.canMoveDownRight = true;
 PixelJS.Entity.prototype.canMoveDown = true;
+PixelJS.Entity.prototype.canMoveDownLeft = true;
 PixelJS.Entity.prototype.dragButton = PixelJS.Buttons.Left;
 PixelJS.Entity.prototype.visible = true;
 
@@ -797,9 +810,18 @@ PixelJS.Entity.prototype.fadeTo = function (opacity, duration, callback) {
     return this;
 };
 
-PixelJS.Entity.prototype.moveLeft = function () {
-    if (this.canMoveLeft) {
-        this.pos.x -= this.velocity.x * this.layer.engine._deltaTime;
+PixelJS.Entity.prototype.moveUp = function () {
+    if (this.canMoveUp) {
+        this.pos.y -= this.velocity.y * this.layer.engine._deltaTime;
+    }
+
+    return this;
+};
+
+PixelJS.Entity.prototype.moveUpRight = function () {
+    if (this.canMoveUpRight) {
+        this.pos.y -= this.velocity.y * this.layer.engine._deltaTime;
+        this.pos.x += this.velocity.x * this.layer.engine._deltaTime;
     }
 
     return this;
@@ -813,9 +835,44 @@ PixelJS.Entity.prototype.moveRight = function () {
     return this;
 };
 
+PixelJS.Entity.prototype.moveDownRight = function () {
+    if (this.canMoveDownRight) {
+        this.pos.y += this.velocity.y * this.layer.engine._deltaTime;
+        this.pos.x += this.velocity.x * this.layer.engine._deltaTime;
+    }
+
+    return this;
+};
+
 PixelJS.Entity.prototype.moveDown = function () {
     if (this.canMoveDown) {
         this.pos.y += this.velocity.y * this.layer.engine._deltaTime;
+    }
+
+    return this;
+};
+
+PixelJS.Entity.prototype.moveDownLeft = function () {
+    if (this.canMoveDownLeft) {
+        this.pos.y += this.velocity.y * this.layer.engine._deltaTime;
+        this.pos.x -= this.velocity.x * this.layer.engine._deltaTime;
+    }
+
+    return this;
+};
+
+PixelJS.Entity.prototype.moveLeft = function () {
+    if (this.canMoveLeft) {
+        this.pos.x -= this.velocity.x * this.layer.engine._deltaTime;
+    }
+
+    return this;
+};
+
+PixelJS.Entity.prototype.moveUpLeft = function () {
+    if (this.canMoveUpLeft) {
+        this.pos.y -= this.velocity.y * this.layer.engine._deltaTime;
+        this.pos.x -= this.velocity.x * this.layer.engine._deltaTime;
     }
 
     return this;
@@ -862,14 +919,6 @@ PixelJS.Entity.prototype.moveTo = function (x, y, duration, callback) {
     };
 
     this.layer.engine._registerGameLoopCallback(this._animateMovement);
-    return this;
-};
-
-PixelJS.Entity.prototype.moveUp = function () {
-    if (this.canMoveUp) {
-        this.pos.y -= this.velocity.y * this.layer.engine._deltaTime;
-    }
-
     return this;
 };
 
@@ -1261,9 +1310,13 @@ Object.defineProperty(PixelJS.Layer.prototype, "zIndex", {
 PixelJS.Player = function () {
     this._directionRowMap = {
         down: 0,
-        left: 1,
-        right: 2,
-        up: 3
+        downleft: 1,
+        left: 2,
+        upleft: 3,
+        up: 4,
+        upright: 5,
+        right: 6,
+        downright: 7,
     };
 
     this.direction = 0;
@@ -1280,6 +1333,10 @@ PixelJS.Player.prototype.addToLayer = function (layer) {
 
     this.layer.engine.on('keydown', function (keyCode) {
         switch (keyCode) {
+            case PixelJS.Keys.Down:
+                self.direction |= PixelJS.Directions.Down;
+                break;
+
             case PixelJS.Keys.Left:
                 self.direction |= PixelJS.Directions.Left;
                 break;
@@ -1291,10 +1348,6 @@ PixelJS.Player.prototype.addToLayer = function (layer) {
             case PixelJS.Keys.Right:
                 self.direction |= PixelJS.Directions.Right;
                 break;
-
-            case PixelJS.Keys.Down:
-                self.direction |= PixelJS.Directions.Down;
-                break;
         }
 
         self.layer.requiresDraw = true;
@@ -1302,6 +1355,10 @@ PixelJS.Player.prototype.addToLayer = function (layer) {
 
     this.layer.engine.on('keyup', function (keyCode) {
         switch (keyCode) {
+            case PixelJS.Keys.Down:
+                self.direction &= ~PixelJS.Directions.Down;
+                break;
+
             case PixelJS.Keys.Left:
                 self.direction &= ~PixelJS.Directions.Left;
                 break;
@@ -1313,10 +1370,6 @@ PixelJS.Player.prototype.addToLayer = function (layer) {
             case PixelJS.Keys.Right:
                 self.direction &= ~PixelJS.Directions.Right;
                 break;
-
-            case PixelJS.Keys.Down:
-                self.direction &= ~PixelJS.Directions.Down;
-                break;
         }
 
         self.layer.requiresDraw = true;
@@ -1326,56 +1379,73 @@ PixelJS.Player.prototype.addToLayer = function (layer) {
 }
 
 PixelJS.Player.prototype.update = function (elapsedTime, dt) {
-    if (this.allowDiagonalMovement) {
-        if ((this.direction & PixelJS.Directions.Right) != 0) {
-            this.moveRight();
+    if (this.direction == PixelJS.Directions.Up) {
+        if (this.isAnimatedSprite) {
+            this.asset.row = this._directionRowMap.up;
+            this.asset.startAnimating();
         }
-
-        if ((this.direction & PixelJS.Directions.Left) != 0) {
-            this.moveLeft();
-        }
-
-        if ((this.direction & PixelJS.Directions.Up) != 0) {
-            this.moveUp();
-        }
-
-        if ((this.direction & PixelJS.Directions.Down) != 0) {
-            this.moveDown();
-        }
+        this.moveUp();
     }
-    else {
-        if ((this.direction & PixelJS.Directions.Right) != 0) {
-            if (this.isAnimatedSprite) {
-                this.asset.startAnimating();
-                this.asset.row = this._directionRowMap.right;
-            }
-            this.moveRight();
+
+    if (this.direction == PixelJS.Directions.UpRight && this.allowDiagonalMovement) {
+        if (this.isAnimatedSprite) {
+            this.asset.row = this._directionRowMap.upright;
+            this.asset.startAnimating();
         }
-        else if ((this.direction & PixelJS.Directions.Up) != 0) {
-            if (this.isAnimatedSprite) {
-                this.asset.row = this._directionRowMap.up;
-                this.asset.startAnimating();
-            }
-            this.moveUp();
+        this.moveUpRight();
+    }
+
+    if (this.direction == PixelJS.Directions.Right) {
+        if (this.isAnimatedSprite) {
+            this.asset.startAnimating();
+            this.asset.row = this._directionRowMap.right;
         }
-        else if ((this.direction & PixelJS.Directions.Left) != 0) {
-            if (this.isAnimatedSprite) {
-                this.asset.row = this._directionRowMap.left;
-                this.asset.startAnimating();
-            }
-            this.moveLeft();
+        this.moveRight();
+    }
+
+    if (this.direction == PixelJS.Directions.DownRight && this.allowDiagonalMovement) {
+        if (this.isAnimatedSprite) {
+            this.asset.row = this._directionRowMap.downright;
+            this.asset.startAnimating();
         }
-        else if ((this.direction & PixelJS.Directions.Down) != 0) {
-            if (this.isAnimatedSprite) {
-                this.asset.row = this._directionRowMap.down;
-                this.asset.startAnimating();
-            }
-            this.moveDown();
+        this.moveDownRight();
+    }
+
+    if (this.direction == PixelJS.Directions.Down) {
+        if (this.isAnimatedSprite) {
+            this.asset.row = this._directionRowMap.down;
+            this.asset.startAnimating();
         }
-        else {
-            if (this.isAnimatedSprite) {
-                this.asset.stopAnimating();
-            }
+        this.moveDown();
+    }
+
+    if (this.direction == PixelJS.Directions.DownLeft && this.allowDiagonalMovement) {
+        if (this.isAnimatedSprite) {
+            this.asset.row = this._directionRowMap.downleft;
+            this.asset.startAnimating();
+        }
+        this.moveDownLeft();
+    }
+
+    if (this.direction == PixelJS.Directions.Left) {
+        if (this.isAnimatedSprite) {
+            this.asset.row = this._directionRowMap.left;
+            this.asset.startAnimating();
+        }
+        this.moveLeft();
+    }
+
+    if (this.direction == PixelJS.Directions.UpLeft && this.allowDiagonalMovement) {
+        if (this.isAnimatedSprite) {
+            this.asset.row = this._directionRowMap.upleft;
+            this.asset.startAnimating();
+        }
+        this.moveUpLeft();
+    }
+
+    if (this.direction == 0) {
+        if (this.isAnimatedSprite) {
+            this.asset.stopAnimating();
         }
     }
 

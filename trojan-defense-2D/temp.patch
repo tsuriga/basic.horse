@@ -1,0 +1,400 @@
+diff --git a/trojan-defense-2D/code/game.js b/trojan-defense-2D/code/game.js
+index 0a120c0..2dff71d 100755
+--- a/trojan-defense-2D/code/game.js
++++ b/trojan-defense-2D/code/game.js
+@@ -28,9 +28,11 @@ const PLAYER_RANGE = 16;
+
+ function countPositionInArray(posX, posY) {
+     var pos = {};
++
+     // Calculate real coordinates on map
+     var mapX = (posX - GRID_OFFSET + posY * 2);
+     var mapY = ((posY - ((posX - GRID_OFFSET) / 2 )) * 2);
++
+     // Convert coordinates to block format
+     pos["X"] = Math.round(mapX / ACTUAL_BLOCK_SIZE);
+     pos["Y"] = Math.round(mapY / ACTUAL_BLOCK_SIZE);
+@@ -42,7 +44,6 @@ function setItemInMap(posX, posY, map, type) {
+     map[posX][posY] = type;
+ }
+
+-
+ document.onreadystatechange = function () {
+     if (document.readyState == "complete") {
+         var game = new PixelJS.Engine();
+@@ -69,7 +70,6 @@ document.onreadystatechange = function () {
+         var fileArray = [];
+         var fogArray = [];
+
+-
+         // Init layers
+         var itemLayer = game.createLayer('items');
+         var frontLayer = game.createLayer('front of player');
+@@ -77,6 +77,7 @@ document.onreadystatechange = function () {
+         var shadow = shadowLayer.createEntity();
+         var fogLayer = game.createLayer('invisible area')
+         var floorLayer = game.createLayer('floor')
++
+         shadow.asset = new PixelJS.Sprite();
+         shadow.asset.prepare({
+             name: 'shadow.png',
+@@ -96,7 +97,6 @@ document.onreadystatechange = function () {
+         for(var i = 0; i < map1.length; i++) {
+             var mapBlock = map1[i];
+
+-
+             for(var j = 0; j < mapBlock.length; j++) {
+                 if (map1[i][j] == 1) {
+                     var wall = itemLayer.createEntity();
+@@ -162,7 +162,6 @@ document.onreadystatechange = function () {
+                     });
+
+                     fileArray.push(file);
+-
+                 }
+
+                 var fog = fogLayer.createEntity();
+@@ -179,6 +178,7 @@ document.onreadystatechange = function () {
+                 fog.asset.prepare({
+                     name: 'fog.png',
+                 });
++
+                 fogArray.push(fog);
+
+                 var floor = floorLayer.createEntity();
+@@ -196,7 +196,6 @@ document.onreadystatechange = function () {
+                 });
+                 floorArray.push(floor);
+
+-
+                 currentBlockPosX = currentBlockPosX + MAP_BLOCK_SIZE_X;
+             }
+             currentBlockPosY = currentBlockPosY + MAP_BLOCK_SIZE_Y;
+@@ -219,7 +218,7 @@ document.onreadystatechange = function () {
+         player.asset.prepare({
+             name: 'char.png',
+             frames: 3,
+-            rows: 4,
++            rows: 8,
+             speed: 100,
+             defaultFrame: 1
+         });
+@@ -281,8 +280,7 @@ document.onreadystatechange = function () {
+                 }
+             });
+         });
+-
+-
++/* PHILPANDA removed due testing
+         // Register collidable layers
+         playerLayer.registerCollidable(player);
+
+@@ -293,6 +291,7 @@ document.onreadystatechange = function () {
+         wallArray.forEach(function(entry) {
+             itemLayer.registerCollidable(entry);
+         });
++*/
+
+         // Handle key events
+         game.on('keyDown', function (keyCode) {
+diff --git a/trojan-defense-2D/vendor/pixel.js b/trojan-defense-2D/vendor/pixel.js
+index 96c8b4a..2395f51 100755
+--- a/trojan-defense-2D/vendor/pixel.js
++++ b/trojan-defense-2D/vendor/pixel.js
+@@ -14,6 +14,10 @@
+ //
+ // You should have received a copy of the GNU General Public License
+ // along with this program.  If not, see http://www.gnu.org/licenses/.
++//
++// -------------------------------------------------------------------
++// Engine is modified/extended by Pandatom as stated below:
++//     - Support for diagonal movements improved.
+
+ var PixelJS = {
+     AnimatedSprite: function () { },
+@@ -159,10 +163,14 @@ var PixelJS = {
+     },
+
+     Directions: {
+-        Left: 1,
+-        Right: 2,
+         Up: 4,
+-        Down: 8
++        UpRight: 6,
++        Right: 2,
++        DownRight: 10,
++        Down: 8,
++        DownLeft: 9,
++        Left: 1,
++        UpLeft: 5
+     },
+
+     Buttons: {
+@@ -623,6 +631,8 @@ PixelJS.Entity.prototype._isDragging = false;
+ PixelJS.Entity.prototype._isMouseDown = false;
+ PixelJS.Entity.prototype._isHoverable = false;
+ PixelJS.Entity.prototype._isHovered = false;
++
++// @todo implement diagonal directions
+ PixelJS.Entity.prototype.canMoveLeft = true;
+ PixelJS.Entity.prototype.canMoveUp = true;
+ PixelJS.Entity.prototype.canMoveRight = true;
+@@ -797,14 +807,22 @@ PixelJS.Entity.prototype.fadeTo = function (opacity, duration, callback) {
+     return this;
+ };
+
+-PixelJS.Entity.prototype.moveLeft = function () {
+-    if (this.canMoveLeft) {
+-        this.pos.x -= this.velocity.x * this.layer.engine._deltaTime;
++PixelJS.Entity.prototype.moveUp = function () {
++    if (this.canMoveUp) {
++        this.pos.y -= this.velocity.y * this.layer.engine._deltaTime;
+     }
+
+     return this;
+ };
+
++PixelJS.Entity.prototype.moveUpRight = function () {
++    // @todo implement
++    this.pos.y -= this.velocity.y / 2 * this.layer.engine._deltaTime;
++    this.pos.x -= this.velocity.x / 2 * this.layer.engine._deltaTime;
++
++    return this;
++};
++
+ PixelJS.Entity.prototype.moveRight = function () {
+     if (this.canMoveRight) {
+         this.pos.x += this.velocity.x * this.layer.engine._deltaTime;
+@@ -813,6 +831,12 @@ PixelJS.Entity.prototype.moveRight = function () {
+     return this;
+ };
+
++PixelJS.Entity.prototype.moveDownRight = function () {
++    this.pos.y += this.velocity.y / 2 * this.layer.engine._deltaTime;
++    this.pos.x += this.velocity.x / 2 * this.layer.engine._deltaTime;
++    return this;
++};
++
+ PixelJS.Entity.prototype.moveDown = function () {
+     if (this.canMoveDown) {
+         this.pos.y += this.velocity.y * this.layer.engine._deltaTime;
+@@ -821,6 +845,27 @@ PixelJS.Entity.prototype.moveDown = function () {
+     return this;
+ };
+
++PixelJS.Entity.prototype.moveDownLeft = function () {
++    // @todo implement
++    this.pos.y += this.velocity.y / 2 * this.layer.engine._deltaTime;
++    this.pos.x += this.velocity.x / 2 * this.layer.engine._deltaTime;
++
++    return this;
++};
++
++PixelJS.Entity.prototype.moveLeft = function () {
++    if (this.canMoveLeft) {
++        this.pos.x -= this.velocity.x * this.layer.engine._deltaTime;
++    }
++
++    return this;
++};
++
++PixelJS.Entity.prototype.moveUpLeft = function () {
++    // @todo implement
++    return this;
++};
++
+ PixelJS.Entity.prototype.moveTo = function (x, y, duration, callback) {
+     duration = duration === undefined ? 1 : duration;
+
+@@ -865,14 +910,6 @@ PixelJS.Entity.prototype.moveTo = function (x, y, duration, callback) {
+     return this;
+ };
+
+-PixelJS.Entity.prototype.moveUp = function () {
+-    if (this.canMoveUp) {
+-        this.pos.y -= this.velocity.y * this.layer.engine._deltaTime;
+-    }
+-
+-    return this;
+-};
+-
+ PixelJS.Entity.prototype.onCollide = function (callback) {
+     if (!this.isCollidable) {
+         this.isCollidable = true;
+@@ -1261,9 +1298,13 @@ Object.defineProperty(PixelJS.Layer.prototype, "zIndex", {
+ PixelJS.Player = function () {
+     this._directionRowMap = {
+         down: 0,
+-        left: 1,
+-        right: 2,
+-        up: 3
++        downleft: 1,
++        left: 2,
++        upleft: 3,
++        up: 4,
++        upright: 5,
++        right: 6,
++        downright: 7,
+     };
+
+     this.direction = 0;
+@@ -1280,20 +1321,36 @@ PixelJS.Player.prototype.addToLayer = function (layer) {
+
+     this.layer.engine.on('keydown', function (keyCode) {
+         switch (keyCode) {
++            case PixelJS.Keys.Down:
++                self.direction |= PixelJS.Directions.Down;
++                break;
++
++            case PixelJS.Keys.Down + PixelJS.Keys.Left:
++                self.direction |= PixelJS.Directions.DownLeft;
++                break;
++
+             case PixelJS.Keys.Left:
+                 self.direction |= PixelJS.Directions.Left;
+                 break;
+
++            case PixelJS.Keys.Left + PixelJS.Keys.Up:
++                self.direction |= PixelJS.Directions.UpLeft;
++                break;
++
+             case PixelJS.Keys.Up:
+                 self.direction |= PixelJS.Directions.Up;
+                 break;
+
++            case PixelJS.Keys.Up + PixelJS.Keys.Right:
++                self.direction |= PixelJS.Directions.UpRight;
++                break;
++
+             case PixelJS.Keys.Right:
+                 self.direction |= PixelJS.Directions.Right;
+                 break;
+
+-            case PixelJS.Keys.Down:
+-                self.direction |= PixelJS.Directions.Down;
++            case PixelJS.Keys.Right + PixelJS.Keys.Down:
++                self.direction |= PixelJS.Directions.DownRight;
+                 break;
+         }
+
+@@ -1302,20 +1359,36 @@ PixelJS.Player.prototype.addToLayer = function (layer) {
+
+     this.layer.engine.on('keyup', function (keyCode) {
+         switch (keyCode) {
++            case PixelJS.Keys.Down:
++                self.direction &= ~PixelJS.Directions.Down;
++                break;
++
++            case PixelJS.Keys.Down + PixelJS.Keys.Left:
++                self.direction &= ~PixelJS.Directions.DownLeft;
++                break;
++
+             case PixelJS.Keys.Left:
+                 self.direction &= ~PixelJS.Directions.Left;
+                 break;
+
++            case PixelJS.Keys.Left + PixelJS.Keys.Up:
++                self.direction &= ~PixelJS.Directions.UpLeft;
++                break;
++
+             case PixelJS.Keys.Up:
+                 self.direction &= ~PixelJS.Directions.Up;
+                 break;
+
++            case PixelJS.Keys.Up + PixelJS.Keys.Right:
++                self.direction &= ~PixelJS.Directions.UpRight;
++                break;
++
+             case PixelJS.Keys.Right:
+                 self.direction &= ~PixelJS.Directions.Right;
+                 break;
+
+-            case PixelJS.Keys.Down:
+-                self.direction &= ~PixelJS.Directions.Down;
++            case PixelJS.Keys.Right + PixelJS.Keys.Down:
++                self.direction &= ~PixelJS.Directions.DownRight;
+                 break;
+         }
+
+@@ -1327,21 +1400,74 @@ PixelJS.Player.prototype.addToLayer = function (layer) {
+
+ PixelJS.Player.prototype.update = function (elapsedTime, dt) {
+     if (this.allowDiagonalMovement) {
+-        if ((this.direction & PixelJS.Directions.Right) != 0) {
+-            this.moveRight();
++        if ((this.direction & PixelJS.Directions.Up) != 0) {
++            if (this.isAnimatedSprite) {
++                this.asset.row = this._directionRowMap.up;
++                this.asset.startAnimating();
++            }
++            this.moveUp();
+         }
+
+-        if ((this.direction & PixelJS.Directions.Left) != 0) {
+-            this.moveLeft();
++        else if ((this.direction & PixelJS.Directions.UpRight) != 0) {
++            if (this.isAnimatedSprite) {
++                this.asset.row = this._directionRowMap.upright;
++                this.asset.startAnimating();
++            }
++            this.moveUpRight();
+         }
+
+-        if ((this.direction & PixelJS.Directions.Up) != 0) {
+-            this.moveUp();
++        else if ((this.direction & PixelJS.Directions.Right) != 0) {
++            if (this.isAnimatedSprite) {
++                this.asset.startAnimating();
++                this.asset.row = this._directionRowMap.right;
++            }
++            this.moveRight();
+         }
+
+-        if ((this.direction & PixelJS.Directions.Down) != 0) {
++        else if ((this.direction & PixelJS.Directions.DownRight) != 0) {
++            if (this.isAnimatedSprite) {
++                this.asset.row = this._directionRowMap.downright;
++                this.asset.startAnimating();
++            }
++            this.moveDownRight();
++        }
++
++        else if ((this.direction & PixelJS.Directions.Down) != 0) {
++            if (this.isAnimatedSprite) {
++                this.asset.row = this._directionRowMap.down;
++                this.asset.startAnimating();
++            }
+             this.moveDown();
+         }
++
++        else if ((this.direction & PixelJS.Directions.DownLeft) != 0) {
++            if (this.isAnimatedSprite) {
++                this.asset.row = this._directionRowMap.downleft;
++                this.asset.startAnimating();
++            }
++            this.moveDownLeft();
++        }
++
++        else if ((this.direction & PixelJS.Directions.Left) != 0) {
++            if (this.isAnimatedSprite) {
++                this.asset.row = this._directionRowMap.left;
++                this.asset.startAnimating();
++            }
++            this.moveLeft();
++        }
++
++        else if ((this.direction & PixelJS.Directions.UpLeft) != 0) {
++            if (this.isAnimatedSprite) {
++                this.asset.row = this._directionRowMap.upleft;
++                this.asset.startAnimating();
++            }
++            this.moveUpLeft();
++        }
++        else {
++            if (this.isAnimatedSprite) {
++                this.asset.stopAnimating();
++            }
++        }
+     }
+     else {
+         if ((this.direction & PixelJS.Directions.Right) != 0) {

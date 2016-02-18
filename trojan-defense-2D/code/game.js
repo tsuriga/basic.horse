@@ -42,7 +42,6 @@ function setItemInMap(posX, posY, map, type) {
     map[posX][posY] = type;
 }
 
-
 document.onreadystatechange = function () {
     if (document.readyState == "complete") {
         var game = new PixelJS.Engine();
@@ -169,7 +168,6 @@ document.onreadystatechange = function () {
                     });
 
                     fileArray.push(file);
-
                 }
 
                 var fog = fogLayer.createEntity();
@@ -186,6 +184,7 @@ document.onreadystatechange = function () {
                 fog.asset.prepare({
                     name: 'fog.png',
                 });
+
                 fogArray.push(fog);
 
                 var floor = floorLayer.createEntity();
@@ -202,7 +201,6 @@ document.onreadystatechange = function () {
                     name: 'floor.png',
                 });
                 floorArray.push(floor);
-
 
                 currentBlockPosX = currentBlockPosX + MAP_BLOCK_SIZE_X;
             }
@@ -226,7 +224,7 @@ document.onreadystatechange = function () {
         player.asset.prepare({
             name: 'char.png',
             frames: 3,
-            rows: 4,
+            rows: 8,
             speed: 100,
             defaultFrame: 1
         });
