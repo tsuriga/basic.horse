@@ -1,24 +1,9 @@
-// Copyright Pandatom 2016
+// Trojan Defense 2D
+//   Copyright (C) 2016 Pandatom (philpanda, Firzenizer)
+//
+// Version 0.1
+// This game is under development and using (modified) Pixel.js library by rastating
 
-// 0 = floor, 1 = wall, 3 = backdoor, 4 = file
-var map1 = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1],
-    [1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1],
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 4, 0, 1, 0, 1, 1],
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 4, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-];
-
-// consts
 const GRID_OFFSET = 260;
 const ACTUAL_BLOCK_SIZE = 32;
 const MAP_BLOCK_SIZE_X = 16;
@@ -26,11 +11,47 @@ const MAP_BLOCK_SIZE_Y = 16;
 const BLOCK_RANGE = 2;
 const PLAYER_RANGE = 16;
 
-function countPositionInArray(posX, posY) {
+/**
+ * @param int          posX
+ * @param int          posY
+ * @param int|optional offsetX
+ */
+function convertPositionToIsometric(posX, posY, offsetX) {
+    var offsetX = (offsetX == undefined) ? 0 : offsetX;
     var pos = {};
+
+    pos["x"] = offsetX + posX - posY;
+    pos["y"] = (posX + posY) / 2;
+
+    return pos;
+}
+
+/**
+ * @param int          posX
+ * @param int          posY
+ * @param int|optional offsetX
+ */
+function convertPositionToCartesian(posX, posY, offsetX) {
+    var offsetX = (offsetX == undefined) ? 0 : offsetX;
+    var pos = {};
+
+    pos["x"] = offsetX + (2 * posY + posX) / 2;
+    pos["y"] = (2 * posY - posX) / 2;
+
+    return pos;
+}
+
+/**
+ * @param int posX
+ * @param int posY
+ */
+function getClosestPositionInArray(posX, posY) {
+    var pos = {};
+
     // Calculate real coordinates on map
     var mapX = (posX - GRID_OFFSET + posY * 2);
     var mapY = ((posY - ((posX - GRID_OFFSET) / 2 )) * 2);
+
     // Convert coordinates to block format
     pos["Y"] = Math.round(mapY / ACTUAL_BLOCK_SIZE);
     pos["X"] = Math.round(mapX / ACTUAL_BLOCK_SIZE);
@@ -38,15 +59,24 @@ function countPositionInArray(posX, posY) {
     return pos;
 }
 
-function setItemInMap(posX, posY, map, type) {
-    map[posX][posY] = type;
+/**
+ * @param int   posX
+ * @param int   posY
+ * @param array map
+ * @param int   itemType
+ */
+function setItemInMap(posX, posY, map, itemType) {
+    map[posX][posY] = itemType;
 }
 
 document.onreadystatechange = function () {
     if (document.readyState == "complete") {
+
+        // -- Initialization ------------------------------------------------------
+
+        // Engine
         var game = new PixelJS.Engine();
 
-        // Init game container settings
         game.init({
             container: 'game_container',
             width: 640,
@@ -55,12 +85,30 @@ document.onreadystatechange = function () {
 
         game.fullscreen = false;
 
-        // Init game variables
-        var currentlyStandingOn = null;
+        // Level layout arrays (0 = floor, 1 = wall, 3 = backdoor, 4 = file)
+        var map1 = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1],
+            [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
 
+        // State variables
+        var currentlyStandingOn = null;
         var currentBlockPosX = MAP_BLOCK_SIZE_X;
         var currentBlockPosY = MAP_BLOCK_SIZE_Y;
 
+        // Block arrays
         var wallArray = [];
         var wallFrontArray = [];
         var floorArray = [];
@@ -75,7 +123,7 @@ document.onreadystatechange = function () {
         var yMultipler = 0;
         var scanAngle = 0;
 
-        // Init layers
+        // Layers
         var itemLayer = game.createLayer('items');
         var frontLayer = game.createLayer('front of player');
         var shadowLayer = game.createLayer('background shadow');
@@ -83,6 +131,7 @@ document.onreadystatechange = function () {
         var fogLayer = game.createLayer('invisible area')
         var floorLayer = game.createLayer('floor')
         var scanLayer = game.createLayer('scan visible area')
+
         shadow.asset = new PixelJS.Sprite();
         shadow.asset.prepare({
             name: 'shadow.png',
@@ -91,7 +140,7 @@ document.onreadystatechange = function () {
         shadow.pos["x"] = 35;
         shadow.pos["y"] = 10;
 
-        // Set zIndexes
+        // zIndexes
         scanLayer.zIndex = 6;
         itemLayer.zIndex = 3;
         frontLayer.zIndex = 5;
@@ -99,19 +148,22 @@ document.onreadystatechange = function () {
         fogLayer.zIndex = 2;
         floorLayer.zIndex = 1;
 
-        // Level generation
+        // -- Level generation ------------------------------------------------------
+
         for(var i = 0; i < map1.length; i++) {
             var mapBlock = map1[i];
 
             for(var j = 0; j < mapBlock.length; j++) {
                 if (map1[i][j] == 1) {
                     var wall = itemLayer.createEntity();
+
                     wall.size["width"] = BLOCK_RANGE;
                     wall.size["height"] = BLOCK_RANGE;
 
-                    // Isometric conversion
-                    wall.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
-                    wall.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
+                    var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
+
+                    wall.pos["x"] = isometricPosition["x"];
+                    wall.pos["y"] = isometricPosition["y"];
 
                     wall.asset = new PixelJS.Sprite();
                     wall.asset.prepare({
@@ -124,9 +176,9 @@ document.onreadystatechange = function () {
                     wallFront.size["width"] = BLOCK_RANGE;
                     wallFront.size["height"] = BLOCK_RANGE;
 
-                    // Isometric conversion
-                    wallFront.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
-                    wallFront.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
+                    wallFront.pos["x"] = isometricPosition["x"];
+                    wallFront.pos["y"] = isometricPosition["y"];
+
                     wallFront.opacity = 1;
 
                     wallFront.asset = new PixelJS.Sprite();
@@ -138,13 +190,14 @@ document.onreadystatechange = function () {
 
                 } else if (map1[i][j] == 3) {
                     var backdoor = itemLayer.createEntity();
+
                     backdoor.size["width"] = BLOCK_RANGE;
                     backdoor.size["height"] = BLOCK_RANGE;
 
-                    // Isometric conversion
-                    backdoor.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
-                    backdoor.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
+                    var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
 
+                    backdoor.pos["x"] = isometricPosition["x"];
+                    backdoor.pos["y"] = isometricPosition["y"];
 
                     backdoor.asset = new PixelJS.Sprite();
                     backdoor.asset.prepare({
@@ -152,15 +205,17 @@ document.onreadystatechange = function () {
                     });
 
                     backdoorArray.push(backdoor);
+
                 } else if (map1[i][j] == 4) {
                     var file = itemLayer.createEntity();
+
                     file.size["width"] = BLOCK_RANGE;
                     file.size["height"] = BLOCK_RANGE;
 
-                    // Isometric conversion
-                    file.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
-                    file.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
+                    var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
 
+                    file.pos["x"] = isometricPosition["x"];
+                    file.pos["y"] = isometricPosition["y"];
 
                     file.asset = new PixelJS.Sprite();
                     file.asset.prepare({
@@ -171,12 +226,14 @@ document.onreadystatechange = function () {
                 }
 
                 var fog = fogLayer.createEntity();
+
                 fog.size["width"] = BLOCK_RANGE;
                 fog.size["height"] = BLOCK_RANGE;
 
-                // Isometric conversion
-                fog.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
-                fog.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
+                var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
+
+                fog.pos["x"] = isometricPosition["x"];
+                fog.pos["y"] = isometricPosition["y"];
 
                 fog.visible = true; // WIP, fog disabled at the moment
                 fog.opacity = 0.4;
@@ -188,18 +245,20 @@ document.onreadystatechange = function () {
                 fogArray.push(fog);
 
                 var floor = floorLayer.createEntity();
+
                 floor.size["width"] = BLOCK_RANGE;
                 floor.size["height"] = BLOCK_RANGE;
 
-                // Isometric conversion
-                floor.pos["x"] = GRID_OFFSET + currentBlockPosX - currentBlockPosY;
-                floor.pos["y"] = (currentBlockPosX + currentBlockPosY) / 2;
+                var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
 
+                floor.pos["x"] = isometricPosition["x"];
+                floor.pos["y"] = isometricPosition["y"];
 
                 floor.asset = new PixelJS.Sprite();
                 floor.asset.prepare({
                     name: 'floor.png',
                 });
+
                 floorArray.push(floor);
 
                 currentBlockPosX = currentBlockPosX + MAP_BLOCK_SIZE_X;
@@ -208,7 +267,8 @@ document.onreadystatechange = function () {
             currentBlockPosX = MAP_BLOCK_SIZE_X;
         }
 
-        // Create players
+        // -- Entities ------------------------------------------------------
+
         var playerLayer = game.createLayer('players');
         var player = new PixelJS.Player();
 
@@ -230,6 +290,7 @@ document.onreadystatechange = function () {
         });
 
         var scan = scanLayer.createEntity();
+
         scan.pos.x = player.pos.x;
         scan.pos.y = player.pos.y;
         scan.size["width"] = 20;
@@ -241,8 +302,23 @@ document.onreadystatechange = function () {
             name: 'scan.png',
         });
 
+        // -- Collisions ------------------------------------------------------
 
-        // Handle collisions
+        playerLayer.registerCollidable(player);
+        scanLayer.registerCollidable(scan);
+
+        floorArray.forEach(function(entry) {
+            itemLayer.registerCollidable(entry);
+        });
+
+        wallArray.forEach(function(entry) {
+            itemLayer.registerCollidable(entry);
+        });
+
+        fogArray.forEach(function(entry) {
+            fogLayer.registerCollidable(entry);
+        });
+
         player.onCollide(function (entity) {
             floorArray.forEach(function(entry) {
                 if (entity === entry) {
@@ -300,121 +376,56 @@ document.onreadystatechange = function () {
             });
         });
 
-
         scan.onCollide(function (entity) {
             wallArray.forEach(function(entry) {
                 if (entity === entry) {
                     scan.pos.x = player.pos.x;
                     scan.pos.y = player.pos.y;
-                    console.log(entry);
+
                     scanAngle = scanAngle + scanResolution;
                 }
-             });
+            });
+
             fogArray.forEach(function(entry) {
                 if (entity === entry) {
                     entry.visible = false;
                 }
              });
         });
-        // Register collidable layers
-        playerLayer.registerCollidable(player);
-        scanLayer.registerCollidable(scan);
 
-        floorArray.forEach(function(entry) {
-            itemLayer.registerCollidable(entry);
-        });
+        // -- Additional key events  ------------------------------------------------------
 
-        wallArray.forEach(function(entry) {
-            itemLayer.registerCollidable(entry);
-        });
-
-        fogArray.forEach(function(entry) {
-            fogLayer.registerCollidable(entry);
-        });
-
-        // Handle key events
         game.on('keyDown', function (keyCode) {
             if (keyCode === PixelJS.Keys.Space) {
                 var posX = currentlyStandingOn.pos["x"] - currentlyStandingOn.pos["y"];
                 var posY = (currentlyStandingOn.pos["x"] + currentlyStandingOn.pos["y"]) / 2;
+                var posInArray = getClosestPositionInArray(player.pos["x"], player.pos["y"]);
 
-                var posInArray = countPositionInArray(player.pos["x"], player.pos["y"]);
                 setItemInMap(posInArray["X"], posInArray["Y"], map1, 1);
             }
 
             for(var i = 0; i < wallFrontArray.length; i++) {
-                if(player.pos["y"] + MAP_BLOCK_SIZE_Y / 2 < wallFrontArray[i].pos["y"]){
+                if (player.pos["y"] + MAP_BLOCK_SIZE_Y / 2 < wallFrontArray[i].pos["y"]) {
                     wallFrontArray[i].visible = true;
-                }
-                else{
+                } else {
                     wallFrontArray[i].visible = false;
                 }
             }
-
-
         });
 
-        // Game loop
-        game.loadAndRun(function (elapsedTime, dt) {
+        // -- Game loop ------------------------------------------------------
 
+        game.loadAndRun(function (elapsedTime, dt) {
             scanResolution = 15;
+
             xMultipler = Math.cos(scanAngle * Math.PI / 180);
             yMultipler = Math.sin(scanAngle * Math.PI / 180);
             scan.pos.x = scan.pos.x + 15 * xMultipler;
             scan.pos.y = scan.pos.y + 15 * yMultipler;
 
-            if(scanAngle >= 360) {
+            if (scanAngle >= 360) {
                 scanAngle = scanAngle - 360;
             }
         });
-    }
-}
-
-// SVG code starts here
-var aSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-aSvg.setAttribute('width', 640);
-aSvg.setAttribute('height', 480);
-var radar = document.getElementById('radar_container');
-document.getElementById("radar_container").style.zIndex = "6";
-radar.appendChild(aSvg);
-
-
-var SVGline = function (l) {
-    this.l = l;
-}
-
-var Line
-Line = new SVGline(Line);
-
-SVGline.prototype.createLine = function (x1, y1, x2, y2, color, w) {
-    var aLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-
-    aLine.setAttribute('id', "LINE");
-    aLine.setAttribute('x1', x1);
-    aLine.setAttribute('y1', y1);
-    aLine.setAttribute('x2', x2);
-    aLine.setAttribute('y2', y2);
-    aLine.setAttribute('stroke', color);
-    aLine.setAttribute('stroke-width', w);
-    return aLine;
-}
-
-function drawLine(posX, posY, scanX, scanY) {
-
-    if(document.getElementById("LINE")) {
-        document.getElementById("LINE").remove();
-    }
-    var xx = Line.createLine(posX, posY , scanX, scanY, 'rgb(100,200,200)', 5);
-    aSvg.appendChild(xx);
-}
-
-Element.prototype.remove = function() {
-    this.parentElement.removeChild(this);
-}
-NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
-    for(var i = this.length - 1; i >= 0; i--) {
-        if(this[i] && this[i].parentElement) {
-            this[i].parentElement.removeChild(this[i]);
-        }
     }
 }
