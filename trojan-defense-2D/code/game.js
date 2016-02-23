@@ -8,8 +8,8 @@ const GRID_OFFSET = 260;
 const ACTUAL_BLOCK_SIZE = 32;
 const MAP_BLOCK_SIZE_X = 16;
 const MAP_BLOCK_SIZE_Y = 16;
-const BLOCK_RANGE = 2;
-const PLAYER_RANGE = 16;
+const BLOCK_RANGE = 12;
+const PLAYER_RANGE = 12;
 
 /**
  * @param int          posX
@@ -326,51 +326,26 @@ document.onreadystatechange = function () {
                 }
             });
 
-            // @todo This is way too heavy, implement better later
             wallArray.forEach(function(entry) {
                 if (entity === entry) {
-                    // north
-                    if (player.direction == 4) {
-                        player.pos["y"] = player.pos["y"] + 5;
+                    if (entry.pos["x"] > player.pos["x"]) {
+                        console.log("wall at right");
+                        player.pos["x"] = player.pos["x"] - 2;
                     }
 
-                    // north-east
-                    if (player.direction == 6) {
-                        player.pos["x"] = player.pos["x"] - 3;
-                        player.pos["y"] = player.pos["y"] + 3;
+                    if (entry.pos["x"] < player.pos["x"]) {
+                        console.log("wall at left");
+                        player.pos["x"] = player.pos["x"] + 2;
                     }
 
-                    // east
-                    if (player.direction == 2) {
-                        player.pos["x"] = player.pos["x"] - 5;
+                    if (entry.pos["y"] > player.pos["y"]) {
+                        console.log("wall at up");
+                        player.pos["y"] = player.pos["y"] - 2;
                     }
 
-                    // east-south
-                    if (player.direction == 10) {
-                        player.pos["x"] = player.pos["x"] - 3;
-                        player.pos["y"] = player.pos["y"] - 3;
-                    }
-
-                    // south
-                    if (player.direction == 8) {
-                        player.pos["y"] = player.pos["y"] - 5;
-                    }
-
-                    // south-west
-                    if (player.direction == 9) {
-                        player.pos["x"] = player.pos["x"] + 3;
-                        player.pos["y"] = player.pos["y"] - 3;
-                    }
-
-                    // west
-                    if (player.direction == 1) {
-                        player.pos["x"] = player.pos["x"] + 5;
-                    }
-
-                    // west-north
-                    if (player.direction == 5) {
-                        player.pos["x"] = player.pos["x"] + 3;
-                        player.pos["y"] = player.pos["y"] + 3;
+                    if (entry.pos["y"] < player.pos["y"]) {
+                        console.log("wall at down");
+                        player.pos["y"] = player.pos["y"] + 2;
                     }
                 }
             });
