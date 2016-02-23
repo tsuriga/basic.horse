@@ -11,6 +11,14 @@ const MAP_BLOCK_SIZE_Y = 16;
 const BLOCK_RANGE = 12;
 const PLAYER_RANGE = 12;
 
+
+function collisonBetween(firstObject, secondObject) {
+    return firstObject.pos["x"] + firstObject.size.width > secondObject.pos.x &&
+    firstObject.pos["x"] < secondObject.pos["x"] + secondObject.size.width &&
+    firstObject.pos.y + firstObject.size.height > secondObject.pos.y &&
+    firstObject.pos.y < secondObject.pos.y + secondObject.size.height;
+}
+
 /**
  * @param int          posX
  * @param int          posY
@@ -108,6 +116,9 @@ document.onreadystatechange = function () {
         var currentBlockPosX = MAP_BLOCK_SIZE_X;
         var currentBlockPosY = MAP_BLOCK_SIZE_Y;
 
+        // General variables
+        var debug = false;
+
         // Block arrays
         var wallArray = [];
         var wallFrontArray = [];
@@ -115,10 +126,11 @@ document.onreadystatechange = function () {
         var backdoorArray = [];
         var fileArray = [];
         var fogArray = [];
-        var visibilityMap = map1;
+        var scanArray = [];
 
         // Scan / radar variables
         var scanResolution = 10;
+        var scanSpeed = 15;
         var xMultipler = 0;
         var yMultipler = 0;
         var scanAngle = 0;
@@ -289,23 +301,26 @@ document.onreadystatechange = function () {
             defaultFrame: 1
         });
 
-        var scan = scanLayer.createEntity();
+        for(var i = 0; i < 4; i++) {
+            var scan = scanLayer.createEntity();
 
-        scan.pos.x = player.pos.x;
-        scan.pos.y = player.pos.y;
-        scan.size["width"] = 20;
-        scan.size["height"] = 20;
+            scan.pos.x = player.pos.x;
+            scan.pos.y = player.pos.y;
+            scan.size["width"] = 20;
+            scan.size["height"] = 20;
 
-        scan.visible = false;
-        scan.asset = new PixelJS.Sprite();
-        scan.asset.prepare({
-            name: 'scan.png',
-        });
+            scan.angle = 90 * i;
+            scan.visible = false;
+            scan.asset = new PixelJS.Sprite();
+            scan.asset.prepare({
+                name: 'scan.png',
+            });
+            scanArray.push(scan);
+        }
 
         // -- Collisions ------------------------------------------------------
 
         playerLayer.registerCollidable(player);
-        scanLayer.registerCollidable(scan);
 
         floorArray.forEach(function(entry) {
             itemLayer.registerCollidable(entry);
@@ -351,22 +366,6 @@ document.onreadystatechange = function () {
             });
         });
 
-        scan.onCollide(function (entity) {
-            wallArray.forEach(function(entry) {
-                if (entity === entry) {
-                    scan.pos.x = player.pos.x;
-                    scan.pos.y = player.pos.y;
-
-                    scanAngle = scanAngle + scanResolution;
-                }
-            });
-
-            fogArray.forEach(function(entry) {
-                if (entity === entry) {
-                    entry.visible = false;
-                }
-             });
-        });
 
         // -- Additional key events  ------------------------------------------------------
 
@@ -386,20 +385,52 @@ document.onreadystatechange = function () {
                     wallFrontArray[i].visible = false;
                 }
             }
+
+
+            // Toggle debug mode
+            if (keyCode === PixelJS.Keys.D) {
+                if(debug) {
+                    debug = false;
+                } else {
+                    debug = true;
+                }
+                // Debug radar
+                for(var i = 0; i < scanArray.length; i++) {
+                    scanArray[i].visible = debug;
+                }
+            }
         });
 
         // -- Game loop ------------------------------------------------------
 
         game.loadAndRun(function (elapsedTime, dt) {
-            scanResolution = 15;
 
-            xMultipler = Math.cos(scanAngle * Math.PI / 180);
-            yMultipler = Math.sin(scanAngle * Math.PI / 180);
-            scan.pos.x = scan.pos.x + 15 * xMultipler;
-            scan.pos.y = scan.pos.y + 15 * yMultipler;
+            for(var i = 0; i < scanArray.length; i++) {
+                for(var j = 0; j < wallArray.length; j++) {
+                    if (collisonBetween(scanArray[i], wallArray[j])) {
+                        scanArray[i].pos.x = player.pos.x;
+                        scanArray[i].pos.y = player.pos.y;
+                        scanArray[i].angle = scanArray[i].angle + scanResolution;
+                        if ((scanArray[i].angle = scanArray[0].angle) &&
+                            (scanArray[i] != scanArray[0])) {
+                            scanArray[i].angle = scanArray[i].angle + 90 * i;
+                        }
+                    }
+                }
+                for(var j = 0; j < fogArray.length; j++) {
+                    if (collisonBetween(scanArray[i], fogArray[j])) {
+                        fogArray[j].visible = false;
+                    }
+                }
 
-            if (scanAngle >= 360) {
-                scanAngle = scanAngle - 360;
+                xMultipler = Math.cos(scanArray[i].angle * Math.PI / 180);
+                yMultipler = Math.sin(scanArray[i].angle * Math.PI / 180);
+                scanArray[i].pos.x = scanArray[i].pos.x + scanSpeed * xMultipler;
+                scanArray[i].pos.y = scanArray[i].pos.y + scanSpeed * yMultipler;
+
+                if (scanArray[i] >= 360) {
+                    scanArray[i] = scanArray[i] - 360;
+                }
             }
         });
     }
