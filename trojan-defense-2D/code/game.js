@@ -115,6 +115,7 @@ document.onreadystatechange = function () {
         var backdoorArray = [];
         var fileArray = [];
         var fogArray = [];
+        var bulletArray = [];
         var visibilityMap = map1;
 
         // Scan / radar variables
@@ -274,7 +275,7 @@ document.onreadystatechange = function () {
 
         player.addToLayer(playerLayer);
 
-        player.pos = { x: 200, y: 100 };
+        player.pos = { x: 20, y: 100 };
         player.size["width"] = PLAYER_RANGE;
         player.size["height"] = PLAYER_RANGE;
         player.velocity = { x: 100, y: 50 };
@@ -377,6 +378,27 @@ document.onreadystatechange = function () {
                 var posInArray = getClosestPositionInArray(player.pos["x"], player.pos["y"]);
 
                 setItemInMap(posInArray["X"], posInArray["Y"], map1, 1);
+            }
+
+            if (keyCode === PixelJS.Keys.Alt) {
+                console.log("paw!");
+                var bullet = frontLayer.createEntity();
+
+                bullet.size["width"] = BLOCK_RANGE;
+                bullet.size["height"] = BLOCK_RANGE;
+
+                bullet.pos["x"] = player.pos["x"];
+                bullet.pos["y"] = player.pos["y"];
+
+                bullet.asset = new PixelJS.Sprite();
+                bullet.asset.prepare({
+                    name: 'bullet.png',
+                });
+
+                var shootingDirection = player.direction;
+
+                bulletArray.push(bullet);
+                console.log(bulletArray);
             }
 
             for(var i = 0; i < wallFrontArray.length; i++) {
