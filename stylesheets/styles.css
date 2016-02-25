@@ -56,9 +56,12 @@
 
 body {
   background-color: #fff;
+  background-image: url("../background.png");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
   padding:50px;
   font: 14px/1.5 "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color:#727272;
   font-weight:400;
 }
 
@@ -88,7 +91,7 @@ h3, h4, h5, h6 {
 }
 
 a {
-  color:#39c;
+  color:DarkBlue;
   text-decoration:none;
 }
 
@@ -266,7 +269,6 @@ footer {
   }
 
   section {
-    border:1px solid #e5e5e5;
     border-width:1px 0;
     padding:20px 0;
     margin:0 0 20px;
