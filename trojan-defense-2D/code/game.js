@@ -12,6 +12,31 @@ const BLOCK_RANGE = 12;
 const PLAYER_RANGE = 12;
 
 /**
+ * @param object       player
+ * @param object       player
+ */
+function shoot(player, layer) {
+    var bullet = layer.createEntity();
+
+    bullet.size["width"] = BLOCK_RANGE;
+    bullet.size["height"] = BLOCK_RANGE;
+
+    bullet.pos["x"] = player.pos["x"];
+    bullet.pos["y"] = player.pos["y"];
+
+    bullet.asset = new PixelJS.Sprite();
+    bullet.asset.prepare({
+        name: 'bullet.png',
+    });
+
+    console.log("paw!");
+
+    bullet.draw();
+
+    var shootingDirection = player.direction;
+}
+
+/**
  * @param int          posX
  * @param int          posY
  * @param int|optional offsetX
@@ -115,7 +140,6 @@ document.onreadystatechange = function () {
         var backdoorArray = [];
         var fileArray = [];
         var fogArray = [];
-        var bulletArray = [];
         var visibilityMap = map1;
 
         // Scan / radar variables
@@ -275,7 +299,7 @@ document.onreadystatechange = function () {
 
         player.addToLayer(playerLayer);
 
-        player.pos = { x: 20, y: 100 };
+        player.pos = { x: 200, y: 100 };
         player.size["width"] = PLAYER_RANGE;
         player.size["height"] = PLAYER_RANGE;
         player.velocity = { x: 100, y: 50 };
@@ -381,24 +405,7 @@ document.onreadystatechange = function () {
             }
 
             if (keyCode === PixelJS.Keys.Alt) {
-                console.log("paw!");
-                var bullet = frontLayer.createEntity();
-
-                bullet.size["width"] = BLOCK_RANGE;
-                bullet.size["height"] = BLOCK_RANGE;
-
-                bullet.pos["x"] = player.pos["x"];
-                bullet.pos["y"] = player.pos["y"];
-
-                bullet.asset = new PixelJS.Sprite();
-                bullet.asset.prepare({
-                    name: 'bullet.png',
-                });
-
-                var shootingDirection = player.direction;
-
-                bulletArray.push(bullet);
-                console.log(bulletArray);
+                shoot(player, itemLayer);
             }
 
             for(var i = 0; i < wallFrontArray.length; i++) {

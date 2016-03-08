@@ -283,7 +283,7 @@ PixelJS.Engine = function () {
     }
 };
 
-PixelJS.Engine.prototype._checkForCollissions = function () {
+PixelJS.Engine.prototype._checkForCollisions = function () {
     for (var keyIndex = 0; keyIndex < this._layerKeys.length; keyIndex++) {
         // Check for collisions within the layer's own collidables
         var collidables = this._layers[this._layerKeys[keyIndex]]._collidables;
@@ -566,7 +566,7 @@ PixelJS.Engine.prototype.run = function (gameLoop) {
                 self._gameLoopCallbacks[i](elapsedTime, self._deltaTime);
             }
 
-            self._checkForCollissions();
+            self._checkForCollisions();
 
             gameLoop(elapsedTime, self._deltaTime);
 
