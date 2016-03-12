@@ -1320,6 +1320,7 @@ PixelJS.Player = function () {
     };
 
     this.direction = 0;
+    this.lastDirection = 0;
     this.allowDiagonalMovement = true;
 };
 
@@ -1378,7 +1379,40 @@ PixelJS.Player.prototype.addToLayer = function (layer) {
     return this;
 }
 
+PixelJS.Entity.prototype.update = function (elapsedTime, dt) {
+    switch (this.direction) {
+        case PixelJS.Directions.Up:
+            this.moveUp();
+            break;
+        case PixelJS.Directions.UpRight:
+            this.moveUpRight();
+            break;
+        case PixelJS.Directions.Right:
+            this.moveRight();
+            break;
+        case PixelJS.Directions.DownRight:
+            this.moveDownRight();
+            break;
+        case PixelJS.Directions.Down:
+            this.moveDown();
+            break;
+        case PixelJS.Directions.DownLeft:
+            this.moveDownLeft();
+            break;
+        case PixelJS.Directions.Left:
+            this.moveLeft();
+            break;
+        case PixelJS.Directions.UpLeft:
+            this.moveUpLeft();
+            break;
+    }
+}
+
 PixelJS.Player.prototype.update = function (elapsedTime, dt) {
+    if (this.direction != 0) {
+        this.lastDirection = this.direction;
+    }
+
     if (this.direction == PixelJS.Directions.Up) {
         if (this.isAnimatedSprite) {
             this.asset.row = this._directionRowMap.up;

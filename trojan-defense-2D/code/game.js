@@ -10,30 +10,73 @@ const MAP_BLOCK_SIZE_X = 16;
 const MAP_BLOCK_SIZE_Y = 16;
 const BLOCK_RANGE = 12;
 const PLAYER_RANGE = 12;
+const NUM_BULLETS = 15;
+const BULLET_SPEED = 230;
 
 /**
  * @param object       player
  * @param object       player
  */
-function shoot(player, layer) {
-    var bullet = layer.createEntity();
+var bullets = [];
 
-    bullet.size["width"] = BLOCK_RANGE;
-    bullet.size["height"] = BLOCK_RANGE;
+function getFreeBullet() {
+    for (var i=0;i<NUM_BULLETS;i++) {
+        var b = bullets[i];
+        if (!b.visible) {
+            return b;
+        }
+    }
+    return null;
+}
 
-    bullet.pos["x"] = player.pos["x"];
-    bullet.pos["y"] = player.pos["y"];
+function shootFrom(player) {
+    var bullet = getFreeBullet();
+    if (bullet == null) return;
 
-    bullet.asset = new PixelJS.Sprite();
-    bullet.asset.prepare({
-        name: 'bullet.png',
-    });
+    bullet.direction = player.lastDirection;
+    if (bullet.direction == 0) return;
 
-    console.log("paw!");
+    bullet.pos.x = player.pos.x + 9;
+    bullet.pos.y = player.pos.y + 9;
+    bullet.visible = true;
 
-    bullet.draw();
+    switch (bullet.direction) {
+        case PixelJS.Directions.Up:
+            bullet.velocity.x = 0;
+            bullet.velocity.y = BULLET_SPEED;
+            break;
+        case PixelJS.Directions.UpRight:
+            bullet.velocity.x = BULLET_SPEED;
+            bullet.velocity.y = BULLET_SPEED / 2;
+            break;
+        case PixelJS.Directions.UpLeft:
+            bullet.velocity.x = BULLET_SPEED;
+            bullet.velocity.y = BULLET_SPEED / 2;
+            break;
 
-    var shootingDirection = player.direction;
+        case PixelJS.Directions.Left:
+            bullet.velocity.x = BULLET_SPEED;
+            bullet.velocity.y = BULLET_SPEED;
+            break;
+
+        case PixelJS.Directions.Right:
+            bullet.velocity.x = BULLET_SPEED;
+            bullet.velocity.y = 0;
+            break;
+
+        case PixelJS.Directions.DownRight:
+            bullet.velocity.x = BULLET_SPEED;
+            bullet.velocity.y = BULLET_SPEED / 2;
+            break;
+        case PixelJS.Directions.Down:
+            bullet.velocity.x = 0;
+            bullet.velocity.y = BULLET_SPEED;
+            break;
+        case PixelJS.Directions.DownLeft:
+            bullet.velocity.x = BULLET_SPEED;
+            bullet.velocity.y = BULLET_SPEED / 2;
+            break;
+    }
 }
 
 /**
@@ -174,6 +217,22 @@ document.onreadystatechange = function () {
         floorLayer.zIndex = 1;
 
         // -- Level generation ------------------------------------------------------
+
+        for (var i=0;i<NUM_BULLETS;i++) {
+            var b = itemLayer.createEntity();
+            b.visible = false;
+            b.asset = new PixelJS.Sprite();
+            b.asset.prepare({
+                name: 'bullet.png'
+            });
+            b.onCollide(function (entity) {
+                if (wallArray.indexOf(entity) > 0)  {
+                    this.visible = false;
+                }
+            });
+
+            bullets.push(b);
+        }
 
         for(var i = 0; i < map1.length; i++) {
             var mapBlock = map1[i];
@@ -404,8 +463,8 @@ document.onreadystatechange = function () {
                 setItemInMap(posInArray["X"], posInArray["Y"], map1, 1);
             }
 
-            if (keyCode === PixelJS.Keys.Alt) {
-                shoot(player, itemLayer);
+            if (keyCode === PixelJS.Keys.X) {
+                shootFrom(player);
             }
 
             for(var i = 0; i < wallFrontArray.length; i++) {
