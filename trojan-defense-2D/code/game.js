@@ -401,23 +401,6 @@ document.onreadystatechange = function () {
             defaultFrame: 1
         });
 
-        var enemyTrojan = new PixelJS.Player();
-
-        enemyTrojan.pos = { x: 400, y: 200 };
-        enemyTrojan.size["width"] = PLAYER_RANGE;
-        enemyTrojan.size["height"] = PLAYER_RANGE;
-        enemyTrojan.velocity = { x: 100, y: 50 };
-        enemyTrojan.asset = new PixelJS.AnimatedSprite();
-        enemyLayer.zIndex = 3;
-
-        enemyTrojan.asset.prepare({
-            name: 'trojan.png',
-            frames: 3,
-            rows: 8,
-            speed: 100,
-            defaultFrame: 1
-        });
-
         var scan = scanLayer.createEntity();
 
         scan.pos.x = player.pos.x;
