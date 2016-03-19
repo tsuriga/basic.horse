@@ -135,6 +135,7 @@ document.onreadystatechange = function () {
         var xMultipler = 0;
         var yMultipler = 0;
         var scanAngle = 0;
+        var scanLoop = 0;
 
         // Layers
         var itemLayer = game.createLayer('items');
@@ -405,7 +406,6 @@ document.onreadystatechange = function () {
 
         // -- Game loop ------------------------------------------------------
 
-        var scanLoop = 0;
         game.loadAndRun(function (elapsedTime, dt) {
             if (scanLoop == 0) {
                 for(var j = 0; j < fogArray.length; j++) {
