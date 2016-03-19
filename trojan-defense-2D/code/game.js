@@ -53,7 +53,8 @@ function convertPositionToCartesian(posX, posY, offsetX) {
  * @param int posX
  * @param int posY
  */
-function getClosestPositionInArray(posX, posY) {
+function getClosestPositionInArray(posX, posY)
+{
     var pos = {};
 
     // Calculate real coordinates on map
@@ -129,8 +130,8 @@ document.onreadystatechange = function () {
         var scanArray = [];
 
         // Scan / radar variables
-        var scanResolution = 10;
-        var scanSpeed = 15;
+        var scanResolution = 0.2;
+        var scanSpeed = 10;
         var xMultipler = 0;
         var yMultipler = 0;
         var scanAngle = 0;
@@ -299,24 +300,21 @@ document.onreadystatechange = function () {
             rows: 8,
             speed: 100,
             defaultFrame: 1
+        });i
+
+        var scan = scanLayer.createEntity();
+
+        scan.pos.x = player.pos.x;
+        scan.pos.y = player.pos.y;
+        scan.size["width"] = 15;
+        scan.size["height"] = 15;
+
+        scan.angle = 90 * i;
+        scan.visible = false;
+        scan.asset = new PixelJS.Sprite();
+        scan.asset.prepare({
+            name: 'scan.png',
         });
-
-        for(var i = 0; i < 4; i++) {
-            var scan = scanLayer.createEntity();
-
-            scan.pos.x = player.pos.x;
-            scan.pos.y = player.pos.y;
-            scan.size["width"] = 20;
-            scan.size["height"] = 20;
-
-            scan.angle = 90 * i;
-            scan.visible = false;
-            scan.asset = new PixelJS.Sprite();
-            scan.asset.prepare({
-                name: 'scan.png',
-            });
-            scanArray.push(scan);
-        }
 
         // -- Collisions ------------------------------------------------------
 
@@ -370,6 +368,10 @@ document.onreadystatechange = function () {
         // -- Additional key events  ------------------------------------------------------
 
         game.on('keyDown', function (keyCode) {
+
+
+
+
             if (keyCode === PixelJS.Keys.Space) {
                 var posX = currentlyStandingOn.pos["x"] - currentlyStandingOn.pos["y"];
                 var posY = (currentlyStandingOn.pos["x"] + currentlyStandingOn.pos["y"]) / 2;
@@ -403,35 +405,34 @@ document.onreadystatechange = function () {
 
         // -- Game loop ------------------------------------------------------
 
+        var scanLoop = 0;
         game.loadAndRun(function (elapsedTime, dt) {
-
-            for(var i = 0; i < scanArray.length; i++) {
-                for(var j = 0; j < wallArray.length; j++) {
-                    if (collisonBetween(scanArray[i], wallArray[j])) {
-                        scanArray[i].pos.x = player.pos.x;
-                        scanArray[i].pos.y = player.pos.y;
-                        scanArray[i].angle = scanArray[i].angle + scanResolution;
-                        if ((scanArray[i].angle = scanArray[0].angle) &&
-                            (scanArray[i] != scanArray[0])) {
-                            scanArray[i].angle = scanArray[i].angle + 90 * i;
+            if (scanLoop == 0) {
+                for(var j = 0; j < fogArray.length; j++) {
+                        fogArray[j].visible = true;
+                }
+                for(scan.angle = 0; scan.angle < 360; scan.angle = scan.angle + scanResolution) {
+                    for(var j = 0; j < wallArray.length; j++) {
+                        if (collisonBetween(scan, wallArray[j])) {
+                            scan.pos.x = player.pos.x;
+                            scan.pos.y = player.pos.y;
                         }
                     }
-                }
-                for(var j = 0; j < fogArray.length; j++) {
-                    if (collisonBetween(scanArray[i], fogArray[j])) {
-                        fogArray[j].visible = false;
+                    for(var j = 0; j < fogArray.length; j++) {
+                        if (collisonBetween(scan, fogArray[j])) {
+                            fogArray[j].visible = false;
+                        }
                     }
-                }
-
-                xMultipler = Math.cos(scanArray[i].angle * Math.PI / 180);
-                yMultipler = Math.sin(scanArray[i].angle * Math.PI / 180);
-                scanArray[i].pos.x = scanArray[i].pos.x + scanSpeed * xMultipler;
-                scanArray[i].pos.y = scanArray[i].pos.y + scanSpeed * yMultipler;
-
-                if (scanArray[i] >= 360) {
-                    scanArray[i] = scanArray[i] - 360;
+                    xMultipler = Math.cos(scan.angle * Math.PI / 180);
+                    yMultipler = Math.sin(scan.angle * Math.PI / 180);
+                    scan.pos.x = scan.pos.x + scanSpeed * xMultipler;
+                    scan.pos.y = scan.pos.y + scanSpeed * yMultipler;
                 }
             }
+            if (scanLoop > 1) {
+                scanLoop = -1;
+            }
+            scanLoop++;
         });
     }
 }
