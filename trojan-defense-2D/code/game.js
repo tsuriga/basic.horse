@@ -11,13 +11,11 @@ const MAP_BLOCK_SIZE_Y = 16;
 const BLOCK_RANGE = 12;
 const PLAYER_RANGE = 12;
 const NUM_BULLETS = 15;
+const NUM_AUDIO = 3;
 const BULLET_SPEED = 230;
 
-/**
- * @param object       player
- * @param object       player
- */
 var bullets = [];
+var audio = [];
 
 function getFreeBullet() {
     for (var i=0;i<NUM_BULLETS;i++) {
@@ -29,8 +27,23 @@ function getFreeBullet() {
     return null;
 }
 
+function getFreeAudio() {
+    for (var i = 0; i < NUM_AUDIO; i++) {
+        var audio = this.audio[i];
+
+        if (!audio.ended) {
+            return audio;
+        } else {
+            return this.audio[i + 1];
+        }
+    }
+
+    return null;
+}
+
 function shootFrom(player) {
     var bullet = getFreeBullet();
+
     if (bullet == null) return;
 
     bullet.direction = player.lastDirection;
@@ -153,20 +166,25 @@ document.onreadystatechange = function () {
 
         game.fullscreen = false;
 
+        var collectSound = game.createSound('collect');
+        collectSound.prepare({ name: 'default_gun.ogg' });
+        console.log(collectSound);
+        collectSound.play();
+
         // Level layout arrays (0 = floor, 1 = wall, 3 = backdoor, 4 = file)
         var map1 = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1],
+            [1, 0, 1, 1, 0, 0, 0, 0, 4, 0, 0, 1, 1, 0, 1],
             [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
             [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-            [1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1],
+            [1, 0, 1, 1, 3, 0, 0, 0, 0, 3, 0, 1, 1, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ];
@@ -216,7 +234,13 @@ document.onreadystatechange = function () {
         fogLayer.zIndex = 2;
         floorLayer.zIndex = 1;
 
-        // -- Level generation ------------------------------------------------------
+        for (var i=0; i < NUM_AUDIO; i++) {
+            var soundDefaultGun = game.createSound();
+            soundDefaultGun.prepare({ name: 'default_gun.ogg' });
+            audio.push(soundDefaultGun);
+        }
+
+        console.log(audio);
 
         for (var i=0;i<NUM_BULLETS;i++) {
             var b = itemLayer.createEntity();
@@ -233,6 +257,8 @@ document.onreadystatechange = function () {
 
             bullets.push(b);
         }
+
+        // -- Level generation ------------------------------------------------------
 
         for(var i = 0; i < map1.length; i++) {
             var mapBlock = map1[i];
@@ -354,6 +380,8 @@ document.onreadystatechange = function () {
         // -- Entities ------------------------------------------------------
 
         var playerLayer = game.createLayer('players');
+        var enemyLayer = game.createLayer('enemies');
+
         var player = new PixelJS.Player();
 
         player.addToLayer(playerLayer);
@@ -367,6 +395,23 @@ document.onreadystatechange = function () {
 
         player.asset.prepare({
             name: 'char.png',
+            frames: 3,
+            rows: 8,
+            speed: 100,
+            defaultFrame: 1
+        });
+
+        var enemyTrojan = new PixelJS.Player();
+
+        enemyTrojan.pos = { x: 400, y: 200 };
+        enemyTrojan.size["width"] = PLAYER_RANGE;
+        enemyTrojan.size["height"] = PLAYER_RANGE;
+        enemyTrojan.velocity = { x: 100, y: 50 };
+        enemyTrojan.asset = new PixelJS.AnimatedSprite();
+        enemyLayer.zIndex = 3;
+
+        enemyTrojan.asset.prepare({
+            name: 'trojan.png',
             frames: 3,
             rows: 8,
             speed: 100,
@@ -413,22 +458,18 @@ document.onreadystatechange = function () {
             wallArray.forEach(function(entry) {
                 if (entity === entry) {
                     if (entry.pos["x"] > player.pos["x"]) {
-                        console.log("wall at right");
                         player.pos["x"] = player.pos["x"] - 2;
                     }
 
                     if (entry.pos["x"] < player.pos["x"]) {
-                        console.log("wall at left");
                         player.pos["x"] = player.pos["x"] + 2;
                     }
 
                     if (entry.pos["y"] > player.pos["y"]) {
-                        console.log("wall at up");
                         player.pos["y"] = player.pos["y"] - 2;
                     }
 
                     if (entry.pos["y"] < player.pos["y"]) {
-                        console.log("wall at down");
                         player.pos["y"] = player.pos["y"] + 2;
                     }
                 }
@@ -463,8 +504,10 @@ document.onreadystatechange = function () {
                 setItemInMap(posInArray["X"], posInArray["Y"], map1, 1);
             }
 
-            if (keyCode === PixelJS.Keys.X) {
+            if (keyCode === PixelJS.Keys.Alt) {
                 shootFrom(player);
+
+                getFreeAudio().play();
             }
 
             for(var i = 0; i < wallFrontArray.length; i++) {
