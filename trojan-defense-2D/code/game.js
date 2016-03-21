@@ -130,8 +130,8 @@ document.onreadystatechange = function () {
         var scanArray = [];
 
         // Scan / radar variables
-        var scanResolution = 0.2;
-        var scanSpeed = 10;
+        var scanResolution = 0.1;
+        var scanSpeed = 7;
         var xMultipler = 0;
         var yMultipler = 0;
         var scanAngle = 0;
@@ -307,8 +307,8 @@ document.onreadystatechange = function () {
 
         scan.pos.x = player.pos.x;
         scan.pos.y = player.pos.y;
-        scan.size["width"] = 15;
-        scan.size["height"] = 15;
+        scan.size["width"] = 4;
+        scan.size["height"] = 4;
 
         scan.angle = 90 * i;
         scan.visible = false;
@@ -411,11 +411,11 @@ document.onreadystatechange = function () {
                 for(var j = 0; j < fogArray.length; j++) {
                         fogArray[j].visible = true;
                 }
-                for(scan.angle = 0; scan.angle < 360; scan.angle = scan.angle + scanResolution) {
+                for(scan.angle = 0; scan.angle <= 360; scan.angle = scan.angle + scanResolution) {
                     for(var j = 0; j < wallArray.length; j++) {
                         if (collisonBetween(scan, wallArray[j])) {
-                            scan.pos.x = player.pos.x;
-                            scan.pos.y = player.pos.y;
+                            scan.pos.x = player.pos.x + 3;
+                            scan.pos.y = player.pos.y + 4;
                         }
                     }
                     for(var j = 0; j < fogArray.length; j++) {
@@ -429,7 +429,7 @@ document.onreadystatechange = function () {
                     scan.pos.y = scan.pos.y + scanSpeed * yMultipler;
                 }
             }
-            if (scanLoop > 1) {
+            if (scanLoop > 3) {
                 scanLoop = -1;
             }
             scanLoop++;
