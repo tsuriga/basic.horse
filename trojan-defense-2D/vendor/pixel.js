@@ -16,7 +16,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 // -------------------------------------------------------------------
-// Engine is modified/extended by Pandatom as stated below:
+//
+// Copyright (C) 2016 pandatom.com
+// Engine is modified/extended by pandatom as stated below:
 //   - Support for diagonal movements improved.
 
 var PixelJS = {

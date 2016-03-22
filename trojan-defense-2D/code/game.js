@@ -1,5 +1,5 @@
 // Trojan Defense 2D
-//   Copyright (C) 2016 Pandatom (philpanda, Firzenizer)
+//   Copyright (C) 2016 Pandatom (philpanda, saarelaine, molsky, Firzenizer)
 //
 // Version 0.1
 // This game is under development and using (modified) Pixel.js library by rastating
@@ -10,31 +10,31 @@ const MAP_BLOCK_SIZE_X = 16;
 const MAP_BLOCK_SIZE_Y = 16;
 const BLOCK_RANGE = 12;
 const PLAYER_RANGE = 12;
-const NUM_BULLETS = 15;
-const NUM_AUDIO = 3;
+const NUM_BULLETS = 20;
+const NUM_AUDIO = 20;
 const BULLET_SPEED = 230;
 
-var bullets = [];
-var audio = [];
+var bulletArray = [];
+var audioArray = [];
 
 function getFreeBullet() {
-    for (var i=0;i<NUM_BULLETS;i++) {
-        var b = bullets[i];
+    for (var i = 0; i < NUM_BULLETS; i++) {
+        var b = bulletArray[i];
+
         if (!b.visible) {
             return b;
         }
     }
+
     return null;
 }
 
 function getFreeAudio() {
     for (var i = 0; i < NUM_AUDIO; i++) {
-        var audio = this.audio[i];
+        var audio = this.audioArray[i];
 
-        if (!audio.ended) {
+        if (audio.paused) {
             return audio;
-        } else {
-            return this.audio[i + 1];
         }
     }
 
@@ -49,6 +49,7 @@ function shootFrom(player) {
     bullet.direction = player.lastDirection;
     if (bullet.direction == 0) return;
 
+    getFreeAudio().play();
     bullet.pos.x = player.pos.x + 9;
     bullet.pos.y = player.pos.y + 9;
     bullet.visible = true;
@@ -58,10 +59,12 @@ function shootFrom(player) {
             bullet.velocity.x = 0;
             bullet.velocity.y = BULLET_SPEED;
             break;
+
         case PixelJS.Directions.UpRight:
             bullet.velocity.x = BULLET_SPEED;
             bullet.velocity.y = BULLET_SPEED / 2;
             break;
+
         case PixelJS.Directions.UpLeft:
             bullet.velocity.x = BULLET_SPEED;
             bullet.velocity.y = BULLET_SPEED / 2;
@@ -81,10 +84,12 @@ function shootFrom(player) {
             bullet.velocity.x = BULLET_SPEED;
             bullet.velocity.y = BULLET_SPEED / 2;
             break;
+
         case PixelJS.Directions.Down:
             bullet.velocity.x = 0;
             bullet.velocity.y = BULLET_SPEED;
             break;
+
         case PixelJS.Directions.DownLeft:
             bullet.velocity.x = BULLET_SPEED;
             bullet.velocity.y = BULLET_SPEED / 2;
@@ -92,12 +97,15 @@ function shootFrom(player) {
     }
 }
 
-
+/**
+ * @param object firstObject
+ * @param object secondObject
+ */
 function collisonBetween(firstObject, secondObject) {
     return firstObject.pos["x"] + firstObject.size.width > secondObject.pos.x &&
-    firstObject.pos["x"] < secondObject.pos["x"] + secondObject.size.width &&
-    firstObject.pos.y + firstObject.size.height > secondObject.pos.y &&
-    firstObject.pos.y < secondObject.pos.y + secondObject.size.height;
+        firstObject.pos["x"] < secondObject.pos["x"] + secondObject.size.width &&
+        firstObject.pos.y + firstObject.size.height > secondObject.pos.y &&
+        firstObject.pos.y < secondObject.pos.y + secondObject.size.height;
 }
 
 /**
@@ -175,11 +183,6 @@ document.onreadystatechange = function () {
 
         game.fullscreen = false;
 
-        var collectSound = game.createSound('collect');
-        collectSound.prepare({ name: 'default_gun.ogg' });
-        console.log(collectSound);
-        collectSound.play();
-
         // Level layout arrays (0 = floor, 1 = wall, 3 = backdoor, 4 = file)
         var map1 = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -187,9 +190,9 @@ document.onreadystatechange = function () {
             [1, 0, 1, 1, 0, 0, 0, 0, 4, 0, 0, 1, 1, 0, 1],
             [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
             [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1],
             [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
@@ -249,27 +252,28 @@ document.onreadystatechange = function () {
         floorLayer.zIndex = 1;
 
         for (var i=0; i < NUM_AUDIO; i++) {
-            var soundDefaultGun = game.createSound();
+            var soundDefaultGun = game.createSound('sound-default-gun' + i);
             soundDefaultGun.prepare({ name: 'default_gun.ogg' });
-            audio.push(soundDefaultGun);
+
+            audioArray.push(soundDefaultGun);
         }
 
-        console.log(audio);
+        for (var i = 0; i < NUM_BULLETS; i++) {
+            var bullet = itemLayer.createEntity();
+            bullet.visible = false;
+            bullet.asset = new PixelJS.Sprite();
 
-        for (var i=0;i<NUM_BULLETS;i++) {
-            var b = itemLayer.createEntity();
-            b.visible = false;
-            b.asset = new PixelJS.Sprite();
-            b.asset.prepare({
+            bullet.asset.prepare({
                 name: 'bullet.png'
             });
-            b.onCollide(function (entity) {
+
+            bullet.onCollide(function (entity) {
                 if (wallArray.indexOf(entity) > 0)  {
                     this.visible = false;
                 }
             });
 
-            bullets.push(b);
+            bulletArray.push(bullet);
         }
 
         // -- Level generation ------------------------------------------------------
@@ -477,10 +481,6 @@ document.onreadystatechange = function () {
         // -- Additional key events  ------------------------------------------------------
 
         game.on('keyDown', function (keyCode) {
-
-
-
-
             if (keyCode === PixelJS.Keys.Space) {
                 var posX = currentlyStandingOn.pos["x"] - currentlyStandingOn.pos["y"];
                 var posY = (currentlyStandingOn.pos["x"] + currentlyStandingOn.pos["y"]) / 2;
@@ -489,10 +489,8 @@ document.onreadystatechange = function () {
                 setItemInMap(posInArray["X"], posInArray["Y"], map1, 1);
             }
 
-            if (keyCode === PixelJS.Keys.Alt) {
+            if (keyCode === PixelJS.Keys.Space) {
                 shootFrom(player);
-
-                getFreeAudio().play();
             }
 
             for(var i = 0; i < wallFrontArray.length; i++) {
@@ -502,7 +500,6 @@ document.onreadystatechange = function () {
                     wallFrontArray[i].visible = false;
                 }
             }
-
 
             // Toggle debug mode
             if (keyCode === PixelJS.Keys.D) {
