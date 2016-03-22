@@ -622,6 +622,7 @@ PixelJS.Entity = function (layer) {
     this.pos = { x: 0, y: 0 };
     this.size = { width: 0, height: 0 };
     this.velocity = { x: 0, y: 0 };
+    this.angle = 0;
 };
 
 PixelJS.Entity.prototype._isClickable = false;
