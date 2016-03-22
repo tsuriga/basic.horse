@@ -16,7 +16,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 // -------------------------------------------------------------------
-// Engine is modified/extended by Pandatom as stated below:
+//
+// Copyright (C) 2016 pandatom.com
+// Engine is modified/extended by pandatom as stated below:
 //   - Support for diagonal movements improved.
 
 var PixelJS = {
@@ -283,7 +285,7 @@ PixelJS.Engine = function () {
     }
 };
 
-PixelJS.Engine.prototype._checkForCollissions = function () {
+PixelJS.Engine.prototype._checkForCollisions = function () {
     for (var keyIndex = 0; keyIndex < this._layerKeys.length; keyIndex++) {
         // Check for collisions within the layer's own collidables
         var collidables = this._layers[this._layerKeys[keyIndex]]._collidables;
@@ -566,7 +568,7 @@ PixelJS.Engine.prototype.run = function (gameLoop) {
                 self._gameLoopCallbacks[i](elapsedTime, self._deltaTime);
             }
 
-            self._checkForCollissions();
+            self._checkForCollisions();
 
             gameLoop(elapsedTime, self._deltaTime);
 
@@ -1321,6 +1323,7 @@ PixelJS.Player = function () {
     };
 
     this.direction = 0;
+    this.lastDirection = 0;
     this.allowDiagonalMovement = true;
 };
 
@@ -1379,7 +1382,40 @@ PixelJS.Player.prototype.addToLayer = function (layer) {
     return this;
 }
 
+PixelJS.Entity.prototype.update = function (elapsedTime, dt) {
+    switch (this.direction) {
+        case PixelJS.Directions.Up:
+            this.moveUp();
+            break;
+        case PixelJS.Directions.UpRight:
+            this.moveUpRight();
+            break;
+        case PixelJS.Directions.Right:
+            this.moveRight();
+            break;
+        case PixelJS.Directions.DownRight:
+            this.moveDownRight();
+            break;
+        case PixelJS.Directions.Down:
+            this.moveDown();
+            break;
+        case PixelJS.Directions.DownLeft:
+            this.moveDownLeft();
+            break;
+        case PixelJS.Directions.Left:
+            this.moveLeft();
+            break;
+        case PixelJS.Directions.UpLeft:
+            this.moveUpLeft();
+            break;
+    }
+}
+
 PixelJS.Player.prototype.update = function (elapsedTime, dt) {
+    if (this.direction != 0) {
+        this.lastDirection = this.direction;
+    }
+
     if (this.direction == PixelJS.Directions.Up) {
         if (this.isAnimatedSprite) {
             this.asset.row = this._directionRowMap.up;
