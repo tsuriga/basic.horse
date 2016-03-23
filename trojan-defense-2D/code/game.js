@@ -20,12 +20,23 @@ const SCAN_FREQUENCY = 4;
 var bulletArray = [];
 var audioArray = [];
 
+/**
+ * @param object scan
+ * @param object where
+ * @param int    offsetX
+ * @param int    offsetY
+ * @param object fogArray
+ * @param object wallArray
+ * @param int    loopNum
+ * @return int   loopNum
+ */
 function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, loopNum) {
     var xMultipler = 0;
     var yMultipler = 0;
+
     if (loopNum == 0) {
         for(var j = 0; j < fogArray.length; j++) {
-                fogArray[j].visible = true;
+            fogArray[j].visible = true;
         }
         for(scan.angle = 0; scan.angle <= 360; scan.angle = scan.angle + SCAN_RESOLUTION) {
             for(var j = 0; j < wallArray.length; j++) {
@@ -45,9 +56,11 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, loopNum) {
             scan.pos.y = scan.pos.y + SCAN_SPEED * yMultipler;
         }
     }
+
     if (loopNum >= SCAN_FREQUENCY) {
         loopNum = -1;
     }
+
     loopNum++;
     return loopNum;
 }
