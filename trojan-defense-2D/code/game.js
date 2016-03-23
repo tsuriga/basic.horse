@@ -13,9 +13,45 @@ const PLAYER_RANGE = 12;
 const NUM_BULLETS = 20;
 const NUM_AUDIO = 20;
 const BULLET_SPEED = 230;
+const SCAN_RESOLUTION = 0.1;
+const SCAN_SPEED = 7;
+const SCAN_FREQUENCY = 4;
 
 var bulletArray = [];
 var audioArray = [];
+
+function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, loopNum) {
+    var xMultipler = 0;
+    var yMultipler = 0;
+    if (loopNum == 0) {
+        for(var j = 0; j < fogArray.length; j++) {
+                fogArray[j].visible = true;
+        }
+        for(scan.angle = 0; scan.angle <= 360; scan.angle = scan.angle + SCAN_RESOLUTION) {
+            for(var j = 0; j < wallArray.length; j++) {
+                if (collisonBetween(scan, wallArray[j])) {
+                    scan.pos.x = where.pos.x + offsetX;
+                    scan.pos.y = where.pos.y + offsetY;
+                }
+            }
+            for(var j = 0; j < fogArray.length; j++) {
+                if (collisonBetween(scan, fogArray[j])) {
+                    fogArray[j].visible = false;
+                }
+            }
+            xMultipler = Math.cos(scan.angle * Math.PI / 180);
+            yMultipler = Math.sin(scan.angle * Math.PI / 180);
+            scan.pos.x = scan.pos.x + SCAN_SPEED * xMultipler;
+            scan.pos.y = scan.pos.y + SCAN_SPEED * yMultipler;
+        }
+    }
+    if (loopNum >= SCAN_FREQUENCY) {
+        loopNum = -1;
+    }
+    loopNum++;
+    return loopNum;
+}
+
 
 function getFreeBullet() {
     for (var i = 0; i < NUM_BULLETS; i++) {
@@ -218,13 +254,8 @@ document.onreadystatechange = function () {
         var fogArray = [];
         var scanArray = [];
 
-        // Scan / radar variables
-        var scanResolution = 0.1;
-        var scanSpeed = 7;
-        var xMultipler = 0;
-        var yMultipler = 0;
-        var scanAngle = 0;
-        var scanLoop = 0;
+        // Scan variables
+        var playerScanLoop = 0;
 
         // Layers
         var itemLayer = game.createLayer('items');
@@ -518,32 +549,7 @@ document.onreadystatechange = function () {
         // -- Game loop ------------------------------------------------------
 
         game.loadAndRun(function (elapsedTime, dt) {
-            if (scanLoop == 0) {
-                for(var j = 0; j < fogArray.length; j++) {
-                        fogArray[j].visible = true;
-                }
-                for(scan.angle = 0; scan.angle <= 360; scan.angle = scan.angle + scanResolution) {
-                    for(var j = 0; j < wallArray.length; j++) {
-                        if (collisonBetween(scan, wallArray[j])) {
-                            scan.pos.x = player.pos.x + 3;
-                            scan.pos.y = player.pos.y + 4;
-                        }
-                    }
-                    for(var j = 0; j < fogArray.length; j++) {
-                        if (collisonBetween(scan, fogArray[j])) {
-                            fogArray[j].visible = false;
-                        }
-                    }
-                    xMultipler = Math.cos(scan.angle * Math.PI / 180);
-                    yMultipler = Math.sin(scan.angle * Math.PI / 180);
-                    scan.pos.x = scan.pos.x + scanSpeed * xMultipler;
-                    scan.pos.y = scan.pos.y + scanSpeed * yMultipler;
-                }
-            }
-            if (scanLoop > 3) {
-                scanLoop = -1;
-            }
-            scanLoop++;
+            playerScanLoop = scanArea(scan, player, 3, 4, fogArray, wallArray, playerScanLoop)
         });
     }
 }
