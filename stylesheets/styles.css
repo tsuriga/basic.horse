@@ -91,12 +91,12 @@ h3, h4, h5, h6 {
 }
 
 a {
-  color:DarkBlue;
-  text-decoration:none;
+  color: black;
+  text-decoration: none;
 }
 
 a:hover {
-  color:#069;
+  color: orange;
 }
 
 a small {
@@ -158,6 +158,10 @@ th {
 
 img {
   max-width:100%;
+}
+
+.logo {
+    margin-top: -15px;
 }
 
 header {
