@@ -12,13 +12,32 @@ const BLOCK_RANGE = 12;
 const PLAYER_RANGE = 12;
 const NUM_BULLETS = 20;
 const NUM_AUDIO = 20;
+const NUM_TROJANS = 20;
 const BULLET_SPEED = 230;
 const SCAN_RESOLUTION = 0.1;
 const SCAN_SPEED = 7;
 const SCAN_FREQUENCY = 4;
 
+const ENTITY_TYPE_TROJAN = 1;
+
 var bulletArray = [];
 var audioArray = [];
+var trojanArray = [];
+
+/**
+ * @return entity|null
+ */
+function getFreeTrojan() {
+    for (var i = 0; i < NUM_TROJANS; i++) {
+        var trojan = trojanArray[i];
+
+        if (!trojan.visible) {
+            return trojan;
+        }
+    }
+
+    return null;
+}
 
 /**
  * @param object scan
@@ -65,7 +84,9 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, loopNum) {
     return loopNum;
 }
 
-
+/**
+ * @return entity|null
+ */
 function getFreeBullet() {
     for (var i = 0; i < NUM_BULLETS; i++) {
         var b = bulletArray[i];
@@ -78,6 +99,9 @@ function getFreeBullet() {
     return null;
 }
 
+/**
+ * @return entity|null
+ */
 function getFreeAudio() {
     for (var i = 0; i < NUM_AUDIO; i++) {
         var audio = this.audioArray[i];
@@ -90,6 +114,59 @@ function getFreeAudio() {
     return null;
 }
 
+/**
+ * @param int type
+ * @param int spawnPoints
+ * @return object entity
+ */
+function spawnEntity(type, spawnPoints) {
+    if (type == ENTITY_TYPE_TROJAN) {
+        var entity = getFreeTrojan();
+    }
+
+    if (entity == null) return;
+
+    randomPoint = Math.floor((Math.random() * spawnPoints.length) + 0);
+    spawnPoint = spawnPoints[randomPoint];
+
+    randomDistance = Math.floor((Math.random() * 10) + -10);
+    entity.pos.x = spawnPoint.pos.x + randomDistance;
+    entity.pos.y = spawnPoint.pos.y + randomDistance;
+
+    entity.visible = true;
+
+    return entity;
+}
+
+/**
+ * @param object entity
+ * @param array itemArray
+ */
+function moveEntityToNearestItem(entity, itemArray) {
+    items = [];
+
+    itemArray.forEach(function(entry) {
+        itemPosition = [entry.pos.x, entry.pos.y];
+        items.push(itemPosition);
+    });
+
+    distances = [];
+
+    items.forEach(function(entry) {
+        var distanceX = entity.pos.x - entry[0];
+        var distanceY = entity.pos.y - entry[1];
+
+        var distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+        distances.push(distance);
+    });
+
+    var nearest = distances.indexOf(Math.min.apply(Math, distances));
+    entity.moveTo(items[nearest][0], items[nearest][1], 3000);
+}
+
+/**
+ * @param object player
+ */
 function shootFrom(player) {
     var bullet = getFreeBullet();
 
@@ -235,17 +312,17 @@ document.onreadystatechange = function () {
         // Level layout arrays (0 = floor, 1 = wall, 3 = backdoor, 4 = file)
         var map1 = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 1, 1, 0, 0, 0, 0, 4, 0, 0, 1, 1, 0, 1],
-            [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1],
-            [1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1],
-            [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-            [1, 0, 1, 1, 3, 0, 0, 0, 0, 3, 0, 1, 1, 0, 1],
+            [1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 1, 1, 0, 1],
+            [1, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 0, 0, 3, 0, 0, 0, 0, 3, 0, 1, 1, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ];
@@ -271,6 +348,7 @@ document.onreadystatechange = function () {
         var playerScanLoop = 0;
 
         // Layers
+        var enemyLayer = game.createLayer('enemies');
         var itemLayer = game.createLayer('items');
         var frontLayer = game.createLayer('front of player');
         var shadowLayer = game.createLayer('background shadow');
@@ -288,6 +366,7 @@ document.onreadystatechange = function () {
         shadow.pos["y"] = 10;
 
         // zIndexes
+        enemyLayer.zIndex = 6;
         scanLayer.zIndex = 6;
         itemLayer.zIndex = 3;
         frontLayer.zIndex = 5;
@@ -442,10 +521,8 @@ document.onreadystatechange = function () {
         // -- Entities ------------------------------------------------------
 
         var playerLayer = game.createLayer('players');
-        var enemyLayer = game.createLayer('enemies');
 
         var player = new PixelJS.Player();
-
         player.addToLayer(playerLayer);
 
         player.pos = { x: 200, y: 100 };
@@ -461,7 +538,28 @@ document.onreadystatechange = function () {
             rows: 8,
             speed: 100,
             defaultFrame: 1
-        });i
+        });
+
+        for (var i=0; i < NUM_TROJANS; i++) {
+            var trojan = enemyLayer.createEntity();
+            trojan.visible = false;
+            trojan.asset = new PixelJS.AnimatedSprite();
+            trojan.pos = { x: -10000, y: -10000 };
+            trojan.velocity = { x: 100, y: 50 };
+            trojan.size["width"] = PLAYER_RANGE;
+            trojan.size["height"] = PLAYER_RANGE;
+            trojan.active = 0;
+
+            trojan.asset.prepare({
+                name: 'trojan.png',
+                frames: 3,
+                rows: 8,
+                speed: 100,
+                defaultFrame: 1
+            });
+
+            trojanArray.push(trojan);
+        }
 
         var scan = scanLayer.createEntity();
 
@@ -535,6 +633,11 @@ document.onreadystatechange = function () {
 
             if (keyCode === PixelJS.Keys.Space) {
                 shootFrom(player);
+            }
+
+            if (keyCode === PixelJS.Keys.Alt) {
+                var trojan = spawnEntity(ENTITY_TYPE_TROJAN, backdoorArray);
+                moveEntityToNearestItem(trojan, fileArray);
             }
 
             for(var i = 0; i < wallFrontArray.length; i++) {
