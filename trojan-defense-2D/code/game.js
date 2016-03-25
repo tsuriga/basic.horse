@@ -12,11 +12,33 @@ const BLOCK_RANGE = 12;
 const PLAYER_RANGE = 12;
 const NUM_BULLETS = 20;
 const NUM_AUDIO = 20;
+const NUM_TROJANS = 20;
 const BULLET_SPEED = 230;
+
+const ENTITY_TYPE_TROJAN = 1;
 
 var bulletArray = [];
 var audioArray = [];
+var trojanArray = [];
 
+/**
+ * @return entity|null
+ */
+function getFreeTrojan() {
+    for (var i = 0; i < NUM_TROJANS; i++) {
+        var trojan = trojanArray[i];
+
+        if (!trojan.visible) {
+            return trojan;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * @return entity|null
+ */
 function getFreeBullet() {
     for (var i = 0; i < NUM_BULLETS; i++) {
         var b = bulletArray[i];
@@ -29,6 +51,9 @@ function getFreeBullet() {
     return null;
 }
 
+/**
+ * @return entity|null
+ */
 function getFreeAudio() {
     for (var i = 0; i < NUM_AUDIO; i++) {
         var audio = this.audioArray[i];
@@ -39,6 +64,27 @@ function getFreeAudio() {
     }
 
     return null;
+}
+
+/**
+ * @param int type
+ * @param int spawnPoints
+ */
+function spawnEntity(type, spawnPoints) {
+    if (type == ENTITY_TYPE_TROJAN) {
+        var entity = getFreeTrojan();
+    }
+
+    if (entity == null) return;
+
+    randomPoint = Math.floor((Math.random() * spawnPoints.length) + 0);
+    spawnPoint = spawnPoints[randomPoint];
+
+    entity.pos.x = spawnPoint.pos.x;
+    entity.pos.y = spawnPoint.pos.y;
+    entity.visible = true;
+
+    console.log(entity);
 }
 
 function shootFrom(player) {
@@ -417,7 +463,27 @@ document.onreadystatechange = function () {
             rows: 8,
             speed: 100,
             defaultFrame: 1
-        });i
+        });
+
+        for (var i=0; i < NUM_TROJANS; i++) {
+            var trojan = enemyLayer.createEntity();
+            trojan.visible = false;
+            trojan.asset = new PixelJS.AnimatedSprite();
+            trojan.velocity = { x: 100, y: 50 };
+            trojan.size["width"] = PLAYER_RANGE;
+            trojan.size["height"] = PLAYER_RANGE;
+            trojan.zIndex = 3;
+
+            trojan.asset.prepare({
+                name: 'trojan.png',
+                frames: 3,
+                rows: 8,
+                speed: 100,
+                defaultFrame: 1
+            });
+
+            trojanArray.push(trojan);
+        }
 
         var scan = scanLayer.createEntity();
 
@@ -491,6 +557,10 @@ document.onreadystatechange = function () {
 
             if (keyCode === PixelJS.Keys.Space) {
                 shootFrom(player);
+            }
+
+            if (keyCode === PixelJS.Keys.Alt) {
+                spawnEntity(ENTITY_TYPE_TROJAN, backdoorArray);
             }
 
             for(var i = 0; i < wallFrontArray.length; i++) {
