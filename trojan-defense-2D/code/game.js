@@ -678,7 +678,6 @@ document.onreadystatechange = function () {
 
             if (keyCode === PixelJS.Keys.Shift) {
                 var currentlyStandingOn = getNearestPositionInArray(player.pos["x"], player.pos["y"]);
-
                 var isometricPosition = convertPositionToIsometric(currentlyStandingOn.x * MAP_BLOCK_SIZE_X, currentlyStandingOn.y * MAP_BLOCK_SIZE_Y, GRID_OFFSET);
 
                 setItemInMap(currentlyStandingOn.x, currentlyStandingOn.y, map1, 5);
