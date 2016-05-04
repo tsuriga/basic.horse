@@ -1,6 +1,7 @@
 # Trojan Defense 2D 0.2 [in development]
-Once upon a time there was a unfinished game called Trojan Defense (which is still in developement).
-It was/is a 3D FPS. This project is about making a 2D version of it with HTML5/Javascript and some other random libraries.
+Trojan Defense is a game about internet troll who gets pushed into a computer world. To 
+fight malicious Trojans spawning from backdoors; trying to steal your precious files.
+Game is implemented to work inside a browser with modified pixel.js engine.
 
 WIKI: https://github.com/PHILPANDA/pandatom/wiki
 
