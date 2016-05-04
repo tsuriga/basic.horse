@@ -544,6 +544,7 @@ document.onreadystatechange = function () {
 
                 currentBlockPosX = currentBlockPosX + MAP_BLOCK_SIZE_X;
             }
+
             currentBlockPosY = currentBlockPosY + MAP_BLOCK_SIZE_Y;
             currentBlockPosX = MAP_BLOCK_SIZE_X;
         }
@@ -676,13 +677,17 @@ document.onreadystatechange = function () {
             }
 
             if (keyCode === PixelJS.Keys.Shift) {
-                var currentlyStandingOn = getNearestPositionInArray(posX, posY);
-                setItemInMap(currentlyStandingOn.pos["x"], currentlyStandingOn.pos["y"], map1, 5);
-                drawItemInPosition(play.pos["x"], player.pos["y"], 5);
+                var currentlyStandingOn = getNearestPositionInArray(player.pos["x"], player.pos["y"]);
+
+                var isometricPosition = convertPositionToIsometric(currentlyStandingOn.x * MAP_BLOCK_SIZE_X, currentlyStandingOn.y * MAP_BLOCK_SIZE_Y, GRID_OFFSET);
+
+                setItemInMap(currentlyStandingOn.x, currentlyStandingOn.y, map1, 5);
+                drawItemInPosition(isometricPosition.x, isometricPosition.y, 5);
             }
 
             if (keyCode === PixelJS.Keys.Alt) {
                 var trojan = spawnEntity(ENTITY_TYPE_TROJAN, backdoorArray);
+
                 moveEntityToNearestItem(trojan, fileArray);
             }
 
