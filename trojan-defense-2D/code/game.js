@@ -13,6 +13,7 @@ const PLAYER_RANGE = 12;
 const NUM_BULLETS = 20;
 const NUM_AUDIO = 20;
 const NUM_TROJANS = 20;
+const NUM_FIREWALLS = 20;
 const BULLET_SPEED = 230;
 const SCAN_RESOLUTION = 0.1;
 const SCAN_SPEED = 7;
@@ -23,6 +24,7 @@ const ENTITY_TYPE_TROJAN = 1;
 var bulletArray = [];
 var audioArray = [];
 var trojanArray = [];
+var firewallArray = [];
 
 /**
  * @return entity|null
@@ -82,6 +84,21 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, loopNum) {
 
     loopNum++;
     return loopNum;
+}
+
+/**
+ * @return entity|null
+ */
+function getFreeFirewall() {
+    for (var i = 0; i < NUM_FIREWALLS; i++) {
+        var firewall = firewallArray[i];
+
+        if (!firewall.visible) {
+            return firewall;
+        }
+    }
+
+    return null;
 }
 
 /**
@@ -268,7 +285,7 @@ function convertPositionToCartesian(posX, posY, offsetX) {
  * @param int posX
  * @param int posY
  */
-function getClosestPositionInArray(posX, posY)
+function getNearestPositionInArray(posX, posY)
 {
     var pos = {};
 
@@ -277,8 +294,8 @@ function getClosestPositionInArray(posX, posY)
     var mapY = ((posY - ((posX - GRID_OFFSET) / 2 )) * 2);
 
     // Convert coordinates to block format
-    pos["Y"] = Math.round(mapY / ACTUAL_BLOCK_SIZE);
-    pos["X"] = Math.round(mapX / ACTUAL_BLOCK_SIZE);
+    pos["y"] = Math.round(mapY / ACTUAL_BLOCK_SIZE);
+    pos["x"] = Math.round(mapX / ACTUAL_BLOCK_SIZE);
 
     return pos;
 }
@@ -291,6 +308,19 @@ function getClosestPositionInArray(posX, posY)
  */
 function setItemInMap(posX, posY, map, itemType) {
     map[posX][posY] = itemType;
+}
+
+function drawItemInPosition(posX, posY, item) {
+    if (item == 5) {
+        var firewall = getFreeFirewall();
+
+        if (firewall == null) return;
+
+        firewall.pos.x = posX;
+        firewall.pos.y = posY;
+
+        firewall.visible = true;
+    }
 }
 
 document.onreadystatechange = function () {
@@ -309,7 +339,7 @@ document.onreadystatechange = function () {
 
         game.fullscreen = false;
 
-        // Level layout arrays (0 = floor, 1 = wall, 3 = backdoor, 4 = file)
+        // Level layout arrays (0 = floor, 1 = wall, 3 = backdoor, 4 = file, 5 = firewall)
         var map1 = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -514,6 +544,7 @@ document.onreadystatechange = function () {
 
                 currentBlockPosX = currentBlockPosX + MAP_BLOCK_SIZE_X;
             }
+
             currentBlockPosY = currentBlockPosY + MAP_BLOCK_SIZE_Y;
             currentBlockPosX = MAP_BLOCK_SIZE_X;
         }
@@ -534,7 +565,7 @@ document.onreadystatechange = function () {
 
         player.asset.prepare({
             name: 'char.png',
-            frames: 3,
+            frames: 4,
             rows: 8,
             speed: 100,
             defaultFrame: 1
@@ -559,6 +590,24 @@ document.onreadystatechange = function () {
             });
 
             trojanArray.push(trojan);
+        }
+
+        for (var i=0; i < NUM_FIREWALLS; i++) {
+            var firewall = itemLayer.createEntity();
+            firewall.visible = false;
+            firewall.asset = new PixelJS.Sprite();
+
+            firewall.asset.prepare({
+                name: 'firewall.png'
+            });
+
+            firewall.onCollide(function (entity) {
+                if (firewallArray.indexOf(entity) > 0)  {
+                    this.visible = false;
+                }
+            });
+
+            firewallArray.push(firewall);
         }
 
         var scan = scanLayer.createEntity();
@@ -624,19 +673,20 @@ document.onreadystatechange = function () {
 
         game.on('keyDown', function (keyCode) {
             if (keyCode === PixelJS.Keys.Space) {
-                var posX = currentlyStandingOn.pos["x"] - currentlyStandingOn.pos["y"];
-                var posY = (currentlyStandingOn.pos["x"] + currentlyStandingOn.pos["y"]) / 2;
-                var posInArray = getClosestPositionInArray(player.pos["x"], player.pos["y"]);
-
-                setItemInMap(posInArray["X"], posInArray["Y"], map1, 1);
+                shootFrom(player);
             }
 
-            if (keyCode === PixelJS.Keys.Space) {
-                shootFrom(player);
+            if (keyCode === PixelJS.Keys.Shift) {
+                var currentlyStandingOn = getNearestPositionInArray(player.pos["x"], player.pos["y"]);
+                var isometricPosition = convertPositionToIsometric(currentlyStandingOn.x * MAP_BLOCK_SIZE_X, currentlyStandingOn.y * MAP_BLOCK_SIZE_Y, GRID_OFFSET);
+
+                setItemInMap(currentlyStandingOn.x, currentlyStandingOn.y, map1, 5);
+                drawItemInPosition(isometricPosition.x, isometricPosition.y, 5);
             }
 
             if (keyCode === PixelJS.Keys.Alt) {
                 var trojan = spawnEntity(ENTITY_TYPE_TROJAN, backdoorArray);
+
                 moveEntityToNearestItem(trojan, fileArray);
             }
 
