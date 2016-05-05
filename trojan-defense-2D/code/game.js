@@ -1,7 +1,7 @@
 // Trojan Defense 2D
-//   Copyright (C) 2016 Pandatom (philpanda, saarelaine, molsky, Firzenizer)
+//   Copyright (C) 2016 Pandatom (philpanda, saarelaine, molsky)
 //
-// Version 0.2
+// Version 0.3
 // This game is under development and using (modified) Pixel.js library by rastating
 
 const GRID_OFFSET = 260;
