@@ -1,4 +1,4 @@
-# Trojan Defense 2D 0.2 [in development]
+# Trojan Defense 2D 0.3 [in development]
 Trojan Defense is a game about internet troll who gets pushed into a computer world. To 
 fight malicious Trojans spawning from backdoors; trying to steal your precious files.
 
