@@ -193,6 +193,7 @@ function shootFrom(player) {
     if (bullet.direction == 0) return;
 
     getFreeAudio().play();
+
     bullet.pos.x = player.pos.x + 9;
     bullet.pos.y = player.pos.y + 20;
     bullet.visible = true;
@@ -325,10 +326,6 @@ function drawItemInPosition(posX, posY, item) {
 
 document.onreadystatechange = function () {
     if (document.readyState == "complete") {
-
-        // -- Initialization ------------------------------------------------------
-
-        // Engine
         var game = new PixelJS.Engine();
 
         game.init({
