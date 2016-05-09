@@ -4,7 +4,7 @@ fight malicious Trojans spawning from backdoors; trying to steal your precious f
 
 Game is implemented with modified pixel.js engine and meant to be played inside browser.
 
-WIKI: https://github.com/PHILPANDA/pandatom/wiki
+https://github.com/allformsofpandas/pandatom/wiki
 
 Screenshot of current status:
 
