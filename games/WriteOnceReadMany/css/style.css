@@ -11,6 +11,10 @@ body {
     background-size: cover;
 }
 
+#minimap_canvas {
+    margin: 50px;
+}
+
 #menu_container {
     position: relative;
     width: 80%;

@@ -10,43 +10,14 @@ const MAP_BLOCK_SIZE_Y = 16;
 const BLOCK_RANGE = 12;
 const PLAYER_RANGE = 12;
 const NUM_AUDIO = 20;
-const SCAN_RESOLUTION = 0.1;
-const SCAN_SPEED = 7;
-const SCAN_FREQUENCY = 4;
+const NUM_FILES = 100;
+const MINIMAP_SPACING = 0.75;
 
-/**
- * @param int          posX
- * @param int          posY
- * @param int|optional offsetX
- */
-function convertPositionToIsometric(posX, posY, offsetX) {
-    var offsetX = (offsetX == undefined) ? 0 : offsetX;
-    var pos = {};
-
-    pos["x"] = offsetX + posX - posY;
-    pos["y"] = (posX + posY) / 2;
-
-    return pos;
-}
-
-/**
- * @param int          posX
- * @param int          posY
- * @param int|optional offsetX
- */
-function convertPositionToCartesian(posX, posY, offsetX) {
-    var offsetX = (offsetX == undefined) ? 0 : offsetX;
-    var pos = {};
-
-    pos["x"] = offsetX + (2 * posY + posX) / 2;
-    pos["y"] = (2 * posY - posX) / 2;
-
-    return pos;
-}
+var miniMapCanvas = document.getElementById("minimap_canvas");
+var miniMapCtx = miniMapCanvas.getContext("2d");
 
 document.onreadystatechange = function () {
     if (document.readyState == "complete") {
-
         var game = new PixelJS.Engine();
 
         game.init({
@@ -56,24 +27,6 @@ document.onreadystatechange = function () {
         });
 
         game.fullscreen = false;
-
-        // Level layout arrays (0 = floor, 1 = wall)
-        var map1 = [
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-        ];
 
         // State variables
         var currentlyStandingOn = null;
@@ -85,26 +38,15 @@ document.onreadystatechange = function () {
 
         // Block arrays
         var wallArray = [];
-        var wallFrontArray = [];
         var floorArray = [];
-        var fogArray = [];
-        var scanArray = [];
 
         // Layers
+        var playerLayer = game.createLayer('players');
         var itemLayer = game.createLayer('items');
-        var frontLayer = game.createLayer('front of player');
-        var shadowLayer = game.createLayer('background shadow');
-        var shadow = shadowLayer.createEntity();
-        var fogLayer = game.createLayer('invisible area')
         var floorLayer = game.createLayer('floor')
-        var scanLayer = game.createLayer('scan visible area')
 
         // zIndexes
-        scanLayer.zIndex = 6;
         itemLayer.zIndex = 3;
-        frontLayer.zIndex = 5;
-        shadowLayer.zIndex = 0;
-        fogLayer.zIndex = 2;
         floorLayer.zIndex = 1;
 
         // -- Level generation ------------------------------------------------------
@@ -130,22 +72,6 @@ document.onreadystatechange = function () {
                     });
 
                     wallArray.push(wall);
-
-                    var wallFront = frontLayer.createEntity();
-                    wallFront.size["width"] = BLOCK_RANGE;
-                    wallFront.size["height"] = BLOCK_RANGE;
-
-                    wallFront.pos["x"] = isometricPosition["x"];
-                    wallFront.pos["y"] = isometricPosition["y"];
-
-                    wallFront.opacity = 1;
-
-                    wallFront.asset = new PixelJS.Sprite();
-                    wallFront.asset.prepare({
-                        name: 'wall.png',
-                    });
-
-                    wallFrontArray.push(wallFront);
                 }
 
                 var floor = floorLayer.createEntity();
@@ -172,19 +98,82 @@ document.onreadystatechange = function () {
             currentBlockPosX = MAP_BLOCK_SIZE_X;
         }
 
-        var playerLayer = game.createLayer('players');
-
         var player = new PixelJS.Player();
+
         player.addToLayer(playerLayer);
 
-        player.pos = { x: 200, y: 100 };
+        player.pos = { x: 280, y: 100 };
         player.size["width"] = PLAYER_RANGE;
         player.size["height"] = PLAYER_RANGE;
         player.velocity = { x: 100, y: 50 };
         player.asset = new PixelJS.AnimatedSprite();
         playerLayer.zIndex = 3;
 
+        player.asset.prepare({
+            name: 'char.png',
+            frames: 1,
+            rows: 4,
+            speed: 100,
+            defaultFrame: 0
+        });
+
+        // -- Collisions ------------------------------------------------------
+
+        playerLayer.registerCollidable(player);
+
+        floorArray.forEach(function(entry) {
+            itemLayer.registerCollidable(entry);
+        });
+
+        wallArray.forEach(function(entry) {
+            itemLayer.registerCollidable(entry);
+        });
+
+        player.onCollide(function (entity) {
+            floorArray.forEach(function(entry) {
+                if (entity === entry) {
+                    currentlyStandingOn = entry;
+                }
+            });
+
+            wallArray.forEach(function(entry) {
+                if (entity === entry) {
+                    if (entry.pos["x"] > player.pos["x"]) {
+                        alert("DEATH");
+                    }
+
+                    if (entry.pos["x"] < player.pos["x"]) {
+                        alert("DEATH");
+                    }
+
+                    if (entry.pos["y"] > player.pos["y"]) {
+                        alert("DEATH");
+                    }
+
+                    if (entry.pos["y"] < player.pos["y"]) {
+                        alert("DEATH");
+                    }
+                }
+            });
+        });
+
+        // -- Additional key events  ------------------------------------------------------
+
+        game.on('keyDown', function (keyCode) {
+            // Toggle debug mode
+            if (keyCode === PixelJS.Keys.Space) {
+                if(debug) {
+                    console.debug("Debug mode off");
+                    debug = false;
+                } else {
+                    console.debug("Debug mode on");
+                    debug = true;
+                }
+            }
+        });
+
         game.loadAndRun(function (elapsedTime, dt) {
+            drawMiniMap(map1, player);
         });
     }
 }
