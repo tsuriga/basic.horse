@@ -32,6 +32,8 @@ document.onreadystatechange = function () {
         var currentlyStandingOn = null;
         var currentBlockPosX = MAP_BLOCK_SIZE_X;
         var currentBlockPosY = MAP_BLOCK_SIZE_Y;
+        var startPointX = 0;
+        var startPointY = 0;
 
         // General variables
         var debug = false;
@@ -74,6 +76,11 @@ document.onreadystatechange = function () {
                     wallArray.push(wall);
                 }
 
+                if (map1[i][j] == 2) {
+                    startPointX = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET).x;
+                    startPointY = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET).y;
+                }
+
                 var floor = floorLayer.createEntity();
 
                 floor.size["width"] = BLOCK_RANGE;
@@ -102,11 +109,12 @@ document.onreadystatechange = function () {
 
         player.addToLayer(playerLayer);
 
-        player.pos = { x: 280, y: 100 };
+        player.pos = { x: startPointX, y: startPointY };
         player.size["width"] = PLAYER_RANGE;
         player.size["height"] = PLAYER_RANGE;
         player.velocity = { x: 100, y: 50 };
         player.asset = new PixelJS.AnimatedSprite();
+
         playerLayer.zIndex = 3;
 
         player.asset.prepare({
@@ -139,19 +147,19 @@ document.onreadystatechange = function () {
             wallArray.forEach(function(entry) {
                 if (entity === entry) {
                     if (entry.pos["x"] > player.pos["x"]) {
-                        alert("DEATH");
+//                        alert("DEATH");
                     }
 
                     if (entry.pos["x"] < player.pos["x"]) {
-                        alert("DEATH");
+//                        alert("DEATH");
                     }
 
                     if (entry.pos["y"] > player.pos["y"]) {
-                        alert("DEATH");
+//                        alert("DEATH");
                     }
 
                     if (entry.pos["y"] < player.pos["y"]) {
-                        alert("DEATH");
+//                        alert("DEATH");
                     }
                 }
             });
