@@ -1,4 +1,4 @@
-// Trojan Defense 2D
+// ghost Defense 2D
 //   Copyright (C) 2016 Pandatom (philpanda, saarelaine, molsky)
 //
 // Version 0.3
@@ -12,30 +12,30 @@ const BLOCK_RANGE = 12;
 const PLAYER_RANGE = 12;
 const NUM_BULLETS = 20;
 const NUM_AUDIO = 20;
-const NUM_TROJANS = 20;
+const NUM_GHOSTS = 20;
 const NUM_FIREWALLS = 20;
 const BULLET_SPEED = 230;
 const SCAN_RESOLUTION = 0.1;
 const SCAN_SPEED = 7;
 const SCAN_FREQUENCY = 4;
 
-const ENTITY_TYPE_TROJAN = 1;
+const ENTITY_TYPE_GHOST = 1;
 
 var bulletArray = [];
 var audioArray = [];
-var trojanArray = [];
+var ghostArray = [];
 var firewallArray = [];
 var angryGhostArray = [];
 
 /**
  * @return entity|null
  */
-function getFreeTrojan() {
-    for (var i = 0; i < NUM_TROJANS; i++) {
-        var trojan = trojanArray[i];
+function getFreeGhost() {
+    for (var i = 0; i < NUM_GHOSTS; i++) {
+        var ghost = ghostArray[i];
 
-        if (!trojan.visible) {
-            return trojan;
+        if (!ghost.visible) {
+            return ghost;
         }
     }
 
@@ -60,6 +60,7 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, loopNum) {
         for(var j = 0; j < fogArray.length; j++) {
             fogArray[j].visible = true;
         }
+
         for(scan.angle = 0; scan.angle <= 360; scan.angle = scan.angle + SCAN_RESOLUTION) {
             for(var j = 0; j < wallArray.length; j++) {
                 if (collisonBetween(scan, wallArray[j])) {
@@ -67,6 +68,7 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, loopNum) {
                     scan.pos.y = where.pos.y + offsetY;
                 }
             }
+
             for(var j = 0; j < fogArray.length; j++) {
                 if (collisonBetween(scan, fogArray[j])) {
                     fogArray[j].visible = false;
@@ -139,7 +141,7 @@ function getFreeAudio() {
  */
 function spawnEntity(type, spawnPoints)
 {
-    var entity = getFreeTrojan();
+    var entity = getFreeGhost();
 
     randomPoint = Math.floor((Math.random() * spawnPoints.length) + 0);
     spawnPoint = spawnPoints[randomPoint];
@@ -192,9 +194,9 @@ function isEntityTouchingTarget(entity, target)
  */
 function removeEntity(entity)
 {
+    entity.visible = false;
     entity.pos.x = -10000;
     entity.pos.y = -10000;
-    entity.visible = false;
 }
 
 /**
@@ -351,6 +353,11 @@ document.onreadystatechange = function () {
         });
 
         game.fullscreen = false;
+
+        setInterval(function() {
+            var ghost = spawnEntity(ENTITY_TYPE_GHOST, backdoorArray);
+            angryGhostArray.push(ghost);
+        }, Math.floor((Math.random() * 5000) + 1000));
 
         // Level layout arrays (0 = floor, 1 = wall, 3 = backdoor, 4 = file, 5 = firewall)
         var map1 = [
@@ -589,25 +596,26 @@ document.onreadystatechange = function () {
             defaultFrame: 1
         });
 
-        for (var i=0; i < NUM_TROJANS; i++) {
-            var trojan = enemyLayer.createEntity();
-            trojan.visible = false;
-            trojan.asset = new PixelJS.AnimatedSprite();
-            trojan.pos = { x: -10000, y: -10000 };
-            trojan.velocity = { x: 100, y: 50 };
-            trojan.size["width"] = PLAYER_RANGE;
-            trojan.size["height"] = PLAYER_RANGE;
-            trojan.active = 0;
+        for (var i=0; i < NUM_GHOSTS; i++) {
+            var ghost = enemyLayer.createEntity();
 
-            trojan.asset.prepare({
-                name: 'trojan.png',
+            ghost.visible = false;
+            ghost.asset = new PixelJS.AnimatedSprite();
+            ghost.pos = { x: -10000, y: -10000 };
+            ghost.velocity = { x: 100, y: 50 };
+            ghost.size["width"] = PLAYER_RANGE;
+            ghost.size["height"] = PLAYER_RANGE;
+            ghost.active = 0;
+
+            ghost.asset.prepare({
+                name: 'ghost.png',
                 frames: 1,
                 rows: 8,
                 speed: 100,
                 defaultFrame: 1
             });
 
-            trojanArray.push(trojan);
+            ghostArray.push(ghost);
         }
 
         for (var i=0; i < NUM_FIREWALLS; i++) {
@@ -700,11 +708,6 @@ document.onreadystatechange = function () {
 
                 setItemInMap(currentlyStandingOn.x, currentlyStandingOn.y, map1, 5);
                 drawItemInPosition(isometricPosition.x, isometricPosition.y, 5);
-            }
-
-            if (keyCode === PixelJS.Keys.Alt) {
-                var trojan = spawnEntity(ENTITY_TYPE_TROJAN, backdoorArray);
-                angryGhostArray.push(trojan);
             }
 
             for(var i = 0; i < wallFrontArray.length; i++) {
