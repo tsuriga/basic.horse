@@ -25,6 +25,7 @@ var bulletArray = [];
 var audioArray = [];
 var trojanArray = [];
 var firewallArray = [];
+var angryGhostArray = [];
 
 /**
  * @return entity|null
@@ -136,17 +137,14 @@ function getFreeAudio() {
  * @param int spawnPoints
  * @return object entity
  */
-function spawnEntity(type, spawnPoints) {
-    if (type == ENTITY_TYPE_TROJAN) {
-        var entity = getFreeTrojan();
-    }
-
-    if (entity == null) return;
+function spawnEntity(type, spawnPoints)
+{
+    var entity = getFreeTrojan();
 
     randomPoint = Math.floor((Math.random() * spawnPoints.length) + 0);
     spawnPoint = spawnPoints[randomPoint];
 
-    randomDistance = Math.floor((Math.random() * 10) + -10);
+    randomDistance = Math.floor((Math.random() * 30) + -30);
     entity.pos.x = spawnPoint.pos.x + randomDistance;
     entity.pos.y = spawnPoint.pos.y + randomDistance;
 
@@ -157,28 +155,27 @@ function spawnEntity(type, spawnPoints) {
 
 /**
  * @param object entity
- * @param array itemArray
+ * @param object target
  */
-function moveEntityToNearestItem(entity, itemArray) {
-    items = [];
+function moveEntityToTarget(entity, target)
+{
+    if (entity.visible) {
+        entity.moveTo(target.pos.x, target.pos.y, 3000);
+    }
+}
 
-    itemArray.forEach(function(entry) {
-        itemPosition = [entry.pos.x, entry.pos.y];
-        items.push(itemPosition);
-    });
-
-    distances = [];
-
-    items.forEach(function(entry) {
-        var distanceX = entity.pos.x - entry[0];
-        var distanceY = entity.pos.y - entry[1];
-
-        var distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-        distances.push(distance);
-    });
-
-    var nearest = distances.indexOf(Math.min.apply(Math, distances));
-    entity.moveTo(items[nearest][0], items[nearest][1], 3000);
+/**
+ * @param object entity
+ * @param object target
+ */
+function isEntityTouchingTarget(entity, target)
+{
+    if (true) {
+        console.log("YOU ARE DEAD");
+        return true;
+    } else {
+        return false;
+    }
 }
 
 /**
@@ -339,18 +336,18 @@ document.onreadystatechange = function () {
         // Level layout arrays (0 = floor, 1 = wall, 3 = backdoor, 4 = file, 5 = firewall)
         var map1 = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 4, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ];
 
@@ -481,6 +478,8 @@ document.onreadystatechange = function () {
                     backdoor.asset.prepare({
                         name: 'backdoor.png',
                     });
+
+                    backdoor.opacity = 0.0;
 
                     backdoorArray.push(backdoor);
 
@@ -683,8 +682,7 @@ document.onreadystatechange = function () {
 
             if (keyCode === PixelJS.Keys.Alt) {
                 var trojan = spawnEntity(ENTITY_TYPE_TROJAN, backdoorArray);
-
-                moveEntityToNearestItem(trojan, fileArray);
+                angryGhostArray.push(trojan);
             }
 
             for(var i = 0; i < wallFrontArray.length; i++) {
@@ -713,6 +711,11 @@ document.onreadystatechange = function () {
 
         game.loadAndRun(function (elapsedTime, dt) {
             playerScanLoop = scanArea(scan, player, 3, 4, fogArray, wallArray, playerScanLoop)
+
+            angryGhostArray.forEach(function(entry) {
+                moveEntityToTarget(entry, player);
+                isEntityTouchingTarget(entry, player);
+            });
         });
     }
 }
