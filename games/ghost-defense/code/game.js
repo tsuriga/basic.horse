@@ -1,8 +1,10 @@
-// Ghost Defense 2D
-//   Copyright (C) 2016 Basic Horse (philpanda, saarelaine)
-//
-// Version 0.4
-// This game is under development and using (modified) Pixel.js library by rastating
+/*
+ * Ghost Defense 2D
+ *   Copyright (C) 2016 Basic Horse (Olli Suoranta, Juho Saarelainen)
+ *
+ * Version 0.4
+ * This game is under development and using Pixel.js library by rastating
+ */
 
 const GRID_OFFSET = 320;
 const ACTUAL_BLOCK_SIZE = 32;
@@ -18,8 +20,10 @@ const BULLET_SPEED = 230;
 const SCAN_RESOLUTION = 0.05;
 const SCAN_SPEED = 7;
 const SCAN_FREQUENCY = 4;
+const MINIMAP_SPACING = 0.75;
 
-const ENTITY_TYPE_GHOST = 1;
+var miniMapCanvas = document.getElementById("minimap_canvas");
+var miniMapCtx = miniMapCanvas.getContext("2d");
 
 var lastPosition = {x:0, y:0};
 var bulletArray = [];
@@ -27,320 +31,6 @@ var audioArray = [];
 var ghostArray = [];
 var firewallArray = [];
 var angryGhostArray = [];
-
-/**
- * @return entity|null
- */
-function getFreeGhost() {
-    for (var i = 0; i < NUM_GHOSTS; i++) {
-        var ghost = ghostArray[i];
-
-        if (!ghost.visible) {
-            return ghost;
-        }
-    }
-
-    return null;
-}
-
-/**
- * @param object scan
- * @param object where
- * @param int    offsetX
- * @param int    offsetY
- * @param object fogArray
- * @param object wallArray
- * @param int    loopNum
- * @return int   loopNum
- */
-function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray) {
-    console.log("SCAN!");
-
-    var xMultipler = 0;
-    var yMultipler = 0;
-
-    for(var j = 0; j < fogArray.length; j++) {
-        fogArray[j].visible = true;
-    }
-    for(scan.angle = 0; scan.angle <= 360; scan.angle = scan.angle + SCAN_RESOLUTION) {
-        for(var j = 0; j < wallArray.length; j++) {
-            if (collisonBetween(scan, wallArray[j])) {
-                scan.pos.x = where.x + offsetX;
-                scan.pos.y = where.y + offsetY;
-            }
-        }
-        for(var j = 0; j < fogArray.length; j++) {
-            if (collisonBetween(scan, fogArray[j])) {
-                fogArray[j].visible = false;
-            }
-        }
-        xMultipler = Math.cos(scan.angle * Math.PI / 180);
-        yMultipler = Math.sin(scan.angle * Math.PI / 180);
-        scan.pos.x = scan.pos.x + SCAN_SPEED * xMultipler;
-        scan.pos.y = scan.pos.y + SCAN_SPEED * yMultipler;
-    }
-}
-
-/**
- * @return entity|null
- */
-function getFreeFirewall() {
-    for (var i = 0; i < NUM_FIREWALLS; i++) {
-        var firewall = firewallArray[i];
-
-        if (!firewall.visible) {
-            return firewall;
-        }
-    }
-
-    return null;
-}
-
-/**
- * @return entity|null
- */
-function getFreeBullet() {
-    for (var i = 0; i < NUM_BULLETS; i++) {
-        var b = bulletArray[i];
-
-        if (!b.visible) {
-            return b;
-        }
-    }
-
-    return null;
-}
-
-/**
- * @return entity|null
- */
-function getFreeAudio() {
-    for (var i = 0; i < NUM_AUDIO; i++) {
-        var audio = this.audioArray[i];
-
-        if (audio.paused) {
-            return audio;
-        }
-    }
-
-    return null;
-}
-
-/**
- * @param int type
- * @param int spawnPoints
- * @return object entity
- */
-function spawnEntity(type, spawnPoints)
-{
-    var entity = getFreeGhost();
-
-    randomPoint = Math.floor((Math.random() * spawnPoints.length) + 0);
-    spawnPoint = spawnPoints[randomPoint];
-
-    randomDistance = Math.floor((Math.random() * 30) + -30);
-    entity.pos.x = spawnPoint.pos.x + randomDistance;
-    entity.pos.y = spawnPoint.pos.y + randomDistance;
-
-    entity.visible = true;
-
-    return entity;
-}
-
-/**
- * @param object entity
- * @param object target
- */
-function moveEntityToTarget(entity, target)
-{
-    if (entity.visible) {
-        entity.moveTo(target.pos.x, target.pos.y, 2000);
-    }
-}
-
-/**
- * @param object entity
- * @param object target
- */
-function isEntityTouchingTarget(entity, target)
-{
-    if (entity.visible) {
-        var targetDimensionStartX = target.pos.x - 16;
-        var targetDimensionEndX = target.pos.x + 16;
-        var targetDimensionStartY = target.pos.y - 16;
-        var targetDimensionEndY = target.pos.y + 16;
-
-        if (
-            entity.pos.x < targetDimensionEndX && entity.pos.x > targetDimensionStartX &&
-            entity.pos.y < targetDimensionEndY && entity.pos.y > targetDimensionStartY
-        ) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-/**
- * @param object entity
- */
-function removeEntity(entity)
-{
-    entity.visible = false;
-    entity.pos.x = -10000;
-    entity.pos.y = -10000;
-}
-
-/**
- * @param object player
- */
-function shootFrom(player) {
-    var bullet = getFreeBullet();
-
-    if (bullet == null) return;
-
-    bullet.direction = player.lastDirection;
-    if (bullet.direction == 0) return;
-
-    getFreeAudio().play();
-
-    bullet.pos.x = player.pos.x + 9;
-    bullet.pos.y = player.pos.y + 20;
-    bullet.visible = true;
-
-    switch (bullet.direction) {
-        case PixelJS.Directions.Up:
-            bullet.velocity.x = 0;
-            bullet.velocity.y = BULLET_SPEED;
-            break;
-
-        case PixelJS.Directions.UpRight:
-            bullet.velocity.x = BULLET_SPEED;
-            bullet.velocity.y = BULLET_SPEED / 2;
-            break;
-
-        case PixelJS.Directions.UpLeft:
-            bullet.velocity.x = BULLET_SPEED;
-            bullet.velocity.y = BULLET_SPEED / 2;
-            break;
-
-        case PixelJS.Directions.Left:
-            bullet.velocity.x = BULLET_SPEED;
-            bullet.velocity.y = BULLET_SPEED;
-            break;
-
-        case PixelJS.Directions.Right:
-            bullet.velocity.x = BULLET_SPEED;
-            bullet.velocity.y = 0;
-            break;
-
-        case PixelJS.Directions.DownRight:
-            bullet.velocity.x = BULLET_SPEED;
-            bullet.velocity.y = BULLET_SPEED / 2;
-            break;
-
-        case PixelJS.Directions.Down:
-            bullet.velocity.x = 0;
-            bullet.velocity.y = BULLET_SPEED;
-            break;
-
-        case PixelJS.Directions.DownLeft:
-            bullet.velocity.x = BULLET_SPEED;
-            bullet.velocity.y = BULLET_SPEED / 2;
-            break;
-    }
-}
-
-/**
- * @param object firstObject
- * @param object secondObject
- */
-function collisonBetween(firstObject, secondObject) {
-    return firstObject.pos["x"] + firstObject.size.width > secondObject.pos.x &&
-        firstObject.pos["x"] < secondObject.pos["x"] + secondObject.size.width &&
-        firstObject.pos.y + firstObject.size.height > secondObject.pos.y &&
-        firstObject.pos.y < secondObject.pos.y + secondObject.size.height;
-}
-
-/**
- * @param int          posX
- * @param int          posY
- * @param int|optional offsetX
- */
-function convertPositionToIsometric(posX, posY, offsetX) {
-    var offsetX = (offsetX == undefined) ? 0 : offsetX;
-    var pos = {};
-
-    pos["x"] = offsetX + posX - posY;
-    pos["y"] = (posX + posY) / 2;
-
-    return pos;
-}
-
-/**
- * @param int          posX
- * @param int          posY
- * @param int|optional offsetX
- */
-function convertPositionToCartesian(posX, posY, offsetX) {
-    var offsetX = (offsetX == undefined) ? 0 : offsetX;
-    var pos = {};
-
-    pos["x"] = offsetX + (2 * posY + posX) / 2;
-    pos["y"] = (2 * posY - posX) / 2;
-
-    return pos;
-}
-
-
-function getCoordinatesInMapByArrayPosition(posX, posY) {
-    var currentPosition = getNearestPositionInArray(posX, posY);
-    var pos = convertPositionToIsometric(currentPosition.x *
-        MAP_BLOCK_SIZE_X, currentPosition.y * MAP_BLOCK_SIZE_Y, GRID_OFFSET);
-
-    return pos;
-}
-/**
- * @param int posX
- * @param int posY
- */
-function getNearestPositionInArray(posX, posY)
-{
-    var pos = {};
-
-    // Calculate real coordinates on map
-    var mapX = (posX - GRID_OFFSET + posY * 2);
-    var mapY = ((posY - ((posX - GRID_OFFSET) / 2 )) * 2);
-
-    // Convert coordinates to block format
-    pos["y"] = Math.round(mapY / ACTUAL_BLOCK_SIZE);
-    pos["x"] = Math.round(mapX / ACTUAL_BLOCK_SIZE);
-
-    return pos;
-}
-
-/**
- * @param int   posX
- * @param int   posY
- * @param array map
- * @param int   itemType
- */
-function setItemInMap(posX, posY, map, itemType) {
-    map[posX][posY] = itemType;
-}
-
-function drawItemInPosition(posX, posY, item) {
-    if (item == 5) {
-        var firewall = getFreeFirewall();
-
-        if (firewall == null) return;
-
-        firewall.pos.x = posX;
-        firewall.pos.y = posY;
-
-        firewall.visible = true;
-    }
-}
 
 document.onreadystatechange = function () {
     if (document.readyState == "complete") {
@@ -355,15 +45,15 @@ document.onreadystatechange = function () {
         game.fullscreen = false;
 
         setInterval(function() {
-            var ghost = spawnEntity(ENTITY_TYPE_GHOST, backdoorArray);
+            var ghost = spawnGhost(ghostSpawnArray);
             angryGhostArray.push(ghost);
         }, Math.floor((Math.random() * 5000) + 1000));
 
-        // Level layout arrays (0 = floor, 1 = wall, 3 = backdoor, 4 = file, 5 = firewall)
+        // Level layout arrays (0 = floor, 1 = wall, 2 = ghost spawn)
         var map1 = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1],
+            [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -375,7 +65,6 @@ document.onreadystatechange = function () {
             [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
             [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
             [1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         ];
@@ -392,7 +81,7 @@ document.onreadystatechange = function () {
         var wallArray = [];
         var wallFrontArray = [];
         var floorArray = [];
-        var backdoorArray = [];
+        var ghostSpawnArray = [];
         var fileArray = [];
         var fogArray = [];
         var scanArray = [];
@@ -426,6 +115,9 @@ document.onreadystatechange = function () {
         shadowLayer.zIndex = 0;
         fogLayer.zIndex = 2;
         floorLayer.zIndex = 1;
+
+        var music = game.createSound('sound-music');
+        music.prepare({ name: 'music.ogg' });
 
         for (var i=0; i < NUM_AUDIO; i++) {
             var soundDefaultGun = game.createSound('sound-default-gun' + i);
@@ -492,43 +184,24 @@ document.onreadystatechange = function () {
 
                     wallFrontArray.push(wallFront);
 
-                } else if (map1[i][j] == 3) {
-                    var backdoor = itemLayer.createEntity();
+                } else if (map1[i][j] == 2) {
+                    var ghostSpawn = itemLayer.createEntity();
 
-                    backdoor.size["width"] = BLOCK_RANGE;
-                    backdoor.size["height"] = BLOCK_RANGE;
-
-                    var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
-
-                    backdoor.pos["x"] = isometricPosition["x"];
-                    backdoor.pos["y"] = isometricPosition["y"];
-
-                    backdoor.asset = new PixelJS.Sprite();
-                    backdoor.asset.prepare({
-                        name: 'backdoor.png',
-                    });
-
-                    backdoor.opacity = 0.0;
-
-                    backdoorArray.push(backdoor);
-
-                } else if (map1[i][j] == 4) {
-                    var file = itemLayer.createEntity();
-
-                    file.size["width"] = BLOCK_RANGE;
-                    file.size["height"] = BLOCK_RANGE;
+                    ghostSpawn.size["width"] = BLOCK_RANGE;
+                    ghostSpawn.size["height"] = BLOCK_RANGE;
 
                     var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
 
-                    file.pos["x"] = isometricPosition["x"];
-                    file.pos["y"] = isometricPosition["y"];
+                    ghostSpawn.pos["x"] = isometricPosition["x"];
+                    ghostSpawn.pos["y"] = isometricPosition["y"];
 
-                    file.asset = new PixelJS.Sprite();
-                    file.asset.prepare({
-                        name: 'file.png',
+                    ghostSpawn.asset = new PixelJS.Sprite();
+                    ghostSpawn.asset.prepare({
+                        name: 'ghostSpawn.png',
                     });
 
-                    fileArray.push(file);
+                    ghostSpawn.opacity = 0.0;
+                    ghostSpawnArray.push(ghostSpawn);
                 }
 
                 var fog = fogLayer.createEntity();
@@ -590,7 +263,7 @@ document.onreadystatechange = function () {
 
         player.asset.prepare({
             name: 'char.png',
-            frames: 4,
+            frames: 3,
             rows: 8,
             speed: 100,
             defaultFrame: 1
@@ -735,6 +408,7 @@ document.onreadystatechange = function () {
         // -- Game loop ------------------------------------------------------
 
         game.loadAndRun(function (elapsedTime, dt) {
+            music.play();
 
             angryGhostArray.forEach(function(ghostEntry) {
                 moveEntityToTarget(ghostEntry, player);
@@ -750,11 +424,15 @@ document.onreadystatechange = function () {
                     };
                 });
             });
+
             var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
+
             if ((lastPosition.x !=  currentPosInArray.x) && (lastPosition.y !=  currentPosInArray.y)) {
                 lastPosition =  currentPosInArray
                 scanArea(scan, player.pos , 3, 4, fogArray, wallArray)
             }
+
+            drawMiniMap(map1, player);
         });
     }
 }
