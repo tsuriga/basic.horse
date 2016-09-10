@@ -54,7 +54,7 @@ function getFreeGhost() {
  * @return int   loopNum
  */
 function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray) {
-  console.log("SCAN!");
+    console.log("SCAN!");
 
     var xMultipler = 0;
     var yMultipler = 0;
@@ -753,8 +753,8 @@ document.onreadystatechange = function () {
             var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
             if ((lastPosition.x !=  currentPosInArray.x) && (lastPosition.y !=  currentPosInArray.y)) {
                 lastPosition =  currentPosInArray
-            }
                 scanArea(scan, player.pos , 3, 4, fogArray, wallArray)
+            }
         });
     }
 }
