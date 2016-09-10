@@ -1,7 +1,7 @@
-// ghost Defense 2D
-//   Copyright (C) 2016 Pandatom (philpanda, saarelaine, molsky)
+// Ghost Defense 2D
+//   Copyright (C) 2016 Basic Horse (philpanda, saarelaine)
 //
-// Version 0.3
+// Version 0.4
 // This game is under development and using (modified) Pixel.js library by rastating
 
 const GRID_OFFSET = 320;
@@ -15,12 +15,13 @@ const NUM_AUDIO = 20;
 const NUM_GHOSTS = 20;
 const NUM_FIREWALLS = 20;
 const BULLET_SPEED = 230;
-const SCAN_RESOLUTION = 0.1;
+const SCAN_RESOLUTION = 0.05;
 const SCAN_SPEED = 7;
 const SCAN_FREQUENCY = 4;
 
 const ENTITY_TYPE_GHOST = 1;
 
+var lastPosition = {x:0, y:0};
 var bulletArray = [];
 var audioArray = [];
 var ghostArray = [];
@@ -52,41 +53,32 @@ function getFreeGhost() {
  * @param int    loopNum
  * @return int   loopNum
  */
-function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, loopNum) {
+function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray) {
+  console.log("SCAN!");
+
     var xMultipler = 0;
     var yMultipler = 0;
 
-    if (loopNum == 0) {
+    for(var j = 0; j < fogArray.length; j++) {
+        fogArray[j].visible = true;
+    }
+    for(scan.angle = 0; scan.angle <= 360; scan.angle = scan.angle + SCAN_RESOLUTION) {
+        for(var j = 0; j < wallArray.length; j++) {
+            if (collisonBetween(scan, wallArray[j])) {
+                scan.pos.x = where.x + offsetX;
+                scan.pos.y = where.y + offsetY;
+            }
+        }
         for(var j = 0; j < fogArray.length; j++) {
-            fogArray[j].visible = true;
-        }
-
-        for(scan.angle = 0; scan.angle <= 360; scan.angle = scan.angle + SCAN_RESOLUTION) {
-            for(var j = 0; j < wallArray.length; j++) {
-                if (collisonBetween(scan, wallArray[j])) {
-                    scan.pos.x = where.pos.x + offsetX;
-                    scan.pos.y = where.pos.y + offsetY;
-                }
+            if (collisonBetween(scan, fogArray[j])) {
+                fogArray[j].visible = false;
             }
-
-            for(var j = 0; j < fogArray.length; j++) {
-                if (collisonBetween(scan, fogArray[j])) {
-                    fogArray[j].visible = false;
-                }
-            }
-            xMultipler = Math.cos(scan.angle * Math.PI / 180);
-            yMultipler = Math.sin(scan.angle * Math.PI / 180);
-            scan.pos.x = scan.pos.x + SCAN_SPEED * xMultipler;
-            scan.pos.y = scan.pos.y + SCAN_SPEED * yMultipler;
         }
+        xMultipler = Math.cos(scan.angle * Math.PI / 180);
+        yMultipler = Math.sin(scan.angle * Math.PI / 180);
+        scan.pos.x = scan.pos.x + SCAN_SPEED * xMultipler;
+        scan.pos.y = scan.pos.y + SCAN_SPEED * yMultipler;
     }
-
-    if (loopNum >= SCAN_FREQUENCY) {
-        loopNum = -1;
-    }
-
-    loopNum++;
-    return loopNum;
 }
 
 /**
@@ -300,6 +292,14 @@ function convertPositionToCartesian(posX, posY, offsetX) {
     return pos;
 }
 
+
+function getCoordinatesInMapByArrayPosition(posX, posY) {
+    var currentPosition = getNearestPositionInArray(posX, posY);
+    var pos = convertPositionToIsometric(currentPosition.x *
+        MAP_BLOCK_SIZE_X, currentPosition.y * MAP_BLOCK_SIZE_Y, GRID_OFFSET);
+
+    return pos;
+}
 /**
  * @param int posX
  * @param int posY
@@ -735,7 +735,6 @@ document.onreadystatechange = function () {
         // -- Game loop ------------------------------------------------------
 
         game.loadAndRun(function (elapsedTime, dt) {
-            playerScanLoop = scanArea(scan, player, 3, 4, fogArray, wallArray, playerScanLoop)
 
             angryGhostArray.forEach(function(ghostEntry) {
                 moveEntityToTarget(ghostEntry, player);
@@ -751,6 +750,11 @@ document.onreadystatechange = function () {
                     };
                 });
             });
+            var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
+            if ((lastPosition.x !=  currentPosInArray.x) && (lastPosition.y !=  currentPosInArray.y)) {
+                lastPosition =  currentPosInArray
+            }
+                scanArea(scan, player.pos , 3, 4, fogArray, wallArray)
         });
     }
 }
