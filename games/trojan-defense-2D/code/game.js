@@ -4,7 +4,7 @@
 // Version 0.3
 // This game is under development and using (modified) Pixel.js library by rastating
 
-const GRID_OFFSET = 260;
+const GRID_OFFSET = 320;
 const ACTUAL_BLOCK_SIZE = 32;
 const MAP_BLOCK_SIZE_X = 16;
 const MAP_BLOCK_SIZE_Y = 16;
@@ -160,7 +160,7 @@ function spawnEntity(type, spawnPoints)
 function moveEntityToTarget(entity, target)
 {
     if (entity.visible) {
-        entity.moveTo(target.pos.x, target.pos.y, 3000);
+        entity.moveTo(target.pos.x, target.pos.y, 2000);
     }
 }
 
@@ -170,12 +170,31 @@ function moveEntityToTarget(entity, target)
  */
 function isEntityTouchingTarget(entity, target)
 {
-    if (true) {
-        console.log("YOU ARE DEAD");
-        return true;
-    } else {
-        return false;
+    if (entity.visible) {
+        var targetDimensionStartX = target.pos.x - 16;
+        var targetDimensionEndX = target.pos.x + 16;
+        var targetDimensionStartY = target.pos.y - 16;
+        var targetDimensionEndY = target.pos.y + 16;
+
+        if (
+            entity.pos.x < targetDimensionEndX && entity.pos.x > targetDimensionStartX &&
+            entity.pos.y < targetDimensionEndY && entity.pos.y > targetDimensionStartY
+        ) {
+            return true;
+        }
     }
+
+    return false;
+}
+
+/**
+ * @param object entity
+ */
+function removeEntity(entity)
+{
+    entity.pos.x = -10000;
+    entity.pos.y = -10000;
+    entity.visible = false;
 }
 
 /**
@@ -335,20 +354,23 @@ document.onreadystatechange = function () {
 
         // Level layout arrays (0 = floor, 1 = wall, 3 = backdoor, 4 = file, 5 = firewall)
         var map1 = [
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         ];
 
         // State variables
@@ -712,9 +734,19 @@ document.onreadystatechange = function () {
         game.loadAndRun(function (elapsedTime, dt) {
             playerScanLoop = scanArea(scan, player, 3, 4, fogArray, wallArray, playerScanLoop)
 
-            angryGhostArray.forEach(function(entry) {
-                moveEntityToTarget(entry, player);
-                isEntityTouchingTarget(entry, player);
+            angryGhostArray.forEach(function(ghostEntry) {
+                moveEntityToTarget(ghostEntry, player);
+
+                if (isEntityTouchingTarget(ghostEntry, player)) {
+                    removeEntity(player);
+                };
+
+                bulletArray.forEach(function(bulletEntry) {
+                    if(isEntityTouchingTarget(bulletEntry, ghostEntry)) {
+                        removeEntity(ghostEntry);
+                        removeEntity(bulletEntry);
+                    };
+                });
             });
         });
     }
