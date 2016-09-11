@@ -145,6 +145,9 @@ document.onreadystatechange = function () {
             var file = itemLayer.createEntity();
             file.visible = false;
             file.asset = new PixelJS.Sprite();
+            file.size["width"] = BLOCK_RANGE;
+            file.size["height"] = BLOCK_RANGE;
+
 
             file.asset.prepare({
                 name: 'file.png'
@@ -507,14 +510,22 @@ document.onreadystatechange = function () {
                 for(var j = 0; j < fogArray.length; j++) {
                     fogArray[j].visible = true;
                 }
+                for(var j = 0; j < ghostArray.length; j++) {
+                    ghostArray[j].opacity = 0;
+                }
+                for(var j = 0; j < fileArray.length; j++) {
+                    fileArray[j].opacity = 0;
+                }
 
                 for(var j = 0; j < radarArray.length; j++) {
                     if(radarArray[j].pos.x >= 1){
-                        scanArea(scan,  radarArray[j].pos , 3, 4, fogArray, wallArray)
+                        scanArea(scan,  radarArray[j].pos , 3, 4, fogArray, wallArray, ghostArray, fileArray)
                     }
                 }
-                scanArea(scan, player.pos , 3, 4, fogArray, wallArray)
+                scanArea(scan, player.pos , 3, 4, fogArray, wallArray, ghostArray, fileArray)
             }
+
+
 
             drawMiniMap(map1, player);
 

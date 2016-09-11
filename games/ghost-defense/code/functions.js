@@ -60,7 +60,7 @@ function getFreeGhost() {
  * @param int    loopNum
  * @return int   loopNum
  */
-function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray) {
+function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, ghostArray, fileArray) {
     console.log("SCAN!");
 
     var xMultipler = 0;
@@ -81,6 +81,17 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray) {
                 fogArray[j].visible = false;
             }
         }
+        for(var j = 0; j < ghostArray.length; j++) {
+             if (collisonBetween(scan, ghostArray[j])) {
+                 ghostArray[j].opacity = 100;
+             }
+        }
+        for(var j = 0; j < fileArray.length; j++) {
+             if (collisonBetween(scan, fileArray[j])) {
+                 fileArray[j].opacity = 100;
+             }
+        }
+
         xMultipler = Math.cos(scan.angle * Math.PI / 180);
         yMultipler = Math.sin(scan.angle * Math.PI / 180);
         scan.pos.x = scan.pos.x + SCAN_SPEED * xMultipler;
@@ -425,7 +436,7 @@ function drawItemInPosition(posX, posY, item) {
 
         radar.visible = true;
 
-        return radar;
+    //    return radar;
     }
 }
 
