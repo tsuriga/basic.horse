@@ -66,9 +66,9 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray) {
     var xMultipler = 0;
     var yMultipler = 0;
 
-    for(var j = 0; j < fogArray.length; j++) {
-        fogArray[j].visible = true;
-    }
+    scan.pos.x = where.x;
+    scan.pos.y = where.y;
+
     for(scan.angle = 0; scan.angle <= 360; scan.angle = scan.angle + SCAN_RESOLUTION) {
         for(var j = 0; j < wallArray.length; j++) {
             if (collisonBetween(scan, wallArray[j])) {
@@ -91,12 +91,12 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray) {
 /**
  * @return entity|null
  */
-function getFreeFirewall() {
-    for (var i = 0; i < NUM_FIREWALLS; i++) {
-        var firewall = firewallArray[i];
+function getFreeRadar() {
+    for (var i = 0; i < NUM_RADARS; i++) {
+        var radar = radarArray[i];
 
-        if (!firewall.visible) {
-            return firewall;
+        if (!radar.visible) {
+            return radar;
         }
     }
 
@@ -360,14 +360,16 @@ function setItemInMap(posX, posY, map, itemType) {
 
 function drawItemInPosition(posX, posY, item) {
     if (item == 5) {
-        var firewall = getFreeFirewall();
+        var radar = getFreeRadar();
 
-        if (firewall == null) return;
+        if (radar == null) return;
 
-        firewall.pos.x = posX;
-        firewall.pos.y = posY;
+        radar.pos.x = posX;
+        radar.pos.y = posY;
 
-        firewall.visible = true;
+        radar.visible = true;
+
+        return radar;
     }
 }
 

@@ -18,9 +18,9 @@ const DEATH_RANGE = 20;
 const NUM_BULLETS = 10;
 const NUM_AUDIO = 10;
 const NUM_GHOSTS = 10;
-const NUM_FIREWALLS = 5;
+const NUM_RADARS = 5;
 const BULLET_SPEED = 230;
-const SCAN_RESOLUTION = 0.05;
+const SCAN_RESOLUTION = 0.08;
 const SCAN_SPEED = 7;
 const SCAN_FREQUENCY = 4;
 const MINIMAP_SPACING = 0.75;
@@ -32,7 +32,7 @@ var lastPosition = {x:0, y:0};
 var bulletArray = [];
 var audioArray = [[],[]];
 var ghostArray = [];
-var firewallArray = [];
+var radarArray = [];
 var angryGhostArray = [];
 
 document.onreadystatechange = function () {
@@ -296,29 +296,28 @@ document.onreadystatechange = function () {
         }
 
         ghostSpawner = setInterval(function() {
+
             var ghost = spawnGhost(ghostSpawnArray, player);
-
             if (ghost) {
-                angryGhostArray.push(ghost);
             }
+                angryGhostArray.push(ghost);
         }, Math.floor((Math.random() * 700) + 200));
+        for (var i=0; i < NUM_RADARS; i++) {
+            var radar = itemLayer.createEntity();
+            radar.visible = false;
+            radar.asset = new PixelJS.Sprite();
 
-        for (var i=0; i < NUM_FIREWALLS; i++) {
-            var firewall = itemLayer.createEntity();
-            firewall.visible = false;
-            firewall.asset = new PixelJS.Sprite();
-
-            firewall.asset.prepare({
-                name: 'firewall.png'
+            radar.asset.prepare({
+                name: 'radar.png'
             });
 
-            firewall.onCollide(function (entity) {
-                if (firewallArray.indexOf(entity) > 0)  {
+            radar.onCollide(function (entity) {
+                if (radarArray.indexOf(entity) > 0)  {
                     this.visible = false;
                 }
             });
 
-            firewallArray.push(firewall);
+            radarArray.push(radar);
         }
 
         var scan = scanLayer.createEntity();
@@ -444,9 +443,21 @@ document.onreadystatechange = function () {
 
             var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
 
-            if ((lastPosition.x !=  currentPosInArray.x) && (lastPosition.y !=  currentPosInArray.y)) {
-                lastPosition =  currentPosInArray
-                scanArea(scan, player.pos , 3, 4, fogArray, wallArray)
+                if ((lastPosition.x !=  currentPosInArray.x) && (lastPosition.y !=  currentPosInArray.y)) {
+                    lastPosition =  currentPosInArray
+
+                    for(var j = 0; j < fogArray.length; j++) {
+                        fogArray[j].visible = true;
+                    }
+                    console.log(radarArray[1].pos, player.pos);
+                    for(var j = 0; j < radarArray.length; j++) {
+                        if(radarArray[j].pos.x >= 1){
+                            scanArea(scan,  radarArray[j].pos , 3, 4, fogArray, wallArray)
+                        }
+                    }
+                    scanArea(scan, player.pos , 3, 4, fogArray, wallArray)
+                }
+
             }
 
             drawMiniMap(map1, player);
