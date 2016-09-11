@@ -3,7 +3,7 @@ Ghost Defense is about fighting spoopy ghosts inside a computer world.
 
 Game is implemented with pixel.js engine and meant to be played inside browser.
 
--![alt tag](https://github.com/PHILPANDA/pandatom/blob/master/ghost-defense/logo.png?raw=true)
+![alt tag](https://raw.githubusercontent.com/basic-horse/primary-projects/master/games/ghost-defense/logo.png?raw=true)
 
 ## Key combinations
 **CTRL + F:** Toggle between fullscreen mode.
