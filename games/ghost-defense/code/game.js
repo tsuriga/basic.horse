@@ -47,23 +47,18 @@ document.onreadystatechange = function () {
 
         game.fullscreen = false;
 
-        ghostSpawner = setInterval(function() {
-            var ghost = spawnGhost(ghostSpawnArray);
-            angryGhostArray.push(ghost);
-        }, Math.floor((Math.random() * 1500) + 500));
-
         // Level layout arrays (0 = floor, 1 = wall, 2 = ghost spawn)
         var map1 = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1],
+            [1, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1],
+            [1, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
             [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
             [1, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 1],
             [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
@@ -299,6 +294,14 @@ document.onreadystatechange = function () {
 
             ghostArray.push(ghost);
         }
+
+        ghostSpawner = setInterval(function() {
+            var ghost = spawnGhost(ghostSpawnArray, player);
+
+            if (ghost) {
+                angryGhostArray.push(ghost);
+            }
+        }, Math.floor((Math.random() * 700) + 200));
 
         for (var i=0; i < NUM_FIREWALLS; i++) {
             var firewall = itemLayer.createEntity();
