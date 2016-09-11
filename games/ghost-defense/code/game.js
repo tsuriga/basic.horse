@@ -296,12 +296,13 @@ document.onreadystatechange = function () {
         }
 
         ghostSpawner = setInterval(function() {
-
             var ghost = spawnGhost(ghostSpawnArray, player);
+
             if (ghost) {
-            }
                 angryGhostArray.push(ghost);
+            }
         }, Math.floor((Math.random() * 700) + 200));
+
         for (var i=0; i < NUM_RADARS; i++) {
             var radar = itemLayer.createEntity();
             radar.visible = false;
@@ -443,21 +444,19 @@ document.onreadystatechange = function () {
 
             var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
 
-                if ((lastPosition.x !=  currentPosInArray.x) && (lastPosition.y !=  currentPosInArray.y)) {
-                    lastPosition =  currentPosInArray
+            if ((lastPosition.x !=  currentPosInArray.x) && (lastPosition.y !=  currentPosInArray.y)) {
+                lastPosition =  currentPosInArray
 
-                    for(var j = 0; j < fogArray.length; j++) {
-                        fogArray[j].visible = true;
-                    }
-                    console.log(radarArray[1].pos, player.pos);
-                    for(var j = 0; j < radarArray.length; j++) {
-                        if(radarArray[j].pos.x >= 1){
-                            scanArea(scan,  radarArray[j].pos , 3, 4, fogArray, wallArray)
-                        }
-                    }
-                    scanArea(scan, player.pos , 3, 4, fogArray, wallArray)
+                for(var j = 0; j < fogArray.length; j++) {
+                    fogArray[j].visible = true;
                 }
-
+                console.log(radarArray[1].pos, player.pos);
+                for(var j = 0; j < radarArray.length; j++) {
+                    if(radarArray[j].pos.x >= 1){
+                        scanArea(scan,  radarArray[j].pos , 3, 4, fogArray, wallArray)
+                    }
+                }
+                scanArea(scan, player.pos , 3, 4, fogArray, wallArray)
             }
 
             drawMiniMap(map1, player);
