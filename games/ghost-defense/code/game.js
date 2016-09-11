@@ -481,7 +481,15 @@ document.onreadystatechange = function () {
                 if (isEntityTouchingTarget(ghostEntry, player)) {
                     clearInterval(ghostSpawner);
                     gameOverMusic.play();
-                    gameOver(player, ghostArray, wallFrontArray, wallArray, floorArray);
+                    gameOver(
+                        player,
+                        ghostArray,
+                        wallFrontArray,
+                        wallArray,
+                        floorArray,
+                        fogArray,
+                        fileArray
+                    );
                 };
 
                 bulletArray.forEach(function(bulletEntry) {

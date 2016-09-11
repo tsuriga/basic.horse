@@ -440,15 +440,32 @@ function drawItemInPosition(posX, posY, item) {
     }
 }
 
-function gameOver(player, ghostArray, wallFrontArray, wallArray, floorArray) {
-    removeEntity(player);
+function gameOver(
+    player,
+    ghostArray,
+    wallFrontArray,
+    wallArray,
+    floorArray,
+    fogArray,
+    fileArray
+) {
+    setInterval(function () {
+        player.pos.y++;
+    }, 0.01);
 
-    ghostArray.forEach(function(entry) {
-        removeEntity(entry);
-    });
+    setInterval(function () {
+        if (fileArray.length > 0) {
+            removeEntity(fileArray[0]);
+            fileArray.shift();
+        }
+    }, 1);
 
-    wallArrayLength = wallArray.length;
-    wallFrontArrayLength = wallFrontArray.length;
+    setInterval(function () {
+        if (ghostArray.length > 0) {
+            removeEntity(ghostArray[0]);
+            ghostArray.shift();
+        }
+    }, 1);
 
     setInterval(function () {
         if (wallArray.length > 0) {
@@ -470,4 +487,11 @@ function gameOver(player, ghostArray, wallFrontArray, wallArray, floorArray) {
             wallFrontArray.shift();
         }
     }, 80);
+
+    setInterval(function () {
+        if (fogArray.length > 0) {
+            removeEntity(fogArray[0]);
+            fogArray.shift();
+        }
+    }, 40);
 }
