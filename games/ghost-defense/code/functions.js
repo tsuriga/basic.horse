@@ -119,14 +119,28 @@ function getFreeBullet() {
 }
 
 /**
+ * @param int type
  * @return entity|null
  */
-function getFreeAudio() {
-    for (var i = 0; i < NUM_AUDIO; i++) {
-        var audio = this.audioArray[i];
+function getFreeAudio(type) {
 
-        if (audio.paused) {
-            return audio;
+    if (type === 0) {
+        for (var i = 0; i < NUM_AUDIO; i++) {
+            var audio = this.audioArray[0][i];
+
+            if (audio.paused) {
+                return audio;
+            }
+        }
+    }
+
+    if (type === 1) {
+        for (var i = 0; i < NUM_AUDIO; i++) {
+            var audio = this.audioArray[1][i];
+
+            if (audio.paused) {
+                return audio;
+            }
         }
     }
 
@@ -171,10 +185,10 @@ function moveEntityToTarget(entity, target)
 function isEntityTouchingTarget(entity, target)
 {
     if (entity.visible) {
-        var targetDimensionStartX = target.pos.x - 16;
-        var targetDimensionEndX = target.pos.x + 16;
-        var targetDimensionStartY = target.pos.y - 16;
-        var targetDimensionEndY = target.pos.y + 16;
+        var targetDimensionStartX = target.pos.x - DEATH_RANGE;
+        var targetDimensionEndX = target.pos.x + DEATH_RANGE;
+        var targetDimensionStartY = target.pos.y - DEATH_RANGE;
+        var targetDimensionEndY = target.pos.y + DEATH_RANGE;
 
         if (
             entity.pos.x < targetDimensionEndX && entity.pos.x > targetDimensionStartX &&
@@ -208,7 +222,7 @@ function shootFrom(player) {
     bullet.direction = player.lastDirection;
     if (bullet.direction == 0) return;
 
-    getFreeAudio().play();
+    getFreeAudio(0).play();
 
     bullet.pos.x = player.pos.x + 9;
     bullet.pos.y = player.pos.y + 20;

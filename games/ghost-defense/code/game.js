@@ -6,16 +6,19 @@
  * This game is under development and using Pixel.js library by rastating
  */
 
+const ENABLE_MUSIC = true;
+
 const GRID_OFFSET = 320;
 const ACTUAL_BLOCK_SIZE = 32;
 const MAP_BLOCK_SIZE_X = 16;
 const MAP_BLOCK_SIZE_Y = 16;
 const BLOCK_RANGE = 12;
 const PLAYER_RANGE = 12;
-const NUM_BULLETS = 20;
-const NUM_AUDIO = 20;
-const NUM_GHOSTS = 20;
-const NUM_FIREWALLS = 20;
+const DEATH_RANGE = 20;
+const NUM_BULLETS = 10;
+const NUM_AUDIO = 10;
+const NUM_GHOSTS = 10;
+const NUM_FIREWALLS = 5;
 const BULLET_SPEED = 230;
 const SCAN_RESOLUTION = 0.05;
 const SCAN_SPEED = 7;
@@ -27,7 +30,7 @@ var miniMapCtx = miniMapCanvas.getContext("2d");
 
 var lastPosition = {x:0, y:0};
 var bulletArray = [];
-var audioArray = [];
+var audioArray = [[],[]];
 var ghostArray = [];
 var firewallArray = [];
 var angryGhostArray = [];
@@ -120,10 +123,14 @@ document.onreadystatechange = function () {
         music.prepare({ name: 'music.ogg' });
 
         for (var i=0; i < NUM_AUDIO; i++) {
-            var soundDefaultGun = game.createSound('sound-default-gun' + i);
-            soundDefaultGun.prepare({ name: 'default_gun.ogg' });
+            var soundThrow = game.createSound('sound-throw' + i);
+            var soundGhostKill = game.createSound('sound-ghost-kill' + i);
 
-            audioArray.push(soundDefaultGun);
+            soundThrow.prepare({ name: 'throw.ogg' });
+            soundGhostKill.prepare({ name: 'ghostKill.ogg' });
+
+            audioArray[0].push(soundThrow);
+            audioArray[1].push(soundGhostKill);
         }
 
         for (var i = 0; i < NUM_BULLETS; i++) {
@@ -408,7 +415,9 @@ document.onreadystatechange = function () {
         // -- Game loop ------------------------------------------------------
 
         game.loadAndRun(function (elapsedTime, dt) {
-            music.play();
+            if (ENABLE_MUSIC) {
+                music.play();
+            }
 
             angryGhostArray.forEach(function(ghostEntry) {
                 moveEntityToTarget(ghostEntry, player);
@@ -421,6 +430,7 @@ document.onreadystatechange = function () {
                     if(isEntityTouchingTarget(bulletEntry, ghostEntry)) {
                         removeEntity(ghostEntry);
                         removeEntity(bulletEntry);
+                        getFreeAudio(1).play();
                     };
                 });
             });
