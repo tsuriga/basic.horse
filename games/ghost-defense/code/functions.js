@@ -119,11 +119,25 @@ function getFreeBullet() {
 }
 
 /**
+ * @return entity|null
+ */
+function getFreeFile() {
+    for (var i = 0; i < NUM_FILES; i++) {
+        var b = fileArray[i];
+
+        if (!b.visible) {
+            return b;
+        }
+    }
+
+    return null;
+}
+
+/**
  * @param int type
  * @return entity|null
  */
 function getFreeAudio(type) {
-
     if (type === 0) {
         for (var i = 0; i < NUM_AUDIO; i++) {
             var audio = this.audioArray[0][i];
@@ -143,6 +157,48 @@ function getFreeAudio(type) {
             }
         }
     }
+
+    if (type === 2) {
+        for (var i = 0; i < NUM_AUDIO; i++) {
+            var audio = this.audioArray[2][i];
+
+            if (audio.paused) {
+                return audio;
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
+ * @param int spawnPoints
+ * @param object player
+ * @return object entity
+ */
+function spawnFile(spawnPoints, player)
+{
+    var entity = getFreeFile();
+
+    randomPoint = Math.floor((Math.random() * spawnPoints.length) + 0);
+    spawnPoint = spawnPoints[randomPoint];
+
+/* @todo Implement logic not to spawn near player
+    if (Math.abs(player.pos.x - spawnPoint.pos.x) > 40 &&
+        Math.abs(player.pos.y - spawnPoint.pos.y) > 40
+    ) {
+*/
+        randomDistance = Math.floor((Math.random() * 20) + -20);
+        entity.pos.x = spawnPoint.pos.x + randomDistance;
+        entity.pos.y = spawnPoint.pos.y + randomDistance;
+
+        entity.visible = true;
+        console.log("spawned");
+
+        return entity;
+//    }
+
+    console.log("not spawned");
 
     return null;
 }

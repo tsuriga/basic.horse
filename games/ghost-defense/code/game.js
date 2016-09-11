@@ -16,6 +16,7 @@ const BLOCK_RANGE = 15;
 const PLAYER_RANGE = 12;
 const DEATH_RANGE = 20;
 const NUM_BULLETS = 10;
+const NUM_FILES = 3;
 const NUM_AUDIO = 10;
 const NUM_GHOSTS = 10;
 const NUM_RADARS = 5;
@@ -28,9 +29,12 @@ const MINIMAP_SPACING = 0.75;
 var miniMapCanvas = document.getElementById("minimap_canvas");
 var miniMapCtx = miniMapCanvas.getContext("2d");
 
+var score = 0;
+
 var lastPosition = {x:0, y:0};
+var fileArray = [];
 var bulletArray = [];
-var audioArray = [[],[]];
+var audioArray = [[],[],[]];
 var ghostArray = [];
 var radarArray = [];
 var angryGhostArray = [];
@@ -47,22 +51,22 @@ document.onreadystatechange = function () {
 
         game.fullscreen = false;
 
-        // Level layout arrays (0 = floor, 1 = wall, 2 = ghost spawn)
+        // Level layout arrays (0 = floor, 1 = wall, 2 = ghost spawn, 3 = file spawn)
         var map1 = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 1],
+            [1, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 3, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1],
             [1, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-            [1, 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 3, 0, 1],
+            [1, 0, 2, 0, 1, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0, 1],
             [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-            [1, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 0, 3, 0, 1, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 1],
             [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-            [1, 0, 2, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 1],
+            [1, 0, 2, 0, 1, 1, 1, 1, 1, 0, 0, 3, 0, 2, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         ];
@@ -80,7 +84,7 @@ document.onreadystatechange = function () {
         var wallFrontArray = [];
         var floorArray = [];
         var ghostSpawnArray = [];
-        var fileArray = [];
+        var fileSpawnArray = [];
         var fogArray = [];
         var scanArray = [];
 
@@ -117,18 +121,36 @@ document.onreadystatechange = function () {
         var music = game.createSound('sound-music');
         music.prepare({ name: 'music.ogg' });
 
+        var music2 = game.createSound('sound-music-2');
+        music2.prepare({ name: 'music2.ogg' });
+
         var gameOverMusic = game.createSound('sound-gameover');
         gameOverMusic.prepare({ name: 'gameover.ogg' });
 
         for (var i=0; i < NUM_AUDIO; i++) {
             var soundThrow = game.createSound('sound-throw' + i);
             var soundGhostKill = game.createSound('sound-ghost-kill' + i);
+            var soundScore = game.createSound('sound-score' + i);
 
             soundThrow.prepare({ name: 'throw.ogg' });
             soundGhostKill.prepare({ name: 'ghostKill.ogg' });
+            soundScore.prepare({ name: 'score.ogg' });
 
             audioArray[0].push(soundThrow);
             audioArray[1].push(soundGhostKill);
+            audioArray[2].push(soundScore);
+        }
+
+        for (var i = 0; i < NUM_FILES; i++) {
+            var file = itemLayer.createEntity();
+            file.visible = false;
+            file.asset = new PixelJS.Sprite();
+
+            file.asset.prepare({
+                name: 'file.png'
+            });
+
+            fileArray.push(file);
         }
 
         for (var i = 0; i < NUM_BULLETS; i++) {
@@ -207,6 +229,25 @@ document.onreadystatechange = function () {
 
                     ghostSpawn.opacity = 0.0;
                     ghostSpawnArray.push(ghostSpawn);
+                } else if (map1[i][j] == 3) {
+                    var fileSpawn = itemLayer.createEntity();
+
+                    fileSpawn.size["width"] = BLOCK_RANGE;
+                    fileSpawn.size["height"] = BLOCK_RANGE;
+
+                    var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
+
+                    fileSpawn.asset = new PixelJS.Sprite();
+                    fileSpawn.asset.prepare({
+                        name: 'ghostSpawn.png',
+                    });
+
+                    fileSpawn.opacity = 0.0;
+
+                    fileSpawn.pos["x"] = isometricPosition["x"];
+                    fileSpawn.pos["y"] = isometricPosition["y"];
+
+                    fileSpawnArray.push(fileSpawn);
                 }
 
                 var fog = fogLayer.createEntity();
@@ -419,9 +460,16 @@ document.onreadystatechange = function () {
 
         // -- Game loop ------------------------------------------------------
 
+        spawnFile(fileSpawnArray, player);
+
         game.loadAndRun(function (elapsedTime, dt) {
             if (ENABLE_MUSIC) {
                 music.play();
+            }
+
+            if (score > 9) {
+                music.pause();
+                music2.play();
             }
 
             angryGhostArray.forEach(function(ghostEntry) {
@@ -442,6 +490,15 @@ document.onreadystatechange = function () {
                 });
             });
 
+            fileArray.forEach(function(fileEntry) {
+                if(isEntityTouchingTarget(player, fileEntry)) {
+                    getFreeAudio(2).play();
+                    removeEntity(fileEntry);
+                    score++;
+                    spawnFile(fileSpawnArray, player);
+                };
+            });
+
             var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
 
             if ((lastPosition.x !=  currentPosInArray.x) && (lastPosition.y !=  currentPosInArray.y)) {
@@ -450,7 +507,7 @@ document.onreadystatechange = function () {
                 for(var j = 0; j < fogArray.length; j++) {
                     fogArray[j].visible = true;
                 }
-                console.log(radarArray[1].pos, player.pos);
+
                 for(var j = 0; j < radarArray.length; j++) {
                     if(radarArray[j].pos.x >= 1){
                         scanArea(scan,  radarArray[j].pos , 3, 4, fogArray, wallArray)
@@ -460,6 +517,11 @@ document.onreadystatechange = function () {
             }
 
             drawMiniMap(map1, player);
+
+            miniMapCtx.font="100px Tahoma";
+            miniMapCtx.fillStyle = 'yellow';
+            miniMapCtx.textAlign="center";
+            miniMapCtx.fillText(score,108,136);
         });
     }
 }
