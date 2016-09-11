@@ -288,12 +288,11 @@ document.onreadystatechange = function () {
             ghost.velocity = { x: 100, y: 50 };
             ghost.size["width"] = PLAYER_RANGE;
             ghost.size["height"] = PLAYER_RANGE;
-            ghost.active = 0;
 
             ghost.asset.prepare({
                 name: 'ghost.png',
-                frames: 1,
-                rows: 8,
+                frames: 6,
+                rows: 1,
                 speed: 100,
                 defaultFrame: 1
             });

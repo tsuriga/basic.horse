@@ -17,9 +17,8 @@
 //
 // -------------------------------------------------------------------
 //
-// Copyright (C) 2016 pandatom.com
-// Engine is modified/extended by pandatom as stated below:
-//   - Support for diagonal movements improved.
+// Engine is slightly modified/extended by basic.horse (2016)
+//
 
 var PixelJS = {
     AnimatedSprite: function () { },
