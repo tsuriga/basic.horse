@@ -51,7 +51,7 @@ document.onreadystatechange = function () {
         ghostSpawner = setInterval(function() {
             var ghost = spawnGhost(ghostSpawnArray);
             angryGhostArray.push(ghost);
-        }, Math.floor((Math.random() * 5000) + 1000));
+        }, Math.floor((Math.random() * 1500) + 500));
 
         // Level layout arrays (0 = floor, 1 = wall, 2 = ghost spawn)
         var map1 = [
@@ -66,9 +66,9 @@ document.onreadystatechange = function () {
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
             [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
             [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 1],
             [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-            [1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 2, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         ];
