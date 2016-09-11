@@ -28,7 +28,6 @@ const MINIMAP_SPACING = 0.75;
 var miniMapCanvas = document.getElementById("minimap_canvas");
 var miniMapCtx = miniMapCanvas.getContext("2d");
 
-var isGamePlaying= true;
 var lastPosition = {x:0, y:0};
 var bulletArray = [];
 var audioArray = [[],[]];
@@ -419,40 +418,38 @@ document.onreadystatechange = function () {
         // -- Game loop ------------------------------------------------------
 
         game.loadAndRun(function (elapsedTime, dt) {
-            if (isGamePlaying) {
-                if (ENABLE_MUSIC) {
-                    music.play();
-                }
-
-                angryGhostArray.forEach(function(ghostEntry) {
-                    moveEntityToTarget(ghostEntry, player);
-
-                    if (isEntityTouchingTarget(ghostEntry, player)) {
-                        isGamePlaying = false;
-                        clearInterval(ghostSpawner);
-                        music.pause();
-                        gameOverMusic.play();
-                        gameOver(player, ghostArray, wallFrontArray, wallArray, floorArray);
-                    };
-
-                    bulletArray.forEach(function(bulletEntry) {
-                        if(isEntityTouchingTarget(bulletEntry, ghostEntry)) {
-                            removeEntity(ghostEntry);
-                            removeEntity(bulletEntry);
-                            getFreeAudio(1).play();
-                        };
-                    });
-                });
-
-                var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
-
-                if ((lastPosition.x !=  currentPosInArray.x) && (lastPosition.y !=  currentPosInArray.y)) {
-                    lastPosition =  currentPosInArray
-                    scanArea(scan, player.pos , 3, 4, fogArray, wallArray)
-                }
-
-                drawMiniMap(map1, player);
+            if (ENABLE_MUSIC) {
+                music.play();
             }
+
+            angryGhostArray.forEach(function(ghostEntry) {
+                moveEntityToTarget(ghostEntry, player);
+
+                if (isEntityTouchingTarget(ghostEntry, player)) {
+                    clearInterval(ghostSpawner);
+                    music.pause();
+
+                    gameOverMusic.play();
+                    gameOver(player, ghostArray, wallFrontArray, wallArray, floorArray);
+                };
+
+                bulletArray.forEach(function(bulletEntry) {
+                    if(isEntityTouchingTarget(bulletEntry, ghostEntry)) {
+                        removeEntity(ghostEntry);
+                        removeEntity(bulletEntry);
+                        getFreeAudio(1).play();
+                    };
+                });
+            });
+
+            var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
+
+            if ((lastPosition.x !=  currentPosInArray.x) && (lastPosition.y !=  currentPosInArray.y)) {
+                lastPosition =  currentPosInArray
+                scanArea(scan, player.pos , 3, 4, fogArray, wallArray)
+            }
+
+            drawMiniMap(map1, player);
         });
     }
 }
