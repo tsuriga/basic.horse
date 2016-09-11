@@ -12,7 +12,7 @@ const GRID_OFFSET = 320;
 const ACTUAL_BLOCK_SIZE = 32;
 const MAP_BLOCK_SIZE_X = 16;
 const MAP_BLOCK_SIZE_Y = 16;
-const BLOCK_RANGE = 12;
+const BLOCK_RANGE = 15;
 const PLAYER_RANGE = 12;
 const DEATH_RANGE = 20;
 const NUM_BULLETS = 10;
@@ -28,6 +28,7 @@ const MINIMAP_SPACING = 0.75;
 var miniMapCanvas = document.getElementById("minimap_canvas");
 var miniMapCtx = miniMapCanvas.getContext("2d");
 
+var isGamePlaying= true;
 var lastPosition = {x:0, y:0};
 var bulletArray = [];
 var audioArray = [[],[]];
@@ -47,7 +48,7 @@ document.onreadystatechange = function () {
 
         game.fullscreen = false;
 
-        setInterval(function() {
+        ghostSpawner = setInterval(function() {
             var ghost = spawnGhost(ghostSpawnArray);
             angryGhostArray.push(ghost);
         }, Math.floor((Math.random() * 5000) + 1000));
@@ -121,6 +122,9 @@ document.onreadystatechange = function () {
 
         var music = game.createSound('sound-music');
         music.prepare({ name: 'music.ogg' });
+
+        var gameOverMusic = game.createSound('sound-gameover');
+        gameOverMusic.prepare({ name: 'gameover.ogg' });
 
         for (var i=0; i < NUM_AUDIO; i++) {
             var soundThrow = game.createSound('sound-throw' + i);
@@ -356,19 +360,19 @@ document.onreadystatechange = function () {
             wallArray.forEach(function(entry) {
                 if (entity === entry) {
                     if (entry.pos["x"] > player.pos["x"]) {
-                        player.pos["x"] = player.pos["x"] - 2;
+                        player.pos["x"] = player.pos["x"] - 4;
                     }
 
                     if (entry.pos["x"] < player.pos["x"]) {
-                        player.pos["x"] = player.pos["x"] + 2;
+                        player.pos["x"] = player.pos["x"] + 4;
                     }
 
                     if (entry.pos["y"] > player.pos["y"]) {
-                        player.pos["y"] = player.pos["y"] - 2;
+                        player.pos["y"] = player.pos["y"] - 4;
                     }
 
                     if (entry.pos["y"] < player.pos["y"]) {
-                        player.pos["y"] = player.pos["y"] + 2;
+                        player.pos["y"] = player.pos["y"] + 4;
                     }
                 }
             });
@@ -415,34 +419,40 @@ document.onreadystatechange = function () {
         // -- Game loop ------------------------------------------------------
 
         game.loadAndRun(function (elapsedTime, dt) {
-            if (ENABLE_MUSIC) {
-                music.play();
-            }
+            if (isGamePlaying) {
+                if (ENABLE_MUSIC) {
+                    music.play();
+                }
 
-            angryGhostArray.forEach(function(ghostEntry) {
-                moveEntityToTarget(ghostEntry, player);
+                angryGhostArray.forEach(function(ghostEntry) {
+                    moveEntityToTarget(ghostEntry, player);
 
-                if (isEntityTouchingTarget(ghostEntry, player)) {
-                    removeEntity(player);
-                };
-
-                bulletArray.forEach(function(bulletEntry) {
-                    if(isEntityTouchingTarget(bulletEntry, ghostEntry)) {
-                        removeEntity(ghostEntry);
-                        removeEntity(bulletEntry);
-                        getFreeAudio(1).play();
+                    if (isEntityTouchingTarget(ghostEntry, player)) {
+                        isGamePlaying = false;
+                        clearInterval(ghostSpawner);
+                        music.pause();
+                        gameOverMusic.play();
+                        gameOver(player, ghostArray, wallFrontArray, wallArray, floorArray);
                     };
+
+                    bulletArray.forEach(function(bulletEntry) {
+                        if(isEntityTouchingTarget(bulletEntry, ghostEntry)) {
+                            removeEntity(ghostEntry);
+                            removeEntity(bulletEntry);
+                            getFreeAudio(1).play();
+                        };
+                    });
                 });
-            });
 
-            var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
+                var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
 
-            if ((lastPosition.x !=  currentPosInArray.x) && (lastPosition.y !=  currentPosInArray.y)) {
-                lastPosition =  currentPosInArray
-                scanArea(scan, player.pos , 3, 4, fogArray, wallArray)
+                if ((lastPosition.x !=  currentPosInArray.x) && (lastPosition.y !=  currentPosInArray.y)) {
+                    lastPosition =  currentPosInArray
+                    scanArea(scan, player.pos , 3, 4, fogArray, wallArray)
+                }
+
+                drawMiniMap(map1, player);
             }
-
-            drawMiniMap(map1, player);
         });
     }
 }

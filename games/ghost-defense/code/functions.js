@@ -361,3 +361,31 @@ function drawItemInPosition(posX, posY, item) {
         firewall.visible = true;
     }
 }
+
+function gameOver(player, ghostArray, wallFrontArray, wallArray, floorArray) {
+    removeEntity(player);
+
+    ghostArray.forEach(function(entry) {
+        removeEntity(entry);
+    });
+
+    // Game over animation
+
+    wallArrayLength = wallArray.length;
+    wallFrontArrayLength = wallFrontArray.length;
+
+    setInterval(function () {
+        removeEntity(wallArray[0]);
+        wallArray.shift();
+    }, 60);
+
+    setInterval(function () {
+        removeEntity(floorArray[0]);
+        floorArray.shift();
+    }, 30);
+
+    setInterval(function () {
+        removeEntity(wallFrontArray[0]);
+        wallFrontArray.shift();
+    }, 80);
+}
