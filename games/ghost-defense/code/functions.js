@@ -148,23 +148,32 @@ function getFreeAudio(type) {
 }
 
 /**
+ * Spawns ghosts but bewares of spawning next to player
+ *
  * @param int spawnPoints
+ * @param object player
  * @return object entity
  */
-function spawnGhost(spawnPoints)
+function spawnGhost(spawnPoints, player)
 {
     var entity = getFreeGhost();
 
     randomPoint = Math.floor((Math.random() * spawnPoints.length) + 0);
     spawnPoint = spawnPoints[randomPoint];
 
-    randomDistance = Math.floor((Math.random() * 30) + -30);
-    entity.pos.x = spawnPoint.pos.x + randomDistance;
-    entity.pos.y = spawnPoint.pos.y + randomDistance;
+    if (Math.abs(player.pos.x - spawnPoint.pos.x) > 40 &&
+        Math.abs(player.pos.y - spawnPoint.pos.y) > 40
+    ) {
+        randomDistance = Math.floor((Math.random() * 20) + -20);
+        entity.pos.x = spawnPoint.pos.x + randomDistance;
+        entity.pos.y = spawnPoint.pos.y + randomDistance;
 
-    entity.visible = true;
+        entity.visible = true;
 
-    return entity;
+        return entity;
+    }
+
+    return null;
 }
 
 /**
@@ -371,23 +380,27 @@ function gameOver(player, ghostArray, wallFrontArray, wallArray, floorArray) {
         removeEntity(entry);
     });
 
-    // Game over animation
-
     wallArrayLength = wallArray.length;
     wallFrontArrayLength = wallFrontArray.length;
 
     setInterval(function () {
-        removeEntity(wallArray[0]);
-        wallArray.shift();
+        if (wallArray.length > 0) {
+            removeEntity(wallArray[0]);
+            wallArray.shift();
+        }
     }, 60);
 
     setInterval(function () {
-        removeEntity(floorArray[0]);
-        floorArray.shift();
+        if (floorArray.length > 0) {
+            removeEntity(floorArray[0]);
+            floorArray.shift();
+        }
     }, 30);
 
     setInterval(function () {
-        removeEntity(wallFrontArray[0]);
-        wallFrontArray.shift();
+        if (wallFrontArray.length > 0) {
+            removeEntity(wallFrontArray[0]);
+            wallFrontArray.shift();
+        }
     }, 80);
 }

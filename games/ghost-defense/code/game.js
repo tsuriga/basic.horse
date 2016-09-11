@@ -28,7 +28,6 @@ const MINIMAP_SPACING = 0.75;
 var miniMapCanvas = document.getElementById("minimap_canvas");
 var miniMapCtx = miniMapCanvas.getContext("2d");
 
-var isGamePlaying= true;
 var lastPosition = {x:0, y:0};
 var bulletArray = [];
 var audioArray = [[],[]];
@@ -48,23 +47,18 @@ document.onreadystatechange = function () {
 
         game.fullscreen = false;
 
-        ghostSpawner = setInterval(function() {
-            var ghost = spawnGhost(ghostSpawnArray);
-            angryGhostArray.push(ghost);
-        }, Math.floor((Math.random() * 1500) + 500));
-
         // Level layout arrays (0 = floor, 1 = wall, 2 = ghost spawn)
         var map1 = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1],
+            [1, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1],
+            [1, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 0, 2, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
             [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
             [1, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 1],
             [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
@@ -289,12 +283,11 @@ document.onreadystatechange = function () {
             ghost.velocity = { x: 100, y: 50 };
             ghost.size["width"] = PLAYER_RANGE;
             ghost.size["height"] = PLAYER_RANGE;
-            ghost.active = 0;
 
             ghost.asset.prepare({
                 name: 'ghost.png',
-                frames: 1,
-                rows: 8,
+                frames: 6,
+                rows: 1,
                 speed: 100,
                 defaultFrame: 1
             });
@@ -302,6 +295,13 @@ document.onreadystatechange = function () {
             ghostArray.push(ghost);
         }
 
+        ghostSpawner = setInterval(function() {
+
+            var ghost = spawnGhost(ghostSpawnArray, player);
+            if (ghost) {
+            }
+                angryGhostArray.push(ghost);
+        }, Math.floor((Math.random() * 700) + 200));
         for (var i=0; i < NUM_RADARS; i++) {
             var radar = itemLayer.createEntity();
             radar.visible = false;
@@ -419,32 +419,31 @@ document.onreadystatechange = function () {
         // -- Game loop ------------------------------------------------------
 
         game.loadAndRun(function (elapsedTime, dt) {
-            if (isGamePlaying) {
-                if (ENABLE_MUSIC) {
-                    music.play();
-                }
+            if (ENABLE_MUSIC) {
+                music.play();
+            }
 
-                angryGhostArray.forEach(function(ghostEntry) {
-                    moveEntityToTarget(ghostEntry, player);
+            angryGhostArray.forEach(function(ghostEntry) {
+                moveEntityToTarget(ghostEntry, player);
 
-                    if (isEntityTouchingTarget(ghostEntry, player)) {
-                        isGamePlaying = false;
-                        clearInterval(ghostSpawner);
-                        music.pause();
-                        gameOverMusic.play();
-                        gameOver(player, ghostArray, wallFrontArray, wallArray, floorArray);
+                if (isEntityTouchingTarget(ghostEntry, player)) {
+                    clearInterval(ghostSpawner);
+                    music.pause();
+
+                    gameOverMusic.play();
+                    gameOver(player, ghostArray, wallFrontArray, wallArray, floorArray);
+                };
+
+                bulletArray.forEach(function(bulletEntry) {
+                    if(isEntityTouchingTarget(bulletEntry, ghostEntry)) {
+                        removeEntity(ghostEntry);
+                        removeEntity(bulletEntry);
+                        getFreeAudio(1).play();
                     };
-
-                    bulletArray.forEach(function(bulletEntry) {
-                        if(isEntityTouchingTarget(bulletEntry, ghostEntry)) {
-                            removeEntity(ghostEntry);
-                            removeEntity(bulletEntry);
-                            getFreeAudio(1).play();
-                        };
-                    });
                 });
+            });
 
-                var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
+            var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
 
                 if ((lastPosition.x !=  currentPosInArray.x) && (lastPosition.y !=  currentPosInArray.y)) {
                     lastPosition =  currentPosInArray
@@ -461,8 +460,9 @@ document.onreadystatechange = function () {
                     scanArea(scan, player.pos , 3, 4, fogArray, wallArray)
                 }
 
-                drawMiniMap(map1, player);
             }
+
+            drawMiniMap(map1, player);
         });
     }
 }
