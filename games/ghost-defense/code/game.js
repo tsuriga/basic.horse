@@ -6,7 +6,7 @@
  * This game is under development and using Pixel.js library by rastating
  */
 
-const ENABLE_MUSIC = true;
+const ENABLE_MUSIC = false;
 
 const GRID_OFFSET = 320;
 const ACTUAL_BLOCK_SIZE = 32;
@@ -14,12 +14,12 @@ const MAP_BLOCK_SIZE_X = 16;
 const MAP_BLOCK_SIZE_Y = 16;
 const BLOCK_RANGE = 15;
 const PLAYER_RANGE = 12;
-const DEATH_RANGE = 20;
-const NUM_BULLETS = 10;
+const DEATH_RANGE = 21;
+const NUM_BULLETS = 8;
 const NUM_FILES = 3;
 const NUM_AUDIO = 10;
-const NUM_GHOSTS = 10;
-const NUM_RADARS = 5;
+const NUM_GHOSTS = 8;
+const NUM_RADARS = 1;
 const BULLET_SPEED = 230;
 const SCAN_RESOLUTION = 0.08;
 const SCAN_SPEED = 7;
@@ -53,22 +53,25 @@ document.onreadystatechange = function () {
 
         // Level layout arrays (0 = floor, 1 = wall, 2 = ghost spawn, 3 = file spawn)
         var map1 = [
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 3, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1],
-            [1, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 3, 0, 1],
-            [1, 0, 2, 0, 1, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0, 1],
-            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-            [1, 0, 3, 0, 1, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 1],
-            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-            [1, 0, 2, 0, 1, 1, 1, 1, 1, 0, 0, 3, 0, 2, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 2, 0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 0, 0, 3, 2, 0, 1],
+            [1, 0, 0, 3, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1],
+            [1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 3, 0, 1, 1, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 1, 0, 3, 0, 0, 2, 0, 0, 0, 3, 0, 0, 1, 0, 0, 1],
+            [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         ];
 
         // State variables
@@ -92,6 +95,7 @@ document.onreadystatechange = function () {
         var playerScanLoop = 0;
 
         // Layers
+        var guiLayer = game.createLayer('gui');
         var enemyLayer = game.createLayer('enemies');
         var itemLayer = game.createLayer('items');
         var frontLayer = game.createLayer('front of player');
@@ -110,6 +114,7 @@ document.onreadystatechange = function () {
         shadow.pos["y"] = 10;
 
         // zIndexes
+        guiLayer.zIndex = 1;
         enemyLayer.zIndex = 6;
         scanLayer.zIndex = 6;
         itemLayer.zIndex = 3;
@@ -297,13 +302,24 @@ document.onreadystatechange = function () {
         }
 
         // -- Entities ------------------------------------------------------
+        var guiTryAgain = guiLayer.createEntity();
+
+        guiTryAgain.visible = true;
+        guiTryAgain.asset = new PixelJS.Sprite();
+        guiTryAgain.pos = { x: 105, y: 95 };
+        guiTryAgain.size["width"] = 442;
+        guiTryAgain.size["height"] = 164;
+
+        guiTryAgain.asset.prepare({
+            name: 'tryAgain.png'
+        });
 
         var playerLayer = game.createLayer('players');
 
         var player = new PixelJS.Player();
         player.addToLayer(playerLayer);
 
-        player.pos = { x: 200, y: 100 };
+        player.pos = { x: 230, y: 100 };
         player.size["width"] = PLAYER_RANGE;
         player.size["height"] = PLAYER_RANGE;
         player.velocity = { x: 100, y: 50 };
@@ -459,6 +475,10 @@ document.onreadystatechange = function () {
                     scanArray[i].visible = debug;
                 }
             }
+
+            if (keyCode === PixelJS.Keys.R) {
+                location.reload();
+            }
         });
 
         // -- Game loop ------------------------------------------------------
@@ -478,6 +498,14 @@ document.onreadystatechange = function () {
             angryGhostArray.forEach(function(ghostEntry) {
                 moveEntityToTarget(ghostEntry, player);
 
+                bulletArray.forEach(function(bulletEntry) {
+                    if(isEntityTouchingTarget(bulletEntry, ghostEntry)) {
+                        removeEntity(ghostEntry);
+                        removeEntity(bulletEntry);
+                        getFreeAudio(1).play();
+                    };
+                });
+
                 if (isEntityTouchingTarget(ghostEntry, player)) {
                     clearInterval(ghostSpawner);
                     gameOverMusic.play();
@@ -491,14 +519,6 @@ document.onreadystatechange = function () {
                         fileArray
                     );
                 };
-
-                bulletArray.forEach(function(bulletEntry) {
-                    if(isEntityTouchingTarget(bulletEntry, ghostEntry)) {
-                        removeEntity(ghostEntry);
-                        removeEntity(bulletEntry);
-                        getFreeAudio(1).play();
-                    };
-                });
             });
 
             fileArray.forEach(function(fileEntry) {
@@ -533,14 +553,12 @@ document.onreadystatechange = function () {
                 scanArea(scan, player.pos , 3, 4, fogArray, wallArray, ghostArray, fileArray)
             }
 
-
-
             drawMiniMap(map1, player);
 
             miniMapCtx.font="100px Tahoma";
-            miniMapCtx.fillStyle = 'yellow';
+            miniMapCtx.fillStyle = 'LightGreen';
             miniMapCtx.textAlign="center";
-            miniMapCtx.fillText(score,108,136);
+            miniMapCtx.fillText(score,125,156);
         });
     }
 }

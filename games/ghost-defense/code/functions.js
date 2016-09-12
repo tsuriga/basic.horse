@@ -231,13 +231,15 @@ function spawnGhost(spawnPoints, player)
     if (Math.abs(player.pos.x - spawnPoint.pos.x) > 40 &&
         Math.abs(player.pos.y - spawnPoint.pos.y) > 40
     ) {
-        randomDistance = Math.floor((Math.random() * 20) + -20);
-        entity.pos.x = spawnPoint.pos.x + randomDistance;
-        entity.pos.y = spawnPoint.pos.y + randomDistance;
+        if (entity) {
+            randomDistance = Math.floor((Math.random() * 20) + -20);
+            entity.pos.x = spawnPoint.pos.x + randomDistance;
+            entity.pos.y = spawnPoint.pos.y + randomDistance;
 
-        entity.visible = true;
+            entity.visible = true;
 
-        return entity;
+            return entity;
+        }
     }
 
     return null;
@@ -251,6 +253,8 @@ function moveEntityToTarget(entity, target)
 {
     if (entity.visible) {
         entity.moveTo(target.pos.x, target.pos.y, 2000);
+    } else {
+        removeEntity(entity);
     }
 }
 
@@ -449,49 +453,35 @@ function gameOver(
     fogArray,
     fileArray
 ) {
-    setInterval(function () {
-        player.pos.y++;
-    }, 0.01);
+    removeEntity(player);
+
+    floorArray.forEach(function(entry) {
+        removeEntity(entry);
+    });
+
+    fogArray.forEach(function(entry) {
+        removeEntity(entry);
+    });
 
     setInterval(function () {
         if (fileArray.length > 0) {
             removeEntity(fileArray[0]);
             fileArray.shift();
         }
-    }, 1);
 
-    setInterval(function () {
         if (ghostArray.length > 0) {
             removeEntity(ghostArray[0]);
             ghostArray.shift();
         }
-    }, 1);
 
-    setInterval(function () {
         if (wallArray.length > 0) {
             removeEntity(wallArray[0]);
             wallArray.shift();
         }
-    }, 60);
 
-    setInterval(function () {
-        if (floorArray.length > 0) {
-            removeEntity(floorArray[0]);
-            floorArray.shift();
-        }
-    }, 30);
-
-    setInterval(function () {
         if (wallFrontArray.length > 0) {
             removeEntity(wallFrontArray[0]);
             wallFrontArray.shift();
         }
-    }, 80);
-
-    setInterval(function () {
-        if (fogArray.length > 0) {
-            removeEntity(fogArray[0]);
-            fogArray.shift();
-        }
-    }, 40);
+    }, 1);
 }
