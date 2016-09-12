@@ -6,7 +6,7 @@
  * This game is under development and using Pixel.js library by rastating
  */
 
-const ENABLE_MUSIC = false;
+const ENABLE_MUSIC = true;
 
 const GRID_OFFSET = 320;
 const ACTUAL_BLOCK_SIZE = 32;
