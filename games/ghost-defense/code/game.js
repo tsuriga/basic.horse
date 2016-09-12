@@ -123,11 +123,20 @@ document.onreadystatechange = function () {
         fogLayer.zIndex = 2;
         floorLayer.zIndex = 1;
 
-        var music = game.createSound('sound-music');
-        music.prepare({ name: 'music.ogg' });
+        var music1 = game.createSound('sound-music-1');
+        music1.prepare({ name: 'music01.ogg' });
 
         var music2 = game.createSound('sound-music-2');
-        music2.prepare({ name: 'music2.ogg' });
+        music2.prepare({ name: 'music02.ogg' });
+
+        var music3 = game.createSound('sound-music-3');
+        music3.prepare({ name: 'music03.ogg' });
+
+        var music4 = game.createSound('sound-music-4');
+        music4.prepare({ name: 'music04.ogg' });
+
+        var music5 = game.createSound('sound-music-5');
+        music5.prepare({ name: 'music05.ogg' });
 
         var gameOverMusic = game.createSound('sound-gameover');
         gameOverMusic.prepare({ name: 'gameover.ogg' });
@@ -486,13 +495,26 @@ document.onreadystatechange = function () {
         spawnFile(fileSpawnArray, player);
 
         game.loadAndRun(function (elapsedTime, dt) {
-            if (ENABLE_MUSIC) {
-                music.play();
-            }
-
-            if (score > 9) {
-                music.pause();
-                music2.play();
+            switch (score) {
+                case 0:
+                    music1.play();
+                    break;
+                case 5:
+                    music1.pause();
+                    music2.play();
+                    break;
+                case 10:
+                    music2.pause();
+                    music3.play();
+                    break;
+                case 20:
+                    music3.pause();
+                    music4.play();
+                    break;
+                case 30:
+                    music4.pause();
+                    music5.play();
+                    break;
             }
 
             angryGhostArray.forEach(function(ghostEntry) {
