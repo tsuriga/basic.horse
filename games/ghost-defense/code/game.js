@@ -495,26 +495,28 @@ document.onreadystatechange = function () {
         spawnFile(fileSpawnArray, player);
 
         game.loadAndRun(function (elapsedTime, dt) {
-            switch (score) {
-                case 0:
-                    music1.play();
-                    break;
-                case 5:
-                    music1.pause();
-                    music2.play();
-                    break;
-                case 10:
-                    music2.pause();
-                    music3.play();
-                    break;
-                case 20:
-                    music3.pause();
-                    music4.play();
-                    break;
-                case 30:
-                    music4.pause();
-                    music5.play();
-                    break;
+            if (score < 4) {
+                music1.play();
+            }
+
+            if (score > 4) {
+                music1.pause();
+                music2.play();
+            }
+
+            if (score > 9) {
+                music2.pause();
+                music3.play();
+            }
+
+            if (score > 19) {
+                music3.pause();
+                music4.play();
+            }
+
+            if (score > 29) {
+                music4.pause();
+                music5.play();
             }
 
             angryGhostArray.forEach(function(ghostEntry) {
@@ -560,9 +562,11 @@ document.onreadystatechange = function () {
                 for(var j = 0; j < fogArray.length; j++) {
                     fogArray[j].visible = true;
                 }
+
                 for(var j = 0; j < ghostArray.length; j++) {
                     ghostArray[j].opacity = 0;
                 }
+
                 for(var j = 0; j < fileArray.length; j++) {
                     fileArray[j].opacity = 0;
                 }
