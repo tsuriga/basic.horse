@@ -179,6 +179,16 @@ function getFreeAudio(type) {
         }
     }
 
+    if (type === 3) {
+        for (var i = 0; i < 1; i++) {
+            var audio = this.audioArray[3][i];
+
+            if (audio.paused) {
+                return audio;
+            }
+        }
+    }
+
     return null;
 }
 
