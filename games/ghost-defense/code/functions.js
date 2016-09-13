@@ -1,41 +1,4 @@
 /**
- * @param array map
- * @param object player
- */
-function drawMiniMap(map, player) {
-    miniMapCtx.clearRect(0, 0, miniMapCanvas.width, miniMapCanvas.height);
-
-    currentBlockPosX = MAP_BLOCK_SIZE_X;
-    currentBlockPosY = MAP_BLOCK_SIZE_Y;
-
-    for(var i = 0; i < map.length; i++) {
-        var mapBlock = map[i];
-
-        for(var j = 0; j < mapBlock.length; j++) {
-            if (map[i][j] == 0) {
-                miniMapCtx.fillStyle = "black";
-                miniMapCtx.fillRect(currentBlockPosX * MINIMAP_SPACING, currentBlockPosY * MINIMAP_SPACING,10,10);
-            }
-
-            if (map[i][j] == 1) {
-                miniMapCtx.fillStyle = "white";
-                miniMapCtx.fillRect(currentBlockPosX * MINIMAP_SPACING, currentBlockPosY * MINIMAP_SPACING,10,10);
-            }
-
-            currentBlockPosX = currentBlockPosX + MAP_BLOCK_SIZE_X;
-        }
-
-        currentBlockPosY = currentBlockPosY + MAP_BLOCK_SIZE_Y;
-        currentBlockPosX = MAP_BLOCK_SIZE_X;
-    }
-
-    var currentPlayerPositionInArray = getNearestPositionInArray(player.pos["x"], player.pos["y"]);
-
-    miniMapCtx.fillStyle = "violet";
-    miniMapCtx.fillRect(currentPlayerPositionInArray.x * BLOCK_RANGE, currentPlayerPositionInArray.y * BLOCK_RANGE, 10, 10);
-}
-
-/**
  * @return entity|null
  */
 function getFreeGhost() {
@@ -465,10 +428,6 @@ function gameOver(
 ) {
     removeEntity(player);
 
-    floorArray.forEach(function(entry) {
-        removeEntity(entry);
-    });
-
     fogArray.forEach(function(entry) {
         removeEntity(entry);
     });
@@ -484,6 +443,11 @@ function gameOver(
             ghostArray.shift();
         }
 
+        if (floorArray.length > 0) {
+            removeEntity(floorArray[0]);
+            floorArray.shift();
+        }
+
         if (wallArray.length > 0) {
             removeEntity(wallArray[0]);
             wallArray.shift();
@@ -494,4 +458,14 @@ function gameOver(
             wallFrontArray.shift();
         }
     }, 1);
+}
+
+function enterTheVoid(wallArray, wallFrontArray) {
+    wallArray.forEach(function(entry) {
+       entry.opacity = 0;
+    });
+
+    wallFrontArray.forEach(function(entry) {
+        entry.opacity = 0;
+    });
 }

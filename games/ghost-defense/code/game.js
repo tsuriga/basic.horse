@@ -6,8 +6,6 @@
  * This game is under development and using Pixel.js library by rastating
  */
 
-const ENABLE_MUSIC = true;
-
 const GRID_OFFSET = 320;
 const ACTUAL_BLOCK_SIZE = 32;
 const MAP_BLOCK_SIZE_X = 16;
@@ -24,10 +22,6 @@ const BULLET_SPEED = 230;
 const SCAN_RESOLUTION = 0.08;
 const SCAN_SPEED = 7;
 const SCAN_FREQUENCY = 4;
-const MINIMAP_SPACING = 0.75;
-
-var miniMapCanvas = document.getElementById("minimap_canvas");
-var miniMapCtx = miniMapCanvas.getContext("2d");
 
 var score = 0;
 
@@ -314,16 +308,16 @@ document.onreadystatechange = function () {
         }
 
         // -- Entities ------------------------------------------------------
-        var guiTryAgain = guiLayer.createEntity();
+        var guiInfo = guiLayer.createEntity();
 
-        guiTryAgain.visible = true;
-        guiTryAgain.asset = new PixelJS.Sprite();
-        guiTryAgain.pos = { x: 105, y: 95 };
-        guiTryAgain.size["width"] = 442;
-        guiTryAgain.size["height"] = 164;
+        guiInfo.visible = true;
+        guiInfo.asset = new PixelJS.Sprite();
+        guiInfo.pos = { x: 85, y: 120 };
+        guiInfo.size["width"] = 442;
+        guiInfo.size["height"] = 164;
 
-        guiTryAgain.asset.prepare({
-            name: 'tryAgain.png'
+        guiInfo.asset.prepare({
+            name: 'info.png'
         });
 
         var playerLayer = game.createLayer('players');
@@ -529,6 +523,11 @@ document.onreadystatechange = function () {
                 music5.play();
             }
 
+            if (score == 50) {
+                music5.pause();
+                enterTheVoid(wallArray, wallFrontArray);
+            }
+
             angryGhostArray.forEach(function(ghostEntry) {
                 moveEntityToTarget(ghostEntry, player);
 
@@ -561,6 +560,10 @@ document.onreadystatechange = function () {
                     removeEntity(fileEntry);
                     score++;
                     spawnFile(fileSpawnArray, player);
+
+                    if (score < 50) {
+                        wallArray[score].opacity = 0.4;
+                    }
                 };
             });
 
@@ -588,13 +591,6 @@ document.onreadystatechange = function () {
                 }
                 scanArea(scan, player.pos , 3, 4, fogArray, wallArray, ghostArray, fileArray)
             }
-
-            drawMiniMap(map1, player);
-
-            miniMapCtx.font="100px Tahoma";
-            miniMapCtx.fillStyle = 'LightGreen';
-            miniMapCtx.textAlign="center";
-            miniMapCtx.fillText(score,125,156);
         });
     }
 }
