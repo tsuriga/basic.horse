@@ -12,23 +12,25 @@ const MAP_BLOCK_SIZE_X = 16;
 const MAP_BLOCK_SIZE_Y = 16;
 const BLOCK_RANGE = 15;
 const PLAYER_RANGE = 12;
-const DEATH_RANGE = 21;
-const NUM_BULLETS = 8;
-const NUM_FILES = 3;
-const NUM_AUDIO = 10;
-const NUM_GHOSTS = 8;
+const ALARM_RANGE = 30;
+const PLAYER_DEATH_RANGE = 16;
+const ENEMY_DEATH_RANGE = 20;
+const NUM_BULLETS = 5;
+const NUM_FILES = 2;
+const NUM_AUDIO = 25;
+const NUM_GHOSTS = 5;
 const NUM_RADARS = 1;
 const BULLET_SPEED = 230;
 const SCAN_RESOLUTION = 0.08;
-const SCAN_SPEED = 7;
-const SCAN_FREQUENCY = 4;
+const SCAN_SPEED = 5;
 
 var score = 0;
 
+var gameState = true;
 var lastPosition = {x:0, y:0};
 var fileArray = [];
 var bulletArray = [];
-var audioArray = [[],[],[], []];
+var audioArray = [[],[],[],[],[], []];
 var ghostArray = [];
 var radarArray = [];
 var angryGhostArray = [];
@@ -47,25 +49,23 @@ document.onreadystatechange = function () {
 
         // Level layout arrays (0 = floor, 1 = wall, 2 = ghost spawn, 3 = file spawn)
         var map1 = [
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 2, 0, 0, 1, 0, 2, 0, 0, 0, 3, 0, 0, 0, 3, 2, 0, 1],
-            [1, 0, 0, 3, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1],
-            [1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 3, 0, 1, 1, 1, 0, 0, 1],
-            [1, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 1, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 1],
-            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1],
-            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-            [1, 0, 0, 1, 0, 3, 0, 0, 2, 0, 0, 0, 3, 0, 0, 1, 0, 0, 1],
-            [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1],
+            [1, 0, 3, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1],
+            [1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 1, 0, 3, 0, 1, 1, 1, 0, 0, 1],
+            [1, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 2, 0, 2, 3, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1],
+            [1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 3, 0, 0, 2, 0, 3, 0, 3, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         ];
 
         // State variables
@@ -140,16 +140,22 @@ document.onreadystatechange = function () {
             var soundGhostKill = game.createSound('sound-ghost-kill' + i);
             var soundScore = game.createSound('sound-score' + i);
             var soundFoot = game.createSound('sound-foot' + i);
+            var soundRadar = game.createSound('sound-radar' + i);
+            var soundAlarm = game.createSound('sound-alarm' + i);
 
             soundThrow.prepare({ name: 'throw.ogg' });
             soundGhostKill.prepare({ name: 'ghostKill.ogg' });
             soundScore.prepare({ name: 'score.ogg' });
             soundFoot.prepare({ name: 'foot.ogg' });
+            soundRadar.prepare({ name: 'radar.ogg' });
+            soundAlarm.prepare({ name: 'alarm.ogg' });
 
             audioArray[0].push(soundThrow);
             audioArray[1].push(soundGhostKill);
             audioArray[2].push(soundScore);
             audioArray[3].push(soundFoot);
+            audioArray[4].push(soundRadar);
+            audioArray[5].push(soundAlarm);
         }
 
         for (var i = 0; i < NUM_FILES; i++) {
@@ -312,7 +318,7 @@ document.onreadystatechange = function () {
 
         guiInfo.visible = true;
         guiInfo.asset = new PixelJS.Sprite();
-        guiInfo.pos = { x: 85, y: 120 };
+        guiInfo.pos = { x: 85, y: 110 };
         guiInfo.size["width"] = 442;
         guiInfo.size["height"] = 164;
 
@@ -457,8 +463,11 @@ document.onreadystatechange = function () {
                 var currentlyStandingOn = getNearestPositionInArray(player.pos["x"], player.pos["y"]);
                 var isometricPosition = convertPositionToIsometric(currentlyStandingOn.x * MAP_BLOCK_SIZE_X, currentlyStandingOn.y * MAP_BLOCK_SIZE_Y, GRID_OFFSET);
 
-                setItemInMap(currentlyStandingOn.x, currentlyStandingOn.y, map1, 5);
-                drawItemInPosition(isometricPosition.x, isometricPosition.y, 5);
+                setItemInMap(currentlyStandingOn.x, currentlyStandingOn.y, map1);
+
+                if (setRadarInPosition(isometricPosition.x, isometricPosition.y, 5)) {
+                    getFreeAudio(4).play();
+                }
             }
 
             for(var i = 0; i < wallFrontArray.length; i++) {
@@ -492,104 +501,138 @@ document.onreadystatechange = function () {
         spawnFile(fileSpawnArray, player);
 
         game.loadAndRun(function (elapsedTime, dt) {
-
-            if (player.direction != 0) {
-                if (getFreeAudio(3)) {
-                    getFreeAudio(3).play();
+            if (gameState) {
+                if (player.direction != 0) {
+                    if (getFreeAudio(3)) {
+                        getFreeAudio(3).play();
+                    }
                 }
-            }
 
-            if (score < 5) {
-                music1.play();
-            }
+                if (score < 5) {
+                    music1.play();
+                }
 
-            if (score > 4) {
-                music1.pause();
-                music2.play();
-            }
+                if (score > 4) {
+                    music1.pause();
+                    music2.play();
+                }
 
-            if (score > 9) {
-                music2.pause();
-                music3.play();
-            }
+                if (score > 9) {
+                    music2.pause();
+                    music3.play();
+                }
 
-            if (score > 19) {
-                music3.pause();
-                music4.play();
-            }
+                if (score > 19) {
+                    music3.pause();
+                    music4.play();
+                }
 
-            if (score > 29) {
-                music4.pause();
-                music5.play();
-            }
+                if (score > 29) {
+                    music4.pause();
+                    music5.play();
+                }
 
-            if (score == 50) {
-                music5.pause();
-                enterTheVoid(wallArray, wallFrontArray);
-            }
+                if (score == 50) {
+                    music5.pause();
+                    enterTheVoid(wallArray, wallFrontArray);
+                }
 
-            angryGhostArray.forEach(function(ghostEntry) {
-                moveEntityToTarget(ghostEntry, player);
+                angryGhostArray.forEach(function(ghostEntry) {
+                    moveEntityToTarget(ghostEntry, player);
 
-                bulletArray.forEach(function(bulletEntry) {
-                    if(isEntityTouchingTarget(bulletEntry, ghostEntry)) {
-                        removeEntity(ghostEntry);
-                        removeEntity(bulletEntry);
-                        getFreeAudio(1).play();
+                    if (isGhostNear(ghostEntry, player)) {
+                        var audio = getFreeAudio(5);
+
+                        if (audio) {
+                            audio.play();
+                        }
+                    }
+
+                    bulletArray.forEach(function(bulletEntry) {
+                        if(isEntityTouchingTarget(bulletEntry, ghostEntry, ENEMY_DEATH_RANGE)) {
+                            removeEntity(ghostEntry);
+                            removeEntity(bulletEntry);
+                            getFreeAudio(1).play();
+                        };
+                    });
+
+                    if (isEntityTouchingTarget(ghostEntry, player, PLAYER_DEATH_RANGE)) {
+                        clearInterval(ghostSpawner);
+                        gameState = false;
+
+                        gameOverMusic.play();
+                        gameOver(
+                            player,
+                            ghostArray,
+                            wallFrontArray,
+                            wallArray,
+                            floorArray,
+                            fogArray,
+                            fileArray,
+                            radarArray
+                        );
                     };
                 });
 
-                if (isEntityTouchingTarget(ghostEntry, player)) {
-                    clearInterval(ghostSpawner);
-                    gameOverMusic.play();
-                    gameOver(
-                        player,
-                        ghostArray,
-                        wallFrontArray,
-                        wallArray,
-                        floorArray,
+                fileArray.forEach(function(fileEntry) {
+                    if(isEntityTouchingTarget(player, fileEntry, BLOCK_RANGE)) {
+                        getFreeAudio(2).play();
+                        removeEntity(fileEntry);
+                        score++;
+                        spawnFile(fileSpawnArray, player);
+
+                        if (score < 50) {
+                            wallArray[score].opacity = 0.4;
+                        }
+                    };
+                });
+
+                var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
+
+                if ((lastPosition.x != currentPosInArray.x) &&
+                    (lastPosition.y != currentPosInArray.y)) {
+
+                    lastPosition =  currentPosInArray
+
+                    for(var j = 0; j < fogArray.length; j++) {
+                        fogArray[j].visible = true;
+                    }
+
+                    for(var j = 0; j < ghostArray.length; j++) {
+                        ghostArray[j].opacity = 0;
+                    }
+
+                    for(var j = 0; j < fileArray.length; j++) {
+                        fileArray[j].opacity = 0;
+                    }
+
+                    // @todo there are 3 nested fors at best (== heavy), re-think?
+                    for(var j = 0; j < radarArray.length; j++) {
+                        if(radarArray[j].pos.x >= 1){
+                            scanArea(
+                                scan,
+                                radarArray[j].pos,
+                                3,
+                                4,
+                                fogArray,
+                                wallArray,
+                                ghostArray,
+                                fileArray
+                            )
+                        }
+                    }
+
+                    scanArea(
+                        scan,
+                        player.pos,
+                        3,
+                        4,
                         fogArray,
+                        wallArray,
+                        ghostArray,
                         fileArray
-                    );
-                };
-            });
-
-            fileArray.forEach(function(fileEntry) {
-                if(isEntityTouchingTarget(player, fileEntry)) {
-                    getFreeAudio(2).play();
-                    removeEntity(fileEntry);
-                    score++;
-                    spawnFile(fileSpawnArray, player);
-
-                    if (score < 50) {
-                        wallArray[score].opacity = 0.4;
-                    }
-                };
-            });
-
-            var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
-
-            if ((lastPosition.x !=  currentPosInArray.x) && (lastPosition.y !=  currentPosInArray.y)) {
-                lastPosition =  currentPosInArray
-
-                for(var j = 0; j < fogArray.length; j++) {
-                    fogArray[j].visible = true;
+                    )
                 }
-
-                for(var j = 0; j < ghostArray.length; j++) {
-                    ghostArray[j].opacity = 0;
-                }
-
-                for(var j = 0; j < fileArray.length; j++) {
-                    fileArray[j].opacity = 0;
-                }
-
-                for(var j = 0; j < radarArray.length; j++) {
-                    if(radarArray[j].pos.x >= 1){
-                        scanArea(scan,  radarArray[j].pos , 3, 4, fogArray, wallArray, ghostArray, fileArray)
-                    }
-                }
-                scanArea(scan, player.pos , 3, 4, fogArray, wallArray, ghostArray, fileArray)
             }
         });
     }

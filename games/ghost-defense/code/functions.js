@@ -24,8 +24,6 @@ function getFreeGhost() {
  * @return int   loopNum
  */
 function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, ghostArray, fileArray) {
-    console.log("SCAN!");
-
     var xMultipler = 0;
     var yMultipler = 0;
 
@@ -152,6 +150,26 @@ function getFreeAudio(type) {
         }
     }
 
+    if (type === 4) {
+        for (var i = 0; i < 1; i++) {
+            var audio = this.audioArray[4][i];
+
+            if (audio.paused) {
+                return audio;
+            }
+        }
+    }
+
+    if (type === 5) {
+        for (var i = 0; i < 1; i++) {
+            var audio = this.audioArray[5][i];
+
+            if (audio.paused) {
+                return audio;
+            }
+        }
+    }
+
     return null;
 }
 
@@ -234,14 +252,15 @@ function moveEntityToTarget(entity, target)
 /**
  * @param object entity
  * @param object target
+ * @param int range
  */
-function isEntityTouchingTarget(entity, target)
+function isEntityTouchingTarget(entity, target, range)
 {
     if (entity.visible) {
-        var targetDimensionStartX = target.pos.x - DEATH_RANGE;
-        var targetDimensionEndX = target.pos.x + DEATH_RANGE;
-        var targetDimensionStartY = target.pos.y - DEATH_RANGE;
-        var targetDimensionEndY = target.pos.y + DEATH_RANGE;
+        var targetDimensionStartX = target.pos.x - range;
+        var targetDimensionEndX = target.pos.x + range;
+        var targetDimensionStartY = target.pos.y - range;
+        var targetDimensionEndY = target.pos.y + range;
 
         if (
             entity.pos.x < targetDimensionEndX && entity.pos.x > targetDimensionStartX &&
@@ -392,6 +411,20 @@ function getNearestPositionInArray(posX, posY)
     return pos;
 }
 
+function isGhostNear(player, ghost) {
+    if (
+        // ok
+        player.pos["x"] + player.size.width + ALARM_RANGE > ghost.pos.x &&
+        player.pos["x"] < ghost.pos["x"] + ghost.size.width + ALARM_RANGE &&
+        player.pos.y + player.size.height + ALARM_RANGE > ghost.pos.y &&
+        player.pos.y < ghost.pos.y + ghost.size.height + ALARM_RANGE
+    ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 /**
  * @param int   posX
  * @param int   posY
@@ -402,19 +435,17 @@ function setItemInMap(posX, posY, map, itemType) {
     map[posX][posY] = itemType;
 }
 
-function drawItemInPosition(posX, posY, item) {
-    if (item == 5) {
-        var radar = getFreeRadar();
+function setRadarInPosition(posX, posY) {
+    var radar = getFreeRadar();
 
-        if (radar == null) return;
+    if (radar == null) return null;
 
-        radar.pos.x = posX;
-        radar.pos.y = posY;
+    radar.pos.x = posX;
+    radar.pos.y = posY;
 
-        radar.visible = true;
+    radar.visible = true;
 
-    //    return radar;
-    }
+    return true;
 }
 
 function gameOver(
@@ -424,9 +455,14 @@ function gameOver(
     wallArray,
     floorArray,
     fogArray,
-    fileArray
+    fileArray,
+    radarArray
 ) {
     removeEntity(player);
+
+    radarArray.forEach(function(entry) {
+        removeEntity(entry);
+    });
 
     fogArray.forEach(function(entry) {
         removeEntity(entry);
