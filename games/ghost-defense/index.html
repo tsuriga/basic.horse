@@ -6,11 +6,34 @@
         <link rel="stylesheet" type="text/css" href="css/style.css">
     </head>
     <body>
+        <a href="#openInfo"><img id="questionmark" src="question.png" /></a>
         <div id="menu_container">
             <div id="game_container" style="width: 1054px; height: 798px;">
                 <div id="radar_container" style="width: 1024px; height: 768px;"></div>
             </div>
         </div>
+
+        <div id="openInfo" class="modalDialog">
+            <div>
+                <a href="#close" title="Close" class="close">X</a>
+                <h2>Ghost Defense (v.0.5)</h2>
+                <h3>a game by <a href="http://basic.horse" target="_blank"><b>basic horse</b></a></h3>
+
+                <p>
+                    <small>
+                        This game is going to be released as open-source and free to play for everyone.
+                        If you want to value the work of "basic horse" (Olli Suoranta and Juho Saarelainen),
+                        consider doing a PayPal donation by entering this url: -insert url here-<br><br>
+
+                        The game is implemented by using pixel.js engine by <a href="https://github.com/rastating" target=_blank"">rastating</a>,
+                        and is meant to be played inside browser with keyboard. The game is not mobile optimized and there are no plans to make
+                        it so. Thanks for playing!
+                    </small>
+                </p>
+                <p><small>Special thanks to: <b>Mikko Vieru</b>, Tomi Ruusala and Petri Mölläri</small></p>
+            </div>
+        </div>
+
     </body>
 
     <script src="vendor/pixel.js"></script>
