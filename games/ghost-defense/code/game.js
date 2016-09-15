@@ -114,8 +114,8 @@ document.onreadystatechange = function () {
         itemLayer.zIndex = 3;
         frontLayer.zIndex = 5;
         shadowLayer.zIndex = 0;
-        fogLayer.zIndex = 2;
-        floorLayer.zIndex = 1;
+        fogLayer.zIndex = 1;
+        floorLayer.zIndex = 2;
 
         var music1 = game.createSound('sound-music-1');
         music1.prepare({ name: 'music01.ogg' });
@@ -197,6 +197,9 @@ document.onreadystatechange = function () {
             var mapBlock = map1[i];
 
             for(var j = 0; j < mapBlock.length; j++) {
+
+
+
                 if (map1[i][j] == 1) {
                     var wall = itemLayer.createEntity();
 
@@ -281,7 +284,7 @@ document.onreadystatechange = function () {
                 fog.pos["y"] = isometricPosition["y"];
 
                 fog.visible = true; // WIP, fog disabled at the moment
-                fog.opacity = 0.4;
+                fog.opacity = 0.7;
                 fog.asset = new PixelJS.Sprite();
                 fog.asset.prepare({
                     name: 'fog.png',
@@ -500,7 +503,36 @@ document.onreadystatechange = function () {
 
         spawnFile(fileSpawnArray, player);
 
+        game.clamp = function(value) {
+            return Math.max(0, Math.min(1, value));
+        }
+
+        game.smoothStep = function(min, max, value) {
+            var x = game.clamp((value-min)/(max-min));
+            return x*x*(3 - 2*x);
+        };
+
+        game.distance = function(a,b) {
+            return Math.sqrt((a.pos.x - b.pos.x) * (a.pos.x - b.pos.x) + (a.pos.y - b.pos.y) * (a.pos.y - b.pos.y));
+        }
+
+        game.candleLight = function (distance) {
+            return 1 - game.smoothStep(20, Math.sin(game.elapsedTime /(Math.cos(game.elapsedTime / 1000) * 30 + 300)) * 10 + 200, distance);
+        }
+
+        game.fogger = function(tile) {
+
+            var tileBrightness = game.candleLight(game.distance(tile, player));
+
+            for (var i=0;i<radarArray.length;i++) {
+                tileBrightness += game.candleLight(game.distance(radarArray[i], tile));
+            }
+
+            tile.opacity = game.clamp(tileBrightness);
+        }
+
         game.loadAndRun(function (elapsedTime, dt) {
+            game.elapsedTime = elapsedTime;
             if (gameState) {
                 if (player.direction != 0) {
                     if (getFreeAudio(3)) {
@@ -536,6 +568,13 @@ document.onreadystatechange = function () {
                     music5.pause();
                     enterTheVoid(wallArray, wallFrontArray);
                 }
+
+
+                floorArray.map(game.fogger);
+                wallArray.map(game.fogger);
+                wallFrontArray.map(game.fogger);
+
+
 
                 angryGhostArray.forEach(function(ghostEntry) {
                     moveEntityToTarget(ghostEntry, player);

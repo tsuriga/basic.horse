@@ -214,6 +214,7 @@ function spawnFile(spawnPoints, player)
  */
 function spawnGhost(spawnPoints, player)
 {
+    //return;
     var entity = getFreeGhost();
 
     randomPoint = Math.floor((Math.random() * spawnPoints.length) + 0);
