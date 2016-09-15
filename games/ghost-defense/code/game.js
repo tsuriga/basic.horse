@@ -601,14 +601,14 @@ document.onreadystatechange = function () {
                     }
 
                     bulletArray.forEach(function(bulletEntry) {
-                        if(isEntityTouchingTarget(bulletEntry, ghostEntry, ENEMY_DEATH_RANGE)) {
+                        if(bulletEntry.collidesWith(ghostEntry)) {
                             removeEntity(ghostEntry);
                             removeEntity(bulletEntry);
                             getFreeAudio(1).play();
                         };
                     });
 
-                    if (isEntityTouchingTarget(ghostEntry, player, PLAYER_DEATH_RANGE)) {
+                    if (ghostEntry.collidesWith(player)) {
                         clearInterval(ghostSpawner);
                         gameState = false;
 
@@ -627,7 +627,7 @@ document.onreadystatechange = function () {
                 });
 
                 fileArray.forEach(function(fileEntry) {
-                    if(isEntityTouchingTarget(player, fileEntry, BLOCK_RANGE)) {
+                    if(player.collidesWith(fileEntry)) {
                         getFreeAudio(2).play();
                         removeEntity(fileEntry);
                         score++;
