@@ -197,9 +197,6 @@ document.onreadystatechange = function () {
             var mapBlock = map1[i];
 
             for(var j = 0; j < mapBlock.length; j++) {
-
-
-
                 if (map1[i][j] == 1) {
                     var wall = itemLayer.createEntity();
 
@@ -380,6 +377,7 @@ document.onreadystatechange = function () {
 
         for (var i=0; i < NUM_RADARS; i++) {
             var radar = itemLayer.createEntity();
+
             radar.visible = false;
             radar.asset = new PixelJS.Sprite();
 
@@ -569,12 +567,9 @@ document.onreadystatechange = function () {
                     enterTheVoid(wallArray, wallFrontArray);
                 }
 
-
                 floorArray.map(game.fogger);
                 wallArray.map(game.fogger);
                 wallFrontArray.map(game.fogger);
-
-
 
                 angryGhostArray.forEach(function(ghostEntry) {
                     moveEntityToTarget(ghostEntry, player);
