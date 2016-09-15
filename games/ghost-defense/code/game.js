@@ -433,20 +433,38 @@ document.onreadystatechange = function () {
 
             wallArray.forEach(function(entry) {
                 if (entity === entry) {
-                    if (entry.pos["x"] > player.pos["x"]) {
-                        player.pos["x"] = player.pos["x"] - 4;
-                    }
+                    if (entry.collidesWith(player)) {
+                        if (player.direction === 8) {
+                            player.moveUp();
+                        }
 
-                    if (entry.pos["x"] < player.pos["x"]) {
-                        player.pos["x"] = player.pos["x"] + 4;
-                    }
+                        if (player.direction === 9) {
+                            player.moveUpRight();
+                        }
 
-                    if (entry.pos["y"] > player.pos["y"]) {
-                        player.pos["y"] = player.pos["y"] - 4;
-                    }
+                        if (player.direction === 10) {
+                            player.moveUpLeft();
+                        }
 
-                    if (entry.pos["y"] < player.pos["y"]) {
-                        player.pos["y"] = player.pos["y"] + 4;
+                        if (player.direction === 1) {
+                            player.moveRight();
+                        }
+
+                        if (player.direction === 4) {
+                            player.moveDown();
+                        }
+
+                        if (player.direction === 5) {
+                            player.moveDownRight();
+                        }
+
+                        if (player.direction === 6) {
+                            player.moveDownLeft();
+                        }
+
+                        if (player.direction === 2) {
+                            player.moveLeft();
+                        }
                     }
                 }
             });

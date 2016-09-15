@@ -32,23 +32,23 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, ghostArray
 
     for(scan.angle = 0; scan.angle <= 360; scan.angle = scan.angle + SCAN_RESOLUTION) {
         for(var j = 0; j < wallArray.length; j++) {
-            if (collisonBetween(scan, wallArray[j])) {
+            if (scan.collidesWith(wallArray[j])) {
                 scan.pos.x = where.x + offsetX;
                 scan.pos.y = where.y + offsetY;
             }
         }
         for(var j = 0; j < fogArray.length; j++) {
-            if (collisonBetween(scan, fogArray[j])) {
+            if (scan.collidesWith(fogArray[j])) {
                 fogArray[j].visible = false;
             }
         }
         for(var j = 0; j < ghostArray.length; j++) {
-             if (collisonBetween(scan, ghostArray[j])) {
+             if (scan.collidesWith(ghostArray[j])) {
                  ghostArray[j].opacity = 100;
              }
         }
         for(var j = 0; j < fileArray.length; j++) {
-             if (collisonBetween(scan, fileArray[j])) {
+             if (scan.collidesWith(fileArray[j])) {
                  fileArray[j].opacity = 100;
              }
         }
@@ -344,17 +344,6 @@ function shootFrom(player) {
 }
 
 /**
- * @param object firstObject
- * @param object secondObject
- */
-function collisonBetween(firstObject, secondObject) {
-    return firstObject.pos["x"] + firstObject.size.width > secondObject.pos.x &&
-        firstObject.pos["x"] < secondObject.pos["x"] + secondObject.size.width &&
-        firstObject.pos.y + firstObject.size.height > secondObject.pos.y &&
-        firstObject.pos.y < secondObject.pos.y + secondObject.size.height;
-}
-
-/**
  * @param int          posX
  * @param int          posY
  * @param int|optional offsetX
@@ -413,7 +402,6 @@ function getNearestPositionInArray(posX, posY)
 
 function isGhostNear(player, ghost) {
     if (
-        // ok
         player.pos["x"] + player.size.width + ALARM_RANGE > ghost.pos.x &&
         player.pos["x"] < ghost.pos["x"] + ghost.size.width + ALARM_RANGE &&
         player.pos.y + player.size.height + ALARM_RANGE > ghost.pos.y &&
