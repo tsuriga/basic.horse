@@ -251,6 +251,30 @@ function moveEntityToTarget(entity, target)
 
 /**
  * @param object entity
+ * @param object target
+ * @param int range
+ */
+function isEntityTouchingTarget(entity, target, range)
+{
+    if (entity.visible) {
+        var targetDimensionStartX = target.pos.x - range;
+        var targetDimensionEndX = target.pos.x + range;
+        var targetDimensionStartY = target.pos.y - range;
+        var targetDimensionEndY = target.pos.y + range;
+
+        if (
+            entity.pos.x < targetDimensionEndX && entity.pos.x > targetDimensionStartX &&
+            entity.pos.y < targetDimensionEndY && entity.pos.y > targetDimensionStartY
+        ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @param object entity
  */
 function removeEntity(entity)
 {
