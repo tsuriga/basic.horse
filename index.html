@@ -5,49 +5,73 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>basic horse | software group</title>
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?">
-    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/normalize.css">
+    <link rel="stylesheet" href="stylesheets/skeleton.css">
+    <link rel="stylesheet" href="stylesheets/main.css">
     <meta name="viewport" content="width=device-width">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
-    <style>
-        body {
-            background: url(bg.jpg) no-repeat center center fixed;
-              -webkit-background-size: cover;
-              -moz-background-size: cover;
-              -o-background-size: cover;
-              background-size: cover;
-        }
-
-        li {
-            font-size: 16px;
-        }
-
-        .logo {
-            width: 80%;
-        }
-    </style>
   </head>
   <body>
-    <div class="wrapper">
-      <header>
-        <h1><a href="https://github.com/basic-horse" target="_blank"><img src="logo.jpg" class="logo"></img></a></h1>
-      </header>
-      <section>
-          <ul type="square">
-          <li>Software developer group/collective founded in 2016,</li>
-          <li>by <a href="http://allformsofpandas.com" target="_blank"><b>Olli Suoranta</b></a> and <a href="https://github.com/saarelaine" target="_blank"><b>Juho Saarelainen</b></a></li>
-          <li><a href="https://github.com/basic-horse" target="_blank"><b>See our company page @ GitHub</b></a></li>
-          <br>
-          <li>Currently developing <a href="https://github.com/basic-horse/primary-projects/tree/master/games/ghost-defense" target="_blank"><b>"Ghost Defense"</b></a></li>
-          </ul>
-      </section>
-      <footer>
-        <p><small>Copyright © <b>basic horse</b> 2016</small></p>
-      </footer>
+    <div class="container">
+
+        <div id="header" class="row">
+            <div class="three columns">
+                <a href="https://github.com/basic-horse" target="_blank"><img id="logo" src="logo.jpg"></img></a>
+            </div>
+        </div>
+
+        <div id="info" class="row">
+            <div class="six columns">
+                <p>Software developer group founded in 2016,<br>
+                    by <a href="http://allformsofpandas.com" target="_blank"><b>Olli Suoranta</b></a> and
+                    <a href="https://github.com/saarelaine" target="_blank"><b>Juho Saarelainen</b></a>
+                </p>
+            </div>
+            <div class="six columns">
+                <p>Developes open-source projects @ Jyväskylä, Finland<br>
+                <a href="https://github.com/basic-horse" target="_blank"><b>See our company page @ GitHub</b></a></p>
+            </div>
+        </div>
+
+        <div id="image" class="row">
+            <div id="header" class="twelve columns">
+                <a href="#openImage"><img src="images/gd1.jpg"></img></a>
+            </div>
+        </div>
+
+        <div id="openImage" class="modalDialog">
+            <div>
+                <a href="#close" title="Close" class="close">
+                    <img src="images/gd1.jpg"></img>
+                    <p class="tight"><small>"Ghost Defense", a game by basic horse, coming soon.</small></p>
+                </a>
+            </div>
+        </div>
+
+        <div id="info" class="row">
+            <div id="header" class="six columns">
+                <p>Currently developing:<br><a href="https://github.com/basic-horse/primary-projects/tree/master/games/ghost-defense" target="_blank"><b>"Ghost Defense"</b></a></p>
+            </div>
+            <div id="header" class="six columns">
+                <p>Developing in the future:<br><a>Something horror</a></p>
+            </div>
+        </div>
+
+        <div id="image" class="row">
+            <div id="header" class="twelve columns">
+                <img src="images/jkl.png"></img>
+            </div>
+        </div>
+
+        <div id="footer" class="row">
+            <div class="twelve columns">
+                <p>
+                    Contact basic.horse at <a href="mailto:mail@basic.horse" target="_top"><b>mail@basic.horse</b></a><br>
+                    Site design: Copyright © basic horse 2016
+                </p>
+            </div>
+        </div>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
+
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

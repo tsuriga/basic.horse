@@ -1,0 +1,99 @@
+@font-face {
+    font-family: 'VT323';
+    font-style: normal;
+    font-weight: 800;
+    src: local('VT323'), local('VT323-Regular'), url("../font.woff") format('woff');
+}
+
+body {
+    font-family: "VT323", "Courier New", monospace !important;
+    font-size: 1.8em;
+
+    background: url(../images/bg.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    text-align: center;
+    color: white;
+}
+
+p {
+    margin: 20px;
+}
+
+a {
+    color: silver;
+    text-decoration: none;
+}
+
+#image {
+    overflow: hidden;
+    max-height: 400px;
+}
+
+#logo {
+    width: 80%;
+    margin: 15px;
+}
+
+#header {
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.2);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+}
+
+#info {
+    text-align: center;
+    background: black;
+}
+
+#footer {
+    text-align: right;
+    background: #4d4d4d;
+}
+
+.modalDialog {
+    font-family: Verdana, Helvetica, sans-serif;
+    color: white;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 99999;
+    opacity:0;
+    -webkit-transition: opacity 400ms ease-in;
+    -moz-transition: opacity 400ms ease-in;
+    transition: opacity 400ms ease-in;
+    pointer-events: none;
+}
+
+@media (max-width: 600px) {
+    .modalDialog img {
+        width: 100%;
+    }
+}
+
+.modalDialog:target {
+    opacity:1;
+    pointer-events: auto;
+}
+
+.modalDialog > div {
+    position: relative;
+    margin: 10% auto;
+    padding: 5px 20px 13px 20px;
+    border-radius: 10px;
+}
+
+.close:hover {
+    opacity: 0.8;
+}
+
+.tight {
+    margin-top: -10px;
+}
