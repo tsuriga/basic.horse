@@ -523,11 +523,7 @@ document.onreadystatechange = function () {
         }
 
         game.candleLight = function (distance) {
-            if (guiAlarm.visible) {
-                return 1 - game.smoothStep(20, Math.sin(game.elapsedTime /(Math.cos(game.elapsedTime / 1000) * 30 + 300)) * 10 + 100, distance);
-            } else {
-                return 1 - game.smoothStep(20, Math.sin(game.elapsedTime /(Math.cos(game.elapsedTime / 1000) * 30 + 300)) * 10 + 200, distance);
-            }
+            return 1 - game.smoothStep(20, Math.sin(game.elapsedTime /(Math.cos(game.elapsedTime / 1000) * 30 + 300)) * 10 + 200, distance);
         }
 
         game.fogger = function(tile) {
