@@ -319,11 +319,19 @@ document.onreadystatechange = function () {
         guiInfo.visible = true;
         guiInfo.asset = new PixelJS.Sprite();
         guiInfo.pos = { x: 85, y: 110 };
-        guiInfo.size["width"] = 442;
-        guiInfo.size["height"] = 164;
 
         guiInfo.asset.prepare({
             name: 'info.png'
+        });
+
+        var guiAlarm = guiLayer.createEntity();
+
+        guiAlarm.visible = false;
+        guiAlarm.asset = new PixelJS.Sprite();
+        guiAlarm.pos = { x: 160, y: 0 };
+
+        guiAlarm.asset.prepare({
+            name: 'alarm.png'
         });
 
         var playerLayer = game.createLayer('players');
@@ -515,11 +523,14 @@ document.onreadystatechange = function () {
         }
 
         game.candleLight = function (distance) {
-            return 1 - game.smoothStep(20, Math.sin(game.elapsedTime /(Math.cos(game.elapsedTime / 1000) * 30 + 300)) * 10 + 200, distance);
+            if (guiAlarm.visible) {
+                return 1 - game.smoothStep(20, Math.sin(game.elapsedTime /(Math.cos(game.elapsedTime / 1000) * 30 + 300)) * 10 + 100, distance);
+            } else {
+                return 1 - game.smoothStep(20, Math.sin(game.elapsedTime /(Math.cos(game.elapsedTime / 1000) * 30 + 300)) * 10 + 200, distance);
+            }
         }
 
         game.fogger = function(tile) {
-
             var tileBrightness = game.candleLight(game.distance(tile, player));
 
             for (var i=0;i<radarArray.length;i++) {
@@ -531,6 +542,7 @@ document.onreadystatechange = function () {
 
         game.loadAndRun(function (elapsedTime, dt) {
             game.elapsedTime = elapsedTime;
+
             if (gameState) {
                 if (player.direction != 0) {
                     if (getFreeAudio(3)) {
@@ -571,10 +583,14 @@ document.onreadystatechange = function () {
                 wallArray.map(game.fogger);
                 wallFrontArray.map(game.fogger);
 
+                guiAlarm.visible = false;
+
                 angryGhostArray.forEach(function(ghostEntry) {
                     moveEntityToTarget(ghostEntry, player);
 
                     if (isGhostNear(ghostEntry, player)) {
+                        guiAlarm.visible = true;
+
                         var audio = getFreeAudio(5);
 
                         if (audio) {
@@ -593,6 +609,7 @@ document.onreadystatechange = function () {
                     if (isEntityTouchingTarget(ghostEntry, player, PLAYER_DEATH_RANGE)) {
                         clearInterval(ghostSpawner);
                         gameState = false;
+                        guiAlarm.visible = false;
 
                         gameOverMusic.play();
                         gameOver(
