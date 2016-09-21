@@ -132,6 +132,12 @@ document.onreadystatechange = function () {
         var music5 = game.createSound('sound-music-5');
         music5.prepare({ name: 'music05.ogg' });
 
+        var music6 = game.createSound('sound-music-6');
+        music6.prepare({ name: 'music06.ogg' });
+
+        var music7 = game.createSound('sound-music-7');
+        music7.prepare({ name: 'music07.ogg' });
+
         var gameOverMusic = game.createSound('sound-gameover');
         gameOverMusic.prepare({ name: 'gameover.ogg' });
 
@@ -568,6 +574,16 @@ document.onreadystatechange = function () {
                 if (score > 29) {
                     music4.pause();
                     music5.play();
+                }
+
+                if (score > 39) {
+                    music5.pause();
+                    music6.play();
+                }
+
+                if (score > 44) {
+                    music6.pause();
+                    music7.play();
                 }
 
                 if (score == 50) {
