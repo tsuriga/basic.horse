@@ -586,8 +586,8 @@ document.onreadystatechange = function () {
                     music7.play();
                 }
 
-                if (score == 50) {
-                    music5.pause();
+                if (score <= 50) {
+                    music7.pause();
                     enterTheVoid(wallArray, wallFrontArray);
                 }
 
