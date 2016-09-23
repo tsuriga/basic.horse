@@ -23,6 +23,8 @@ const NUM_RADARS = 1;
 const BULLET_SPEED = 230;
 const SCAN_RESOLUTION = 0.08;
 const SCAN_SPEED = 5;
+const ANGRINESS_STEP = 20;
+const ANGRINESS_LIMIT = 80;
 
 var score = 0;
 
@@ -374,6 +376,8 @@ document.onreadystatechange = function () {
             ghost.velocity = { x: 100, y: 50 };
             ghost.size["width"] = PLAYER_RANGE;
             ghost.size["height"] = PLAYER_RANGE;
+            ghost.opacity = 0;
+            ghost.angriness = 0;
 
             ghost.asset.prepare({
                 name: 'ghost.png',
@@ -603,7 +607,9 @@ document.onreadystatechange = function () {
                 guiAlarm.visible = false;
 
                 angryGhostArray.forEach(function(ghostEntry) {
-                    moveEntityToTarget(ghostEntry, player);
+                    if(ghostEntry.angriness >= ANGRINESS_LIMIT) {
+                        moveEntityToTarget(ghostEntry, player);
+                    }
 
                     if (isGhostNear(ghostEntry, player)) {
                         guiAlarm.visible = true;
@@ -620,6 +626,7 @@ document.onreadystatechange = function () {
                             removeEntity(ghostEntry);
                             removeEntity(bulletEntry);
                             getFreeAudio(1).play();
+                            ghostEntry.angriness = 0;
                         };
                     });
 
@@ -719,6 +726,13 @@ document.onreadystatechange = function () {
                         ghostArray,
                         fileArray
                     )
+                    for(var j = 0; j < ghostArray.length; j++) {
+                        if(ghostArray[j].opacity != 100) {
+                            ghostArray[j].angriness = 0;
+                        }
+                    }
+
+
                 }
             }
         });
