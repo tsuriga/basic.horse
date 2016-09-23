@@ -456,16 +456,10 @@ function gameOver(
     ghostArray,
     wallFrontArray,
     wallArray,
-    floorArray,
     fogArray,
-    fileArray,
-    radarArray
+    fileArray
 ) {
     removeEntity(player);
-
-    radarArray.forEach(function(entry) {
-        removeEntity(entry);
-    });
 
     fogArray.forEach(function(entry) {
         removeEntity(entry);
@@ -482,11 +476,6 @@ function gameOver(
             ghostArray.shift();
         }
 
-        if (floorArray.length > 0) {
-            removeEntity(floorArray[0]);
-            floorArray.shift();
-        }
-
         if (wallArray.length > 0) {
             removeEntity(wallArray[0]);
             wallArray.shift();
@@ -496,15 +485,30 @@ function gameOver(
             removeEntity(wallFrontArray[0]);
             wallFrontArray.shift();
         }
-    }, 1);
+    }, 5);
 }
 
-function enterTheVoid(wallArray, wallFrontArray) {
+function enterTheVoid(wallArray, wallFrontArray, ghostArray, fogArray, fileArray) {
+    fileArray.forEach(function(entry) {
+        removeEntity(entry);
+    });
+
+    ghostArray.forEach(function(entry) {
+        removeEntity(entry);
+    });
+
     wallArray.forEach(function(entry) {
-       entry.opacity = 0;
+        removeEntity(entry);
     });
 
     wallFrontArray.forEach(function(entry) {
-        entry.opacity = 0;
+        removeEntity(entry);
     });
+
+    setInterval(function () {
+        if (fogArray.length > 0) {
+            fogArray[0].opacity = 1;
+            fogArray.shift();
+        }
+    }, 5000);
 }

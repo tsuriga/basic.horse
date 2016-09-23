@@ -18,7 +18,7 @@ const ENEMY_DEATH_RANGE = 20;
 const NUM_BULLETS = 10;
 const NUM_FILES = 2;
 const NUM_AUDIO = 25;
-const NUM_GHOSTS = 5;
+const NUM_GHOSTS = 10;
 const NUM_RADARS = 1;
 const BULLET_SPEED = 230;
 const SCAN_RESOLUTION = 0.08;
@@ -46,26 +46,25 @@ document.onreadystatechange = function () {
         });
 
         game.fullscreen = false;
-        game.displayFPS = true;
 
         // Level layout arrays (0 = floor, 1 = wall, 2 = ghost spawn, 3 = file spawn)
         var map1 = [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1],
-            [1, 0, 3, 0, 0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1],
+            [1, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1],
+            [1, 0, 3, 0, 0, 0, 3, 0, 2, 3, 0, 0, 3, 0, 0, 0, 1],
+            [1, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 1, 1, 1, 3, 0, 1],
             [1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 1, 0, 3, 0, 1, 1, 1, 0, 0, 1],
-            [1, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 3, 0, 3, 0, 0, 0, 1, 2, 0, 0, 0, 3, 0, 0, 3, 1],
+            [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 1],
             [1, 0, 2, 0, 2, 3, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1],
-            [1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-            [1, 0, 0, 3, 0, 0, 2, 0, 3, 0, 3, 0, 0, 1, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 3, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 3, 0, 1],
+            [1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 2, 0, 1, 0, 0, 1],
+            [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 3, 0, 0, 2, 0, 3, 0, 3, 0, 0, 1, 3, 0, 1],
+            [1, 0, 2, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 3, 1, 0, 2, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         ];
 
@@ -80,7 +79,6 @@ document.onreadystatechange = function () {
         // Block arrays
         var wallArray = [];
         var wallFrontArray = [];
-        var floorArray = [];
         var ghostSpawnArray = [];
         var fileSpawnArray = [];
         var fogArray = [];
@@ -97,7 +95,6 @@ document.onreadystatechange = function () {
         var shadowLayer = game.createLayer('background shadow');
         var shadow = shadowLayer.createEntity();
         var fogLayer = game.createLayer('invisible area')
-        var floorLayer = game.createLayer('floor')
         var scanLayer = game.createLayer('scan visible area')
         var scoreLayer = game.createLayer("score");
 
@@ -112,14 +109,13 @@ document.onreadystatechange = function () {
         shadow.pos["y"] = 10;
 
         // zIndexes
-        guiLayer.zIndex = 1;
+        guiLayer.zIndex = 0;
         enemyLayer.zIndex = 6;
         scanLayer.zIndex = 6;
         itemLayer.zIndex = 3;
         frontLayer.zIndex = 5;
-        shadowLayer.zIndex = 0;
+        shadowLayer.zIndex = 1;
         fogLayer.zIndex = 1;
-        floorLayer.zIndex = 2;
         scoreLayer.zIndex = 10;
 
         var music1 = game.createSound('sound-music-1');
@@ -292,30 +288,13 @@ document.onreadystatechange = function () {
                 fog.pos["y"] = isometricPosition["y"];
 
                 fog.visible = true; // WIP, fog disabled at the moment
-                fog.opacity = 0.7;
+                fog.opacity = 0.5;
                 fog.asset = new PixelJS.Sprite();
                 fog.asset.prepare({
                     name: 'fog.png',
                 });
 
                 fogArray.push(fog);
-
-                var floor = floorLayer.createEntity();
-
-                floor.size["width"] = BLOCK_RANGE;
-                floor.size["height"] = BLOCK_RANGE;
-
-                var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
-
-                floor.pos["x"] = isometricPosition["x"];
-                floor.pos["y"] = isometricPosition["y"];
-
-                floor.asset = new PixelJS.Sprite();
-                floor.asset.prepare({
-                    name: 'floor.png',
-                });
-
-                floorArray.push(floor);
 
                 currentBlockPosX = currentBlockPosX + MAP_BLOCK_SIZE_X;
             }
@@ -343,6 +322,16 @@ document.onreadystatechange = function () {
 
         guiAlarm.asset.prepare({
             name: 'alarm.png'
+        });
+
+        var floorImg = guiLayer.createEntity();
+
+        floorImg.visible = true;
+        floorImg.asset = new PixelJS.Sprite();
+        floorImg.pos = { x: 88, y: 40 };
+
+        floorImg.asset.prepare({
+            name: 'floorImg.png'
         });
 
         var playerLayer = game.createLayer('players');
@@ -379,7 +368,7 @@ document.onreadystatechange = function () {
                 name: 'ghost.png',
                 frames: 6,
                 rows: 1,
-                speed: 100,
+                speed: 60,
                 defaultFrame: 1
             });
 
@@ -431,10 +420,6 @@ document.onreadystatechange = function () {
 
         playerLayer.registerCollidable(player);
 
-        floorArray.forEach(function(entry) {
-            itemLayer.registerCollidable(entry);
-        });
-
         wallArray.forEach(function(entry) {
             itemLayer.registerCollidable(entry);
         });
@@ -444,12 +429,6 @@ document.onreadystatechange = function () {
         });
 
         player.onCollide(function (entity) {
-            floorArray.forEach(function(entry) {
-                if (entity === entry) {
-                    currentlyStandingOn = entry;
-                }
-            });
-
             wallArray.forEach(function(entry) {
                 if (entity === entry) {
                     if (entry.pos["x"] > player.pos["x"]) {
@@ -534,7 +513,7 @@ document.onreadystatechange = function () {
         }
 
         game.candleLight = function (distance) {
-            return 1 - game.smoothStep(20, Math.sin(game.elapsedTime /(Math.cos(game.elapsedTime / 1000) * 30 + 300)) * 10 + 200, distance);
+            return 1 - game.smoothStep(20, Math.sin(game.elapsedTime /(Math.cos(game.elapsedTime / 1000) * 30 + 200)) * 10 + 200, distance);
         }
 
         game.fogger = function(tile) {
@@ -558,7 +537,7 @@ document.onreadystatechange = function () {
                 }
 
                 if (score < 5) {
-                   // music1.play();
+                    music1.play();
                 }
 
                 if (score > 4) {
@@ -591,12 +570,31 @@ document.onreadystatechange = function () {
                     music7.play();
                 }
 
-                if (score <= 50) {
+                if (score >= 50) {
                     music7.pause();
-                    enterTheVoid(wallArray, wallFrontArray);
+
+                    enterTheVoid(
+                        wallArray,
+                        wallFrontArray,
+                        ghostArray,
+                        fogArray,
+                        fileArray
+                    );
+
+                    scoreLayer.redraw = true;
+
+                    fontSize = Math.floor((Math.random() * 12) + 9);
+
+                    scoreLayer.drawText(
+                        "This is the end, my friend_",
+                        380,
+                        player.pos.y,
+                        fontSize + 'pt "Courier New", Helvetica, sans-serif',
+                        'white',
+                        'center'
+                    );
                 }
 
-                floorArray.map(game.fogger);
                 wallArray.map(game.fogger);
                 wallFrontArray.map(game.fogger);
 
@@ -626,29 +624,55 @@ document.onreadystatechange = function () {
                     if (isEntityTouchingTarget(ghostEntry, player, PLAYER_DEATH_RANGE)) {
                         clearInterval(ghostSpawner);
                         gameState = false;
+
                         guiAlarm.visible = false;
-
-                        scoreLayer.redraw = true;
-
-                        scoreLayer.drawText(
-                            score + "/50",
-                            322,
-                            105,
-                            '60pt "Trebuchet MS", Helvetica, sans-serif',
-                            'silver',
-                            'center'
-                        );
+                        floorImg.visible = false;
 
                         gameOverMusic.play();
+
                         gameOver(
                             player,
                             ghostArray,
                             wallFrontArray,
                             wallArray,
-                            floorArray,
                             fogArray,
-                            fileArray,
-                            radarArray
+                            fileArray
+                        );
+
+                        scoreLayer.redraw = true;
+
+                        var gap = 50 - score;
+
+                        scoreLayer.drawText(
+                            'You were ' + gap + ' files away from the void!',
+                            318,
+                            100,
+                            '12pt "Lucida Console", Helvetica, sans-serif',
+                            'white',
+                            'center'
+                        );
+
+                        var motivations = [
+                            "Maybe try harder next time?",
+                            "Now you are just trapped here.",
+                            "Ghosts got too spooky for ya, eh?",
+                            "Open your eyes.",
+                            "Hunt for the files, not ghosts.",
+                            "You fight like a dairy farmer.",
+                            "Now you've been turned into bits and pieces.",
+                        ]
+
+                        var randomMotivation = Math.floor(
+                            (Math.random() * motivations.length) + 0
+                        );
+
+                        scoreLayer.drawText(
+                            motivations[randomMotivation],
+                            320,
+                            110,
+                            '10pt "Lucida Console", Helvetica, sans-serif',
+                            'yellow',
+                            'center'
                         );
                     };
                 });
