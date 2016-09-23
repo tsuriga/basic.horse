@@ -44,7 +44,10 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, ghostArray
         }
         for(var j = 0; j < ghostArray.length; j++) {
              if (collisonBetween(scan, ghostArray[j])) {
-                 ghostArray[j].opacity = 100;
+                ghostArray[j].opacity = 100;
+                if(ghostArray[j].angriness < 100) {
+                    ghostArray[j].angriness = ghostArray[j].angriness + ANGRINESS_STEP;
+                }
              }
         }
         for(var j = 0; j < fileArray.length; j++) {
@@ -226,6 +229,7 @@ function spawnGhost(spawnPoints, player)
             entity.pos.x = spawnPoint.pos.x + randomDistance;
             entity.pos.y = spawnPoint.pos.y + randomDistance;
 
+            entity.opacity = 0;
             entity.visible = true;
 
             return entity;
