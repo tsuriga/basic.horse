@@ -195,7 +195,6 @@ function spawnFile(spawnPoints, player)
         entity.pos.y = spawnPoint.pos.y + randomDistance;
 
         entity.visible = true;
-        console.log("spawned");
 
         return entity;
 //    }

@@ -46,6 +46,7 @@ document.onreadystatechange = function () {
         });
 
         game.fullscreen = false;
+        game.displayFPS = true;
 
         // Level layout arrays (0 = floor, 1 = wall, 2 = ghost spawn, 3 = file spawn)
         var map1 = [
@@ -98,6 +99,9 @@ document.onreadystatechange = function () {
         var fogLayer = game.createLayer('invisible area')
         var floorLayer = game.createLayer('floor')
         var scanLayer = game.createLayer('scan visible area')
+        var scoreLayer = game.createLayer("score");
+
+        scoreLayer.static = true;
 
         shadow.asset = new PixelJS.Sprite();
         shadow.asset.prepare({
@@ -116,6 +120,7 @@ document.onreadystatechange = function () {
         shadowLayer.zIndex = 0;
         fogLayer.zIndex = 1;
         floorLayer.zIndex = 2;
+        scoreLayer.zIndex = 10;
 
         var music1 = game.createSound('sound-music-1');
         music1.prepare({ name: 'music01.ogg' });
@@ -623,6 +628,17 @@ document.onreadystatechange = function () {
                         gameState = false;
                         guiAlarm.visible = false;
 
+                        scoreLayer.redraw = true;
+
+                        scoreLayer.drawText(
+                            score + "/50",
+                            322,
+                            105,
+                            '60pt "Trebuchet MS", Helvetica, sans-serif',
+                            'silver',
+                            'center'
+                        );
+
                         gameOverMusic.play();
                         gameOver(
                             player,
@@ -642,11 +658,19 @@ document.onreadystatechange = function () {
                         getFreeAudio(2).play();
                         removeEntity(fileEntry);
                         score++;
-                        spawnFile(fileSpawnArray, player);
 
-                        if (score < 50) {
-                            wallArray[score].opacity = 0.4;
-                        }
+                        scoreLayer.redraw = true;
+
+                        scoreLayer.drawText(
+                            score + "/50",
+                            455,
+                            75,
+                            '50pt "Trebuchet MS", Helvetica, sans-serif',
+                            'white',
+                            'center'
+                        );
+
+                        spawnFile(fileSpawnArray, player);
                     };
                 });
 
