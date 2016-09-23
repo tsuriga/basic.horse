@@ -553,7 +553,7 @@ document.onreadystatechange = function () {
                 }
 
                 if (score < 5) {
-                    music1.play();
+                   // music1.play();
                 }
 
                 if (score > 4) {

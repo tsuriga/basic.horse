@@ -445,6 +445,10 @@ function setRadarInPosition(posX, posY) {
 
     radar.visible = true;
 
+    setTimeout(function() {
+        removeEntity(radar);
+    }, 10000);
+
     return true;
 }
 
