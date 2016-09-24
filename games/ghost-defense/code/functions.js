@@ -439,7 +439,7 @@ function setRadarInPosition(posX, posY) {
         removeEntity(radar);
     }, 10000);
 
-    return true;
+    return radar;
 }
 
 function gameOver(

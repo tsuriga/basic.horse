@@ -30,6 +30,7 @@ const SCAN_TIMEOUT = 500;
 var score = 0;
 var triggerScan = true;
 var gameState = true;
+var radarTime = 9;
 var lastPosition = {x:0, y:0};
 var fileArray = [];
 var bulletArray = [];
@@ -100,9 +101,11 @@ document.onreadystatechange = function () {
         var shadow = shadowLayer.createEntity();
         var fogLayer = game.createLayer('invisible area')
         var scanLayer = game.createLayer('scan visible area')
-        var scoreLayer = game.createLayer("score");
+        var scoreTextLayer = game.createLayer("scoreText");
+        var radarTextLayer = game.createLayer("radarText");
 
-        scoreLayer.static = true;
+        scoreTextLayer.static = true;
+        radarTextLayer.static = true;
 
         shadow.asset = new PixelJS.Sprite();
         shadow.asset.prepare({
@@ -120,7 +123,8 @@ document.onreadystatechange = function () {
         frontLayer.zIndex = 5;
         shadowLayer.zIndex = 1;
         fogLayer.zIndex = 1;
-        scoreLayer.zIndex = 10;
+        scoreTextLayer.zIndex = 10;
+        radarTextLayer.zIndex = 10;
 
         var music1 = game.createSound('sound-music-1');
         music1.prepare({ name: 'music01.ogg' });
@@ -472,7 +476,41 @@ document.onreadystatechange = function () {
 
                 setItemInMap(currentlyStandingOn.x, currentlyStandingOn.y, map1);
 
-                if (setRadarInPosition(isometricPosition.x, isometricPosition.y, 5)) {
+                var radar = setRadarInPosition(isometricPosition.x, isometricPosition.y, 5);
+                var radarInterval = null;
+
+                if (radar) {
+                    radarTextLayer.redraw = true;
+                    radarTime = 9;
+
+                    radarTextLayer.drawText(
+                        radarTime + 1,
+                        radar.pos.x + 15,
+                        radar.pos.y,
+                        '13pt "Verdana", Helvetica, sans-serif',
+                        'brown',
+                        'center'
+                    );
+
+                    radarInterval = setInterval(function() {
+                        radarTextLayer.redraw = true;
+                        radarTextLayer.drawText(
+                            radarTime,
+                            radar.pos.x + 15,
+                            radar.pos.y,
+                            '14pt "Verdana", Helvetica, sans-serif',
+                            'brown',
+                            'center'
+                        );
+
+                        radarTime--;
+                    }, 1000);
+
+                    setTimeout(function() {
+                        radarTextLayer.redraw = true;
+                        clearInterval(radarInterval);
+                    }, 10000);
+
                     getFreeAudio(4).play();
                 }
             }
@@ -581,11 +619,9 @@ document.onreadystatechange = function () {
                         fileArray
                     );
 
-                    scoreLayer.redraw = true;
-
                     fontSize = Math.floor((Math.random() * 12) + 9);
 
-                    scoreLayer.drawText(
+                    scoreTextLayer.drawText(
                         "This is the end, my friend_",
                         380,
                         player.pos.y,
@@ -606,12 +642,15 @@ document.onreadystatechange = function () {
                     }
 
                     if (isGhostNear(ghostEntry, player)) {
-                        guiAlarm.visible = true;
 
-                        var audio = getFreeAudio(5);
+                        if (getFreeRadar()) {
+                            guiAlarm.visible = true;
 
-                        if (audio) {
-                            audio.play();
+                            var audio = getFreeAudio(5);
+
+                            if (audio) {
+                                audio.play();
+                            }
                         }
                     }
 
@@ -642,11 +681,11 @@ document.onreadystatechange = function () {
                             fileArray
                         );
 
-                        scoreLayer.redraw = true;
+                        scoreTextLayer.redraw = true;
 
                         var gap = 50 - score;
 
-                        scoreLayer.drawText(
+                        scoreTextLayer.drawText(
                             'You were ' + gap + ' files away from the void!',
                             318,
                             100,
@@ -669,7 +708,7 @@ document.onreadystatechange = function () {
                             Math.floor(Math.random() * motivations.length) + 0
                         );
 
-                        scoreLayer.drawText(
+                        scoreTextLayer.drawText(
                             motivations[randomMotivation],
                             320,
                             110,
@@ -686,9 +725,9 @@ document.onreadystatechange = function () {
                         removeEntity(fileEntry);
                         score++;
 
-                        scoreLayer.redraw = true;
+                        scoreTextLayer.redraw = true;
 
-                        scoreLayer.drawText(
+                        scoreTextLayer.drawText(
                             score + "/50",
                             455,
                             75,
