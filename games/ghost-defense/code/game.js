@@ -48,6 +48,7 @@ document.onreadystatechange = function () {
         });
 
         game.fullscreen = false;
+        game.displayFPS = true;
 
         // Level layout arrays (0 = floor, 1 = wall, 2 = ghost spawn, 3 = file spawn)
         var map1 = [
