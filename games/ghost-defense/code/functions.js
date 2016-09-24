@@ -26,6 +26,8 @@ function getFreeGhost() {
 function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, ghostArray, fileArray, increaseAngriness) {
     var xMultipler = 0;
     var yMultipler = 0;
+    var scanDistance = 0;
+
     scan.pos.x = where.x;
     scan.pos.y = where.y;
 
@@ -34,11 +36,13 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, ghostArray
             if (collisonBetween(scan, wallArray[j])) {
                 scan.pos.x = where.x + offsetX;
                 scan.pos.y = where.y + offsetY;
+                scanDistance = 0;
             }
         }
         for(var j = 0; j < fogArray.length; j++) {
             if (collisonBetween(scan, fogArray[j])) {
-                fogArray[j].visible = false;
+                fogArray[j].opacity = scanDistance / 400;
+
             }
         }
         for(var j = 0; j < ghostArray.length; j++) {
@@ -59,6 +63,8 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, ghostArray
         yMultipler = Math.sin(scan.angle * Math.PI / 180);
         scan.pos.x = scan.pos.x + SCAN_SPEED * xMultipler;
         scan.pos.y = scan.pos.y + SCAN_SPEED * yMultipler;
+        scanDistance = scanDistance + SCAN_SPEED
+
     }
 }
 

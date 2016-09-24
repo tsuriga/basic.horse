@@ -762,7 +762,7 @@ document.onreadystatechange = function () {
                     triggerScan = false;
 
                     for(var j = 0; j < fogArray.length; j++) {
-                        fogArray[j].visible = true;
+                        fogArray[j].opacity = 0.7;
                     }
 
                     for(var j = 0; j < ghostArray.length; j++) {
