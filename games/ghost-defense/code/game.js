@@ -23,8 +23,8 @@ const NUM_RADARS = 1;
 const BULLET_SPEED = 230;
 const SCAN_RESOLUTION = 0.08;
 const SCAN_SPEED = 5;
-const ANGRINESS_STEP = 20;
-const ANGRINESS_LIMIT = 80;
+const ANGRINESS_STEP = 5;
+const ANGRINESS_LIMIT = 90;
 const SCAN_TIMEOUT = 500;
 
 var score = 0;
