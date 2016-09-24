@@ -209,8 +209,8 @@ function spawnGhost(spawnPoints, player)
     randomPoint = Math.floor((Math.random() * spawnPoints.length) + 0);
     spawnPoint = spawnPoints[randomPoint];
 
-    if (Math.abs(player.pos.x - spawnPoint.pos.x) > 40 &&
-        Math.abs(player.pos.y - spawnPoint.pos.y) > 40
+    if (Math.abs(player.pos.x - spawnPoint.pos.x) > 80 &&
+        Math.abs(player.pos.y - spawnPoint.pos.y) > 80
     ) {
         if (entity) {
             entity.pos.x = spawnPoint.pos.x;
