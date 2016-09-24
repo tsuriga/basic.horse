@@ -184,26 +184,15 @@ function spawnFile(spawnPoints, player)
 {
     var entity = getFreeFile();
 
-    randomPoint = Math.floor((Math.random() * spawnPoints.length) + 0);
-    spawnPoint = spawnPoints[randomPoint];
+    randomFile = Math.floor((Math.random() * spawnPoints.length) + 0);
+    spawnPoint = spawnPoints[randomFile];
 
-/* @todo Implement logic not to spawn near player
-    if (Math.abs(player.pos.x - spawnPoint.pos.x) > 40 &&
-        Math.abs(player.pos.y - spawnPoint.pos.y) > 40
-    ) {
-*/
-        randomDistance = Math.floor((Math.random() * 20) + -20);
-        entity.pos.x = spawnPoint.pos.x + randomDistance;
-        entity.pos.y = spawnPoint.pos.y + randomDistance;
+    entity.pos.x = spawnPoint.pos.x;
+    entity.pos.y = spawnPoint.pos.y;
 
-        entity.visible = true;
+    entity.visible = true;
 
-        return entity;
-//    }
-
-    console.log("not spawned");
-
-    return null;
+    return entity;
 }
 
 /**
