@@ -18,7 +18,6 @@
 // -------------------------------------------------------------------
 //
 // Engine is slightly modified/extended by basic.horse (2016)
-//
 
 var PixelJS = {
     AnimatedSprite: function () { },
@@ -1351,6 +1350,22 @@ PixelJS.Player.prototype.addToLayer = function (layer) {
             case PixelJS.Keys.Right:
                 self.direction |= PixelJS.Directions.Right;
                 break;
+
+            case PixelJS.Keys.J:
+                self.direction |= PixelJS.Directions.Down;
+                break;
+
+            case PixelJS.Keys.H:
+                self.direction |= PixelJS.Directions.Left;
+                break;
+
+            case PixelJS.Keys.K:
+                self.direction |= PixelJS.Directions.Up;
+                break;
+
+            case PixelJS.Keys.L:
+                self.direction |= PixelJS.Directions.Right;
+                break;
         }
 
         self.layer.requiresDraw = true;
@@ -1371,6 +1386,22 @@ PixelJS.Player.prototype.addToLayer = function (layer) {
                 break;
 
             case PixelJS.Keys.Right:
+                self.direction &= ~PixelJS.Directions.Right;
+                break;
+
+            case PixelJS.Keys.J:
+                self.direction &= ~PixelJS.Directions.Down;
+                break;
+
+            case PixelJS.Keys.H:
+                self.direction &= ~PixelJS.Directions.Left;
+                break;
+
+            case PixelJS.Keys.K:
+                self.direction &= ~PixelJS.Directions.Up;
+                break;
+
+            case PixelJS.Keys.L:
                 self.direction &= ~PixelJS.Directions.Right;
                 break;
         }
