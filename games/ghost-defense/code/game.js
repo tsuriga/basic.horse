@@ -217,9 +217,11 @@ document.onreadystatechange = function () {
                     wall.pos["x"] = isometricPosition["x"];
                     wall.pos["y"] = isometricPosition["y"];
 
+                    var randomWallSprite = Math.floor(Math.random() * 4) + 1;
+
                     wall.asset = new PixelJS.Sprite();
                     wall.asset.prepare({
-                        name: 'wall.png',
+                        name: 'wall' + randomWallSprite + '.png',
                     });
 
                     wallArray.push(wall);
@@ -235,7 +237,7 @@ document.onreadystatechange = function () {
 
                     wallFront.asset = new PixelJS.Sprite();
                     wallFront.asset.prepare({
-                        name: 'wall.png',
+                        name: 'wall' + randomWallSprite + '.png',
                     });
 
                     wallFrontArray.push(wallFront);
@@ -670,7 +672,7 @@ document.onreadystatechange = function () {
                         ]
 
                         var randomMotivation = Math.floor(
-                            (Math.random() * motivations.length) + 0
+                            Math.floor(Math.random() * motivations.length) + 0
                         );
 
                         scoreLayer.drawText(
