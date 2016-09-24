@@ -50,7 +50,6 @@ document.onreadystatechange = function () {
         });
 
         game.fullscreen = false;
-        game.displayFPS = true;
 
         // Level layout arrays (0 = floor, 1 = wall, 2 = ghost spawn, 3 = file spawn)
         var map1 = [
@@ -620,6 +619,8 @@ document.onreadystatechange = function () {
                     );
 
                     fontSize = Math.floor((Math.random() * 12) + 9);
+
+                    scoreTextLayer.redraw = true;
 
                     scoreTextLayer.drawText(
                         "This is the end, my friend_",
