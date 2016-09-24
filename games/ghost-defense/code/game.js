@@ -25,9 +25,10 @@ const SCAN_RESOLUTION = 0.08;
 const SCAN_SPEED = 5;
 const ANGRINESS_STEP = 20;
 const ANGRINESS_LIMIT = 80;
+const SCAN_TIMEOUT = 500;
 
 var score = 0;
-
+var triggerScan = true;
 var gameState = true;
 var lastPosition = {x:0, y:0};
 var fileArray = [];
@@ -710,10 +711,15 @@ document.onreadystatechange = function () {
 
                 var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
 
-                if ((lastPosition.x != currentPosInArray.x) &&
-                    (lastPosition.y != currentPosInArray.y)) {
+                if (triggerScan) {
+                    setTimeout(function() { setTriggerScan(); }, SCAN_TIMEOUT);
+                }
+
+                if ((lastPosition.x != currentPosInArray.x) ||
+                    (lastPosition.y != currentPosInArray.y) || triggerScan) {
 
                     lastPosition =  currentPosInArray
+                    triggerScan = false;
 
                     for(var j = 0; j < fogArray.length; j++) {
                         fogArray[j].visible = true;

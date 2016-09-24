@@ -515,3 +515,7 @@ function enterTheVoid(wallArray, wallFrontArray, ghostArray, fogArray, fileArray
         }
     }, 5000);
 }
+
+function setTriggerScan() {
+    triggerScan = true;
+}
