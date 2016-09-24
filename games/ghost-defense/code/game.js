@@ -477,14 +477,6 @@ document.onreadystatechange = function () {
                 }
             }
 
-            for(var i = 0; i < wallFrontArray.length; i++) {
-                if (player.pos["y"] + MAP_BLOCK_SIZE_Y / 2 < wallFrontArray[i].pos["y"]) {
-                    wallFrontArray[i].visible = true;
-                } else {
-                    wallFrontArray[i].visible = false;
-                }
-            }
-
             // Toggle debug mode
             if (keyCode === PixelJS.Keys.D) {
                 if(debug) {
@@ -708,6 +700,14 @@ document.onreadystatechange = function () {
                         spawnFile(fileSpawnArray, player);
                     };
                 });
+
+                for(var i = 0; i < wallFrontArray.length; i++) {
+                    if (player.pos["y"] + MAP_BLOCK_SIZE_Y / 2 < wallFrontArray[i].pos["y"]) {
+                        wallFrontArray[i].visible = true;
+                    } else {
+                        wallFrontArray[i].visible = false;
+                    }
+                }
 
                 var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
 
