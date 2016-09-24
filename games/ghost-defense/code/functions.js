@@ -23,10 +23,9 @@ function getFreeGhost() {
  * @param int    loopNum
  * @return int   loopNum
  */
-function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, ghostArray, fileArray) {
+function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, ghostArray, fileArray, increaseAngriness) {
     var xMultipler = 0;
     var yMultipler = 0;
-
     scan.pos.x = where.x;
     scan.pos.y = where.y;
 
@@ -45,7 +44,7 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, ghostArray
         for(var j = 0; j < ghostArray.length; j++) {
              if (collisonBetween(scan, ghostArray[j])) {
                 ghostArray[j].opacity = 100;
-                if(ghostArray[j].angriness < 100) {
+                if ((ghostArray[j].angriness < 100) && increaseAngriness) {
                     ghostArray[j].angriness = ghostArray[j].angriness + ANGRINESS_STEP;
                 }
              }

@@ -738,7 +738,8 @@ document.onreadystatechange = function () {
                                 fogArray,
                                 wallArray,
                                 ghostArray,
-                                fileArray
+                                fileArray,
+                                false
                             )
                         }
                     }
@@ -751,7 +752,8 @@ document.onreadystatechange = function () {
                         fogArray,
                         wallArray,
                         ghostArray,
-                        fileArray
+                        fileArray,
+                        true
                     )
                     for(var j = 0; j < ghostArray.length; j++) {
                         if(ghostArray[j].opacity != 100) {
