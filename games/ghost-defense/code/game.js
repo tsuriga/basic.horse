@@ -18,7 +18,7 @@ const ENEMY_DEATH_RANGE = 25;
 const NUM_BULLETS = 10;
 const NUM_FILES = 2;
 const NUM_AUDIO = 25;
-const NUM_GHOSTS = 10;
+const NUM_GHOSTS = 5;
 const NUM_RADARS = 1;
 const BULLET_SPEED = 230;
 const SCAN_RESOLUTION = 0.08;
@@ -51,7 +51,7 @@ document.onreadystatechange = function () {
 
         game.fullscreen = false;
 
-        randomMapNumber = Math.floor(Math.random() * 0) + maps.length - 1;
+        randomMapNumber = Math.floor(Math.random() * maps.length) + 0;
         map = maps[randomMapNumber];
 
         // State variables
@@ -193,7 +193,13 @@ document.onreadystatechange = function () {
             var mapBlock = map[i];
 
             for(var j = 0; j < mapBlock.length; j++) {
-                if (map[i][j] == 1) {
+                if (map[i][j] == 4 || // wall-green
+                    map[i][j] == 5 || // wall-blue
+                    map[i][j] == 6 || // wall-red
+                    map[i][j] == 7 || // walls-white
+                    map[i][j] == 8 || // walls-short
+                    map[i][j] == 9    // walls-sign
+                ) {
                     var wall = itemLayer.createEntity();
 
                     wall.size["width"] = BLOCK_RANGE;
@@ -204,11 +210,9 @@ document.onreadystatechange = function () {
                     wall.pos["x"] = isometricPosition["x"];
                     wall.pos["y"] = isometricPosition["y"];
 
-                    var randomWallSprite = Math.floor(Math.random() * 4) + 1;
-
                     wall.asset = new PixelJS.Sprite();
                     wall.asset.prepare({
-                        name: 'wall' + randomWallSprite + '.png',
+                        name: 'wall' + map[i][j] + '.png',
                     });
 
                     wallArray.push(wall);
@@ -224,7 +228,7 @@ document.onreadystatechange = function () {
 
                     wallFront.asset = new PixelJS.Sprite();
                     wallFront.asset.prepare({
-                        name: 'wall' + randomWallSprite + '.png',
+                        name: 'wall' + map[i][j] + '.png',
                     });
 
                     wallFrontArray.push(wallFront);
@@ -266,6 +270,29 @@ document.onreadystatechange = function () {
                     fileSpawn.pos["y"] = isometricPosition["y"];
 
                     fileSpawnArray.push(fileSpawn);
+                } else if (map[i][j] == 1) {
+                    var playerLayer = game.createLayer('players');
+
+                    var player = new PixelJS.Player();
+                    player.addToLayer(playerLayer);
+
+                    var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
+
+                    player.pos["x"] = isometricPosition["x"];
+                    player.pos["y"] = isometricPosition["y"];
+                    player.size["width"] = PLAYER_RANGE;
+                    player.size["height"] = PLAYER_RANGE;
+                    player.velocity = { x: 100, y: 50 };
+                    player.asset = new PixelJS.AnimatedSprite();
+                    playerLayer.zIndex = 3;
+
+                    player.asset.prepare({
+                        name: 'char.png',
+                        frames: 3,
+                        rows: 8,
+                        speed: 100,
+                        defaultFrame: 1
+                    });
                 }
 
                 var fog = fogLayer.createEntity();
@@ -323,26 +350,6 @@ document.onreadystatechange = function () {
 
         floorImg.asset.prepare({
             name: 'floorImg.png'
-        });
-
-        var playerLayer = game.createLayer('players');
-
-        var player = new PixelJS.Player();
-        player.addToLayer(playerLayer);
-
-        player.pos = { x: 230, y: 100 };
-        player.size["width"] = PLAYER_RANGE;
-        player.size["height"] = PLAYER_RANGE;
-        player.velocity = { x: 100, y: 50 };
-        player.asset = new PixelJS.AnimatedSprite();
-        playerLayer.zIndex = 3;
-
-        player.asset.prepare({
-            name: 'char.png',
-            frames: 3,
-            rows: 8,
-            speed: 100,
-            defaultFrame: 1
         });
 
         for (var i=0; i < NUM_GHOSTS; i++) {
