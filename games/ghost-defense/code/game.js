@@ -2,9 +2,12 @@
  * Ghost Defense 2D
  *   Copyright (C) 2016 Basic Horse (Olli Suoranta, Juho Saarelainen)
  *
- * Version 0.4
+ * Version 0.7
  * This game is under development and using Pixel.js library by rastating
  */
+
+const GAME_WIDTH = 640;
+const GAME_HEIGHT = 350;
 
 const GRID_OFFSET = 320;
 const ACTUAL_BLOCK_SIZE = 32;
@@ -45,8 +48,8 @@ document.onreadystatechange = function () {
 
         game.init({
             container: 'game_container',
-            width: 640,
-            height: 480
+            width: GAME_WIDTH,
+            height: GAME_HEIGHT
         });
 
         game.fullscreen = false;
@@ -74,6 +77,7 @@ document.onreadystatechange = function () {
         var playerScanLoop = 0;
 
         // Layers
+        var backgroundLayer = game.createLayer('backgroudn');
         var guiLayer = game.createLayer('gui');
         var enemyLayer = game.createLayer('enemies');
         var itemLayer = game.createLayer('items');
@@ -97,13 +101,14 @@ document.onreadystatechange = function () {
         shadow.pos["y"] = 10;
 
         // zIndexes
-        guiLayer.zIndex = 0;
+        backgroundLayer.zIndex = 0;
+        guiLayer.zIndex = 1;
         enemyLayer.zIndex = 6;
         scanLayer.zIndex = 6;
         itemLayer.zIndex = 3;
         frontLayer.zIndex = 5;
-        shadowLayer.zIndex = 1;
-        fogLayer.zIndex = 1;
+        shadowLayer.zIndex = 2;
+        fogLayer.zIndex = 2;
         scoreTextLayer.zIndex = 10;
         radarTextLayer.zIndex = 10;
 
@@ -321,6 +326,27 @@ document.onreadystatechange = function () {
         }
 
         // -- Entities ------------------------------------------------------
+
+        var backgroundImg2 = backgroundLayer.createEntity();
+
+        backgroundImg2.visible = true;
+        backgroundImg2.asset = new PixelJS.Sprite();
+        backgroundImg2.pos = { x: 0, y: 0 - GAME_HEIGHT };
+
+        backgroundImg2.asset.prepare({
+            name: 'background.png'
+        });
+
+        var backgroundImg = backgroundLayer.createEntity();
+
+        backgroundImg.visible = true;
+        backgroundImg.asset = new PixelJS.Sprite();
+        backgroundImg.pos = { x: 0, y: 0 };
+
+        backgroundImg.asset.prepare({
+            name: 'background.png'
+        });
+
         var guiInfo = guiLayer.createEntity();
 
         guiInfo.visible = true;
@@ -562,7 +588,7 @@ document.onreadystatechange = function () {
                 }
 
                 if (score < 5) {
-                    music1.play();
+                    //music1.play();
                 }
 
                 if (score > 4) {
@@ -797,6 +823,17 @@ document.onreadystatechange = function () {
 
 
                 }
+            }
+
+            backgroundImg.pos.y++;
+            backgroundImg2.pos.y++;
+
+            if (backgroundImg.pos.y === GAME_HEIGHT) {
+                backgroundImg.pos.y = 0;
+            }
+
+            if (backgroundImg2.pos.y === 0) {
+                backgroundImg2.pos.y = 0 - GAME_HEIGHT;
             }
         });
     }
