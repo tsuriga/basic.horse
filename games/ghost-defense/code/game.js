@@ -18,7 +18,7 @@ const ENEMY_DEATH_RANGE = 25;
 const NUM_BULLETS = 10;
 const NUM_FILES = 2;
 const NUM_AUDIO = 25;
-const NUM_GHOSTS = 0;
+const NUM_GHOSTS = 5;
 const NUM_RADARS = 1;
 const BULLET_SPEED = 230;
 const SCAN_RESOLUTION = 0.08;
@@ -52,7 +52,7 @@ document.onreadystatechange = function () {
         game.fullscreen = false;
 
         randomMapNumber = Math.floor(Math.random() * maps.length) + 0;
-        map = maps[1];
+        map = maps[randomMapNumber];
 
         // State variables
         var currentlyStandingOn = null;
@@ -160,7 +160,6 @@ document.onreadystatechange = function () {
             file.asset = new PixelJS.Sprite();
             file.size["width"] = BLOCK_RANGE;
             file.size["height"] = BLOCK_RANGE;
-
 
             file.asset.prepare({
                 name: 'file.png'
@@ -563,7 +562,7 @@ document.onreadystatechange = function () {
                 }
 
                 if (score < 5) {
-                    //music1.play();
+                    music1.play();
                 }
 
                 if (score > 4) {
