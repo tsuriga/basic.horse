@@ -51,26 +51,8 @@ document.onreadystatechange = function () {
 
         game.fullscreen = false;
 
-        // Level layout arrays (0 = floor, 1 = wall, 2 = ghost spawn, 3 = file spawn)
-        var map1 = [
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1],
-            [1, 0, 3, 0, 0, 0, 3, 0, 2, 3, 0, 0, 3, 0, 0, 0, 1],
-            [1, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 1, 1, 1, 3, 0, 1],
-            [1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 1, 0, 3, 0, 1, 1, 1, 0, 0, 1],
-            [1, 3, 0, 3, 0, 0, 0, 1, 2, 0, 0, 0, 3, 0, 0, 3, 1],
-            [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 1],
-            [1, 0, 2, 0, 2, 3, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1],
-            [1, 3, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 3, 0, 1],
-            [1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 2, 0, 1, 0, 0, 1],
-            [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-            [1, 0, 0, 3, 0, 0, 2, 0, 3, 0, 3, 0, 0, 1, 3, 0, 1],
-            [1, 0, 2, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 3, 1, 0, 2, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        ];
+        randomMapNumber = Math.floor(Math.random() * 0) + maps.length - 1;
+        map = maps[randomMapNumber];
 
         // State variables
         var currentlyStandingOn = null;
@@ -207,11 +189,11 @@ document.onreadystatechange = function () {
 
         // -- Level generation ------------------------------------------------------
 
-        for(var i = 0; i < map1.length; i++) {
-            var mapBlock = map1[i];
+        for(var i = 0; i < map.length; i++) {
+            var mapBlock = map[i];
 
             for(var j = 0; j < mapBlock.length; j++) {
-                if (map1[i][j] == 1) {
+                if (map[i][j] == 1) {
                     var wall = itemLayer.createEntity();
 
                     wall.size["width"] = BLOCK_RANGE;
@@ -247,7 +229,7 @@ document.onreadystatechange = function () {
 
                     wallFrontArray.push(wallFront);
 
-                } else if (map1[i][j] == 2) {
+                } else if (map[i][j] == 2) {
                     var ghostSpawn = itemLayer.createEntity();
 
                     ghostSpawn.size["width"] = BLOCK_RANGE;
@@ -265,7 +247,7 @@ document.onreadystatechange = function () {
 
                     ghostSpawn.opacity = 0.0;
                     ghostSpawnArray.push(ghostSpawn);
-                } else if (map1[i][j] == 3) {
+                } else if (map[i][j] == 3) {
                     var fileSpawn = itemLayer.createEntity();
 
                     fileSpawn.size["width"] = BLOCK_RANGE;
@@ -473,7 +455,7 @@ document.onreadystatechange = function () {
                 var currentlyStandingOn = getNearestPositionInArray(player.pos["x"], player.pos["y"]);
                 var isometricPosition = convertPositionToIsometric(currentlyStandingOn.x * MAP_BLOCK_SIZE_X, currentlyStandingOn.y * MAP_BLOCK_SIZE_Y, GRID_OFFSET);
 
-                setItemInMap(currentlyStandingOn.x, currentlyStandingOn.y, map1);
+                setItemInMap(currentlyStandingOn.x, currentlyStandingOn.y, map);
 
                 var radar = setRadarInPosition(isometricPosition.x, isometricPosition.y, 5);
                 var radarInterval = null;
