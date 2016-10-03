@@ -456,30 +456,30 @@ function gameOver(
     fogArray,
     fileArray
 ) {
-    removeEntity(player);
+    player.dispose();
 
     fogArray.forEach(function(entry) {
-        removeEntity(entry);
+        entry.dispose();
     });
 
     setInterval(function () {
         if (fileArray.length > 0) {
-            removeEntity(fileArray[0]);
+            fileArray[0].dispose();
             fileArray.shift();
         }
 
         if (ghostArray.length > 0) {
-            removeEntity(ghostArray[0]);
+            ghostArray[0].dispose();
             ghostArray.shift();
         }
 
         if (wallArray.length > 0) {
-            removeEntity(wallArray[0]);
+            wallArray[0].dispose();
             wallArray.shift();
         }
 
         if (wallFrontArray.length > 0) {
-            removeEntity(wallFrontArray[0]);
+            wallFrontArray[0].dispose();
             wallFrontArray.shift();
         }
     }, 5);
@@ -487,19 +487,19 @@ function gameOver(
 
 function enterTheVoid(wallArray, wallFrontArray, ghostArray, fogArray, fileArray) {
     fileArray.forEach(function(entry) {
-        removeEntity(entry);
+        entry.dispose();
     });
 
     ghostArray.forEach(function(entry) {
-        removeEntity(entry);
+        entry.dispose();
     });
 
     wallArray.forEach(function(entry) {
-        removeEntity(entry);
+        entry.dispose();
     });
 
     wallFrontArray.forEach(function(entry) {
-        removeEntity(entry);
+        entry.dispose();
     });
 
     setInterval(function () {
@@ -512,4 +512,12 @@ function enterTheVoid(wallArray, wallFrontArray, ghostArray, fogArray, fileArray
 
 function setTriggerScan() {
     triggerScan = true;
+}
+
+function getCredits() {
+    return "Ghost Defense (v.0.7) is a game by basic horse.\
+        Implemented by using pixel.js engine by rastating\
+        Currently game is unfinished but soon to be released as open-source.\
+        If you want to value the work of Olli Suoranta, Juho Saarelainen and Mikko Vieru, consider doing a paypal donation via our website (basic.horse).\
+        Special thanks to Tomi Ruusala and Petri Mölläri.";
 }

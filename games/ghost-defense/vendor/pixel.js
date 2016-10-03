@@ -15,9 +15,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
+
 // -------------------------------------------------------------------
-//
-// Engine is slightly modified/extended by basic.horse (2016)
+// Engine is slightly modified by basic.horse (2016) (under GPL 3)
+// -------------------------------------------------------------------
 
 var PixelJS = {
     AnimatedSprite: function () { },

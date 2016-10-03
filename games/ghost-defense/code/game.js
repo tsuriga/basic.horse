@@ -88,9 +88,11 @@ document.onreadystatechange = function () {
         var scanLayer = game.createLayer('scan visible area')
         var scoreTextLayer = game.createLayer("scoreText");
         var radarTextLayer = game.createLayer("radarText");
+        var creditsTextLayer = game.createLayer("creditsText");
 
         scoreTextLayer.static = true;
         radarTextLayer.static = true;
+        creditsTextLayer.static = true;
 
         shadow.asset = new PixelJS.Sprite();
         shadow.asset.prepare({
@@ -111,6 +113,9 @@ document.onreadystatechange = function () {
         fogLayer.zIndex = 2;
         scoreTextLayer.zIndex = 10;
         radarTextLayer.zIndex = 10;
+        creditsTextLayer.zIndex = 11;
+
+        creditsTextLayer.x = 50;
 
         var music1 = game.createSound('sound-music-1');
         music1.prepare({ name: 'music01.ogg' });
@@ -682,10 +687,10 @@ document.onreadystatechange = function () {
                         clearInterval(ghostSpawner);
                         gameState = false;
 
-                        guiAlarm.visible = false;
-                        floorImg.visible = false;
-
                         gameOverMusic.play();
+
+                        guiAlarm.dispose();
+                        floorImg.dispose();
 
                         gameOver(
                             player,
@@ -834,6 +839,23 @@ document.onreadystatechange = function () {
 
             if (backgroundImg2.pos.y === 0) {
                 backgroundImg2.pos.y = 0 - GAME_HEIGHT;
+            }
+
+            creditsTextLayer.redraw = true;
+
+            creditsTextLayer.drawText(
+                getCredits(),
+                creditsTextLayer.x,
+                10,
+                '7pt "Verdana", Helvetica, sans-serif',
+                'white',
+                'left'
+            );
+
+            if (creditsTextLayer.x == -2000) {
+                creditsTextLayer.x = GAME_WIDTH;
+            } else {
+                creditsTextLayer.x--;
             }
         });
     }
