@@ -448,6 +448,40 @@ function setRadarInPosition(posX, posY) {
     return radar;
 }
 
+function getCookie(name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+
+    if (parts.length == 2) {
+        return parts.pop().split(";").shift();
+    }
+}
+
+function saveProgress(mapNumber) {
+    var savedProgress = getCookie("progress");
+
+    if (savedProgress === undefined) {
+        var progress = [];
+
+        progress.push(mapNumber);
+
+        var progressJson = "progress=" + JSON.stringify(progress);
+
+        document.cookie = progressJson;
+    } else {
+        var savedProgressArray = JSON.parse(savedProgress);
+
+        if ($.inArray(mapNumber, savedProgressArray) == -1) {
+            savedProgressArray.push(mapNumber);
+            var progressJson = "progress=" + JSON.stringify(savedProgressArray);
+
+            document.cookie = progressJson;
+        }
+    }
+
+    progressSaved = true;
+}
+
 function gameOver(
     player,
     ghostArray,
@@ -485,7 +519,9 @@ function gameOver(
     }, 5);
 }
 
-function enterTheVoid(wallArray, wallFrontArray, ghostArray, fogArray, fileArray) {
+function enterTheVoid(mapNumber, wallArray, wallFrontArray, ghostArray, fogArray, fileArray) {
+    saveProgress(mapNumber);
+
     fileArray.forEach(function(entry) {
         entry.dispose();
     });

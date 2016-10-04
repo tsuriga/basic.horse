@@ -41,6 +41,7 @@ var audioArray = [[],[],[],[],[], []];
 var ghostArray = [];
 var radarArray = [];
 var angryGhostArray = [];
+var progressSaved = false;
 
 document.onreadystatechange = function () {
     if (document.readyState == "complete") {
@@ -54,8 +55,30 @@ document.onreadystatechange = function () {
 
         game.fullscreen = false;
 
-        randomMapNumber = Math.floor(Math.random() * maps.length) + 0;
-        map = maps[randomMapNumber];
+        var progressCookie = getCookie("progress");
+
+        if (progressCookie) {
+            var finishedLevels = JSON.parse(progressCookie);
+        } else {
+            var finishedLevels = [];
+        }
+
+        var unfinishedLevels = [];
+        var availableMaps = maps;
+
+        for (var i = 0; i < availableMaps.length; i++) {
+            if ($.inArray(i, finishedLevels) === -1) {
+                unfinishedLevels.push(i);
+            }
+        };
+
+        if (unfinishedLevels.length != 0) {
+            randomNumber = Math.floor(Math.random() * unfinishedLevels.length) + 0;
+            map = maps[unfinishedLevels[randomNumber]];
+            mapNumber = unfinishedLevels[randomNumber];
+        } else {
+            alert("You have finished all the levels man, clear the cookies to reset!");
+        }
 
         // State variables
         var currentlyStandingOn = null;
@@ -651,13 +674,16 @@ document.onreadystatechange = function () {
                 if (score >= 50) {
                     music7.pause();
 
-                    enterTheVoid(
-                        wallArray,
-                        wallFrontArray,
-                        ghostArray,
-                        fogArray,
-                        fileArray
-                    );
+                    if (!progressSaved) {
+                        enterTheVoid(
+                            mapNumber,
+                            wallArray,
+                            wallFrontArray,
+                            ghostArray,
+                            fogArray,
+                            fileArray
+                        );
+                    }
 
                     fontSize = Math.floor((Math.random() * 12) + 9);
 
