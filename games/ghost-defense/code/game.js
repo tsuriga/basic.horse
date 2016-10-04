@@ -14,9 +14,9 @@ const ACTUAL_BLOCK_SIZE = 32;
 const MAP_BLOCK_SIZE_X = 16;
 const MAP_BLOCK_SIZE_Y = 16;
 const BLOCK_RANGE = 15;
-const PLAYER_RANGE = 12;
+const PLAYER_RANGE = 15;
 const ALARM_RANGE = 40;
-const PLAYER_DEATH_RANGE = 16;
+const PLAYER_DEATH_RANGE = 14;
 const ENEMY_DEATH_RANGE = 25;
 const NUM_BULLETS = 10;
 const NUM_FILES = 2;
@@ -461,20 +461,42 @@ document.onreadystatechange = function () {
         player.onCollide(function (entity) {
             wallArray.forEach(function(entry) {
                 if (entity === entry) {
+                    var nudged = false;
+
                     if (entry.pos["x"] > player.pos["x"]) {
-                        player.pos["x"] = player.pos["x"] - 4;
+                        if (!nudged) {
+                            player.pos["x"] = player.pos["x"] - 3;
+                        } else {
+                            player.pos["x"] = player.pos["x"] - 1.5;
+                        }
+                        nudged = true;
                     }
 
                     if (entry.pos["x"] < player.pos["x"]) {
-                        player.pos["x"] = player.pos["x"] + 4;
+                        if (!nudged) {
+                            player.pos["x"] = player.pos["x"] + 3;
+                        } else {
+                            player.pos["x"] = player.pos["x"] + 1.5;
+                        }
+                        nudged = true;
                     }
 
                     if (entry.pos["y"] > player.pos["y"]) {
-                        player.pos["y"] = player.pos["y"] - 4;
+                        if (!nudged) {
+                            player.pos["y"] = player.pos["y"] - 3;
+                        } else {
+                            player.pos["y"] = player.pos["y"] - 1.5;
+                        }
+                        nudged = true;
                     }
 
                     if (entry.pos["y"] < player.pos["y"]) {
-                        player.pos["y"] = player.pos["y"] + 4;
+                        if (!nudged) {
+                            player.pos["y"] = player.pos["y"] + 3;
+                        } else {
+                            player.pos["y"] = player.pos["y"] + 1.5;
+                        }
+                        nudged = true;
                     }
                 }
             });
@@ -727,6 +749,8 @@ document.onreadystatechange = function () {
                         var randomMotivation = Math.floor(
                             Math.floor(Math.random() * motivations.length) + 0
                         );
+
+                        scoreTextLayer.redraw = true;
 
                         scoreTextLayer.drawText(
                             motivations[randomMotivation],
