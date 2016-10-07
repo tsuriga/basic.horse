@@ -27,6 +27,7 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, ghostArray
     var xMultipler = 0;
     var yMultipler = 0;
     var scanDistance = 0;
+    var newOpacity = 0;
 
     scan.pos.x = where.x;
     scan.pos.y = where.y;
@@ -41,8 +42,10 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, ghostArray
         }
         for(var j = 0; j < fogArray.length; j++) {
             if (collisonBetween(scan, fogArray[j])) {
-                fogArray[j].opacity = scanDistance / 400;
-
+                newOpacity = scanDistance / 400;
+                if (fogArray[j].opacity >= newOpacity) {
+                    fogArray[j].opacity = newOpacity;
+                }
             }
         }
         for(var j = 0; j < ghostArray.length; j++) {
