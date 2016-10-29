@@ -891,21 +891,24 @@ document.onreadystatechange = function () {
                 backgroundImg2.pos.y = 0 - GAME_HEIGHT;
             }
 
-            creditsTextLayer.redraw = true;
 
-            creditsTextLayer.drawText(
-                getCredits(),
-                creditsTextLayer.x,
-                10,
-                '7pt "Verdana", Helvetica, sans-serif',
-                'white',
-                'left'
-            );
+            if (!gameState) {
+                creditsTextLayer.redraw = true;
 
-            if (creditsTextLayer.x == -2000) {
-                creditsTextLayer.x = GAME_WIDTH;
-            } else {
-                creditsTextLayer.x--;
+                creditsTextLayer.drawText(
+                    getCredits(),
+                    creditsTextLayer.x,
+                    10,
+                    '7pt "Verdana", Helvetica, sans-serif',
+                    'white',
+                    'left'
+                );
+
+                if (creditsTextLayer.x == -2000) {
+                    creditsTextLayer.x = GAME_WIDTH;
+                } else {
+                    creditsTextLayer.x--;
+                }
             }
         });
     }
