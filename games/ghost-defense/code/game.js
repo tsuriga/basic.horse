@@ -724,7 +724,6 @@ document.onreadystatechange = function () {
                     }
 
                     if (isGhostNear(ghostEntry, player)) {
-
                         if (getFreeRadar()) {
                             guiAlarm.visible = true;
 
@@ -738,10 +737,9 @@ document.onreadystatechange = function () {
 
                     bulletArray.forEach(function(bulletEntry) {
                         if(isEntityTouchingTarget(bulletEntry, ghostEntry, ENEMY_DEATH_RANGE)) {
-                            removeEntity(ghostEntry);
                             removeEntity(bulletEntry);
+                            removeEntity(ghostEntry);
                             getFreeAudio(1).play();
-                            ghostEntry.angriness = 0;
                         };
                     });
 
@@ -846,6 +844,7 @@ document.onreadystatechange = function () {
                         fileArray,
                         true
                     )
+
                     for(var j = 0; j < ghostArray.length; j++) {
                         if(ghostArray[j].opacity != 100) {
                             ghostArray[j].angriness = 0;

@@ -228,6 +228,8 @@ function spawnGhost(spawnPoints, player)
             entity.opacity = 0;
             entity.visible = true;
 
+            console.log("SPAWN");
+            console.log(entity)
             return entity;
         }
     }
@@ -277,9 +279,9 @@ function isEntityTouchingTarget(entity, target, range)
  */
 function removeEntity(entity)
 {
-    entity.visible = false;
     entity.pos.x = -10000;
     entity.pos.y = -10000;
+    entity.visible = false;
 }
 
 /**
@@ -410,13 +412,12 @@ function getNearestPositionInArray(posX, posY)
     return pos;
 }
 
-function isGhostNear(player, ghost) {
+function isGhostNear(entity, ghost) {
     if (
-        // ok
-        player.pos["x"] + player.size.width + ALARM_RANGE > ghost.pos.x &&
-        player.pos["x"] < ghost.pos["x"] + ghost.size.width + ALARM_RANGE &&
-        player.pos.y + player.size.height + ALARM_RANGE > ghost.pos.y &&
-        player.pos.y < ghost.pos.y + ghost.size.height + ALARM_RANGE
+        entity.pos["x"] + entity.size.width + ALARM_RANGE > ghost.pos.x &&
+        entity.pos["x"] < ghost.pos["x"] + ghost.size.width + ALARM_RANGE &&
+        entity.pos.y + entity.size.height + ALARM_RANGE > ghost.pos.y &&
+        entity.pos.y < ghost.pos.y + ghost.size.height + ALARM_RANGE
     ) {
         return true;
     } else {
