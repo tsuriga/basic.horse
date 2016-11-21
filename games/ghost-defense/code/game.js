@@ -117,6 +117,20 @@ document.onreadystatechange = function () {
         radarTextLayer.static = true;
         creditsTextLayer.static = true;
 
+        var motivations = [
+            "Maybe try harder next time?",
+            "Now you are just trapped here.",
+            "Ghosts got too spooky for ya, eh?",
+            "Open your eyes.",
+            "Hunt for the files, not ghosts.",
+            "You fight like a dairy farmer.",
+            "Now you've been turned into bits and pieces.",
+        ]
+
+        var randomMotivation = Math.floor(
+            Math.floor(Math.random() * motivations.length) + 0
+        );
+
         shadow.asset = new PixelJS.Sprite();
         shadow.asset.prepare({
             name: 'shadow.png',
@@ -638,7 +652,7 @@ document.onreadystatechange = function () {
                 }
 
                 if (score < 5) {
-                    music1.play();
+                    //music1.play();
                 }
 
                 if (score > 4) {
@@ -747,44 +761,6 @@ document.onreadystatechange = function () {
                             wallArray,
                             fogArray,
                             fileArray
-                        );
-
-                        scoreTextLayer.redraw = true;
-
-                        var gap = 50 - score;
-
-                        scoreTextLayer.drawText(
-                            'You were ' + gap + ' files away from the void!',
-                            318,
-                            100,
-                            '12pt "Lucida Console", Helvetica, sans-serif',
-                            'white',
-                            'center'
-                        );
-
-                        var motivations = [
-                            "Maybe try harder next time?",
-                            "Now you are just trapped here.",
-                            "Ghosts got too spooky for ya, eh?",
-                            "Open your eyes.",
-                            "Hunt for the files, not ghosts.",
-                            "You fight like a dairy farmer.",
-                            "Now you've been turned into bits and pieces.",
-                        ]
-
-                        var randomMotivation = Math.floor(
-                            Math.floor(Math.random() * motivations.length) + 0
-                        );
-
-                        scoreTextLayer.redraw = true;
-
-                        scoreTextLayer.drawText(
-                            motivations[randomMotivation],
-                            320,
-                            110,
-                            '10pt "Lucida Console", Helvetica, sans-serif',
-                            'yellow',
-                            'center'
                         );
                     };
                 });
@@ -902,6 +878,28 @@ document.onreadystatechange = function () {
                     '7pt "Verdana", Helvetica, sans-serif',
                     'white',
                     'left'
+                );
+
+                scoreTextLayer.redraw = true;
+
+                var gap = 50 - score;
+
+                scoreTextLayer.drawText(
+                    'You were ' + gap + ' files away from the void!',
+                    318,
+                    100,
+                    '12pt "Lucida Console", Helvetica, sans-serif',
+                    'white',
+                    'center'
+                );
+
+                scoreTextLayer.drawText(
+                    motivations[randomMotivation],
+                    320,
+                    110,
+                    '10pt "Lucida Console", Helvetica, sans-serif',
+                    'yellow',
+                    'center'
                 );
 
                 if (creditsTextLayer.x == -2000) {
