@@ -2,8 +2,7 @@
  * Ghost Defense 2D
  *   Copyright (C) 2016 Basic Horse (Olli Suoranta, Juho Saarelainen)
  *
- * Version 0.7
- * This game is under development and using Pixel.js library by rastating
+ * Version 1.0
  */
 
 const GAME_WIDTH = 640;
@@ -110,11 +109,9 @@ document.onreadystatechange = function () {
         var fogLayer = game.createLayer('invisible area')
         var scanLayer = game.createLayer('scan visible area')
         var scoreTextLayer = game.createLayer("scoreText");
-        var radarTextLayer = game.createLayer("radarText");
         var creditsTextLayer = game.createLayer("creditsText");
 
         scoreTextLayer.static = true;
-        radarTextLayer.static = true;
         creditsTextLayer.static = true;
 
         var motivations = [
@@ -149,7 +146,6 @@ document.onreadystatechange = function () {
         shadowLayer.zIndex = 2;
         fogLayer.zIndex = 2;
         scoreTextLayer.zIndex = 10;
-        radarTextLayer.zIndex = 10;
         creditsTextLayer.zIndex = 11;
 
         creditsTextLayer.x = 50;
@@ -557,37 +553,6 @@ document.onreadystatechange = function () {
                 var radarInterval = null;
 
                 if (radar) {
-                    radarTextLayer.redraw = true;
-                    radarTime = 9;
-
-                    radarTextLayer.drawText(
-                        radarTime + 1,
-                        radar.pos.x + 15,
-                        radar.pos.y,
-                        '13pt "Verdana", Helvetica, sans-serif',
-                        'brown',
-                        'center'
-                    );
-
-                    radarInterval = setInterval(function() {
-                        radarTextLayer.redraw = true;
-                        radarTextLayer.drawText(
-                            radarTime,
-                            radar.pos.x + 15,
-                            radar.pos.y,
-                            '14pt "Verdana", Helvetica, sans-serif',
-                            'brown',
-                            'center'
-                        );
-
-                        radarTime--;
-                    }, 1000);
-
-                    setTimeout(function() {
-                        radarTextLayer.redraw = true;
-                        clearInterval(radarInterval);
-                    }, 10000);
-
                     getFreeAudio(4).play();
                 }
             }
