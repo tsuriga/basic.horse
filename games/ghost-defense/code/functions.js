@@ -1,6 +1,3 @@
-/**
- * @return entity|null
- */
 function getFreeGhost() {
     for (var i = 0; i < NUM_GHOSTS; i++) {
         var ghost = ghostArray[i];
@@ -13,17 +10,17 @@ function getFreeGhost() {
     return null;
 }
 
-/**
- * @param object scan
- * @param object where
- * @param int    offsetX
- * @param int    offsetY
- * @param object fogArray
- * @param object wallArray
- * @param int    loopNum
- * @return int   loopNum
- */
-function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, ghostArray, fileArray, increaseAngriness) {
+function scanArea(
+    scan,
+    where,
+    offsetX,
+    offsetY,
+    fogArray,
+    wallArray,
+    ghostArray,
+    fileArray,
+    increaseAngriness
+) {
     var xMultipler = 0;
     var yMultipler = 0;
     var scanDistance = 0;
@@ -37,25 +34,31 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, ghostArray
             if (collisonBetween(scan, wallArray[j])) {
                 scan.pos.x = where.x + offsetX;
                 scan.pos.y = where.y + offsetY;
+
                 scanDistance = 0;
             }
         }
+
         for(var j = 0; j < fogArray.length; j++) {
             if (collisonBetween(scan, fogArray[j])) {
                 newOpacity = scanDistance / 400;
+
                 if (fogArray[j].opacity >= newOpacity) {
                     fogArray[j].opacity = newOpacity;
                 }
             }
         }
+
         for(var j = 0; j < ghostArray.length; j++) {
              if (collisonBetween(scan, ghostArray[j])) {
                 ghostArray[j].opacity = 100;
+
                 if ((ghostArray[j].angriness < 100) && increaseAngriness) {
                     ghostArray[j].angriness = ghostArray[j].angriness + ANGRINESS_STEP;
                 }
              }
         }
+
         for(var j = 0; j < fileArray.length; j++) {
              if (collisonBetween(scan, fileArray[j])) {
                  fileArray[j].opacity = 100;
@@ -64,16 +67,14 @@ function scanArea(scan, where, offsetX, offsetY, fogArray, wallArray, ghostArray
 
         xMultipler = Math.cos(scan.angle * Math.PI / 180);
         yMultipler = Math.sin(scan.angle * Math.PI / 180);
+
         scan.pos.x = scan.pos.x + SCAN_SPEED * xMultipler;
         scan.pos.y = scan.pos.y + SCAN_SPEED * yMultipler;
-        scanDistance = scanDistance + SCAN_SPEED
 
+        scanDistance = scanDistance + SCAN_SPEED
     }
 }
 
-/**
- * @return entity|null
- */
 function getFreeRadar() {
     for (var i = 0; i < NUM_RADARS; i++) {
         var radar = radarArray[i];
@@ -86,9 +87,6 @@ function getFreeRadar() {
     return null;
 }
 
-/**
- * @return entity|null
- */
 function getFreeBullet() {
     for (var i = 0; i < NUM_BULLETS; i++) {
         var b = bulletArray[i];
@@ -101,9 +99,6 @@ function getFreeBullet() {
     return null;
 }
 
-/**
- * @return entity|null
- */
 function getFreeFile() {
     for (var i = 0; i < NUM_FILES; i++) {
         var b = fileArray[i];
@@ -116,10 +111,6 @@ function getFreeFile() {
     return null;
 }
 
-/**
- * @param int type
- * @return entity|null
- */
 function getFreeAudio(type) {
     if (type === 0) {
         for (var i = 0; i < NUM_AUDIO; i++) {
@@ -184,11 +175,6 @@ function getFreeAudio(type) {
     return null;
 }
 
-/**
- * @param int spawnPoints
- * @param object player
- * @return object entity
- */
 function spawnFile(spawnPoints, player)
 {
     var entity = getFreeFile();
@@ -216,13 +202,6 @@ function spawnFile(spawnPoints, player)
     return null;
 }
 
-/**
- * Spawns ghosts but bewares of spawning next to player
- *
- * @param int spawnPoints
- * @param object player
- * @return object entity
- */
 function spawnGhost(spawnPoints, player)
 {
     var entity = getFreeGhost();
@@ -256,10 +235,6 @@ function spawnGhost(spawnPoints, player)
     return null;
 }
 
-/**
- * @param object entity
- * @param object target
- */
 function moveEntityToTarget(entity, target)
 {
     if (entity.visible) {
@@ -269,11 +244,6 @@ function moveEntityToTarget(entity, target)
     }
 }
 
-/**
- * @param object entity
- * @param object target
- * @param int range
- */
 function isEntityTouchingTarget(entity, target, range)
 {
     if (entity.visible) {
@@ -293,9 +263,6 @@ function isEntityTouchingTarget(entity, target, range)
     return false;
 }
 
-/**
- * @param object entity
- */
 function removeEntity(entity)
 {
     entity.pos.x = -10000;
@@ -303,15 +270,13 @@ function removeEntity(entity)
     entity.visible = false;
 }
 
-/**
- * @param object player
- */
 function shootFrom(player) {
     var bullet = getFreeBullet();
 
     if (bullet == null) return;
 
     bullet.direction = player.lastDirection;
+
     if (bullet.direction == 0) return;
 
     getFreeAudio(0).play();
@@ -325,37 +290,30 @@ function shootFrom(player) {
             bullet.velocity.x = 0;
             bullet.velocity.y = BULLET_SPEED;
             break;
-
         case PixelJS.Directions.UpRight:
             bullet.velocity.x = BULLET_SPEED;
             bullet.velocity.y = BULLET_SPEED / 2;
             break;
-
         case PixelJS.Directions.UpLeft:
             bullet.velocity.x = BULLET_SPEED;
             bullet.velocity.y = BULLET_SPEED / 2;
             break;
-
         case PixelJS.Directions.Left:
             bullet.velocity.x = BULLET_SPEED;
             bullet.velocity.y = BULLET_SPEED;
             break;
-
         case PixelJS.Directions.Right:
             bullet.velocity.x = BULLET_SPEED;
             bullet.velocity.y = 0;
             break;
-
         case PixelJS.Directions.DownRight:
             bullet.velocity.x = BULLET_SPEED;
             bullet.velocity.y = BULLET_SPEED / 2;
             break;
-
         case PixelJS.Directions.Down:
             bullet.velocity.x = 0;
             bullet.velocity.y = BULLET_SPEED;
             break;
-
         case PixelJS.Directions.DownLeft:
             bullet.velocity.x = BULLET_SPEED;
             bullet.velocity.y = BULLET_SPEED / 2;
@@ -363,10 +321,6 @@ function shootFrom(player) {
     }
 }
 
-/**
- * @param object firstObject
- * @param object secondObject
- */
 function collisonBetween(firstObject, secondObject) {
     return firstObject.pos["x"] + firstObject.size.width > secondObject.pos.x &&
         firstObject.pos["x"] < secondObject.pos["x"] + secondObject.size.width &&
@@ -374,11 +328,6 @@ function collisonBetween(firstObject, secondObject) {
         firstObject.pos.y < secondObject.pos.y + secondObject.size.height;
 }
 
-/**
- * @param int          posX
- * @param int          posY
- * @param int|optional offsetX
- */
 function convertPositionToIsometric(posX, posY, offsetX) {
     var offsetX = (offsetX == undefined) ? 0 : offsetX;
     var pos = {};
@@ -389,11 +338,6 @@ function convertPositionToIsometric(posX, posY, offsetX) {
     return pos;
 }
 
-/**
- * @param int          posX
- * @param int          posY
- * @param int|optional offsetX
- */
 function convertPositionToCartesian(posX, posY, offsetX) {
     var offsetX = (offsetX == undefined) ? 0 : offsetX;
     var pos = {};
@@ -404,7 +348,6 @@ function convertPositionToCartesian(posX, posY, offsetX) {
     return pos;
 }
 
-
 function getCoordinatesInMapByArrayPosition(posX, posY) {
     var currentPosition = getNearestPositionInArray(posX, posY);
     var pos = convertPositionToIsometric(currentPosition.x *
@@ -412,10 +355,7 @@ function getCoordinatesInMapByArrayPosition(posX, posY) {
 
     return pos;
 }
-/**
- * @param int posX
- * @param int posY
- */
+
 function getNearestPositionInArray(posX, posY)
 {
     var pos = {};
@@ -444,12 +384,6 @@ function isGhostNear(entity, ghost) {
     }
 }
 
-/**
- * @param int   posX
- * @param int   posY
- * @param array map
- * @param int   itemType
- */
 function setItemInMap(posX, posY, map, itemType) {
     map[posX][posY] = itemType;
 }
@@ -574,9 +508,8 @@ function setTriggerScan() {
 }
 
 function getCredits() {
-    return "Ghost Defense (v.0.7) is a game by basic horse.\
+    return "Ghost Defense (v.1.0) is a game by basic horse.\
         Implemented by using pixel.js engine by rastating\
-        Currently game is unfinished but soon to be released as open-source.\
-        If you want to value the work of Olli Suoranta, Juho Saarelainen and Mikko Vieru, consider doing a paypal donation via our website (basic.horse).\
-        Special thanks to Tomi Ruusala and Petri Mölläri.";
+        If you want to value the work of Olli Suoranta, Juho Saarelainen, consider doing a paypal donation via our website (basic.horse).\
+        Special thanks to Mikko Vieru, Tomi Ruusala and Petri Mölläri.";
 }

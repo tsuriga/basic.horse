@@ -1,8 +1,10 @@
 /*
  * Ghost Defense 2D
- *   Copyright (C) 2016 Basic Horse (Olli Suoranta, Juho Saarelainen)
+ * Copyright (C) 2016 Basic Horse (Olli Suoranta and Juho Saarelainen)
  *
- * Version 1.0
+ * This is the first game of Basic Horse.
+ *
+ * Version 0.9
  */
 
 const GAME_WIDTH = 640;
@@ -78,7 +80,11 @@ document.onreadystatechange = function () {
             map = maps[unfinishedLevels[randomNumber]];
             mapNumber = unfinishedLevels[randomNumber];
         } else {
-            alert("You have finished all the levels man, clear the cookies to reset!");
+            alert("Thank you for playing the first game of Basic Horse. Finishing this project was a long \
+                   and bumpy journey, but it had to be done. With the knowledge and know-how gathered from this project, \
+                   Basic Horse can create better projects in the future. See the latest buzz from our website basic.horse. \
+                   If you want to play this game from the start all over again, clear your cookies. \
+            ");
         }
 
         // State variables
@@ -101,7 +107,7 @@ document.onreadystatechange = function () {
         var playerScanLoop = 0;
 
         // Layers
-        var backgroundLayer = game.createLayer('backgroudn');
+        var backgroundLayer = game.createLayer('background');
         var guiLayer = game.createLayer('gui');
         var enemyLayer = game.createLayer('enemies');
         var itemLayer = game.createLayer('items');
@@ -118,7 +124,7 @@ document.onreadystatechange = function () {
 
         var motivations = [
             "Maybe try harder next time?",
-            "Now you are just trapped here.",
+            "Use the radars wisely.",
             "Ghosts got too spooky for ya, eh?",
             "Open your eyes.",
             "Hunt for the files, not ghosts.",
@@ -246,674 +252,678 @@ document.onreadystatechange = function () {
 
         // -- Level generation ------------------------------------------------------
 
-        for(var i = 0; i < map.length; i++) {
-            var mapBlock = map[i];
+        if (unfinishedLevels.length != 0) {
+            for(var i = 0; i < map.length; i++) {
+                var mapBlock = map[i];
 
-            for(var j = 0; j < mapBlock.length; j++) {
-                if (map[i][j] == 4 || // wall-green
-                    map[i][j] == 5 || // wall-blue
-                    map[i][j] == 6 || // wall-red
-                    map[i][j] == 7 || // walls-white
-                    map[i][j] == 8 || // walls-short
-                    map[i][j] == 9    // walls-sign
-                ) {
-                    var wall = itemLayer.createEntity();
+                for(var j = 0; j < mapBlock.length; j++) {
+                    if (map[i][j] == 4 || // wall-green
+                        map[i][j] == 5 || // wall-blue
+                        map[i][j] == 6 || // wall-red
+                        map[i][j] == 7 || // walls-white
+                        map[i][j] == 8 || // walls-short
+                        map[i][j] == 9    // walls-sign
+                    ) {
+                        var wall = itemLayer.createEntity();
 
-                    wall.size["width"] = BLOCK_RANGE;
-                    wall.size["height"] = BLOCK_RANGE;
+                        wall.size["width"] = BLOCK_RANGE;
+                        wall.size["height"] = BLOCK_RANGE;
+
+                        var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
+
+                        wall.pos["x"] = isometricPosition["x"];
+                        wall.pos["y"] = isometricPosition["y"];
+
+                        wall.asset = new PixelJS.Sprite();
+                        wall.asset.prepare({
+                            name: 'wall' + map[i][j] + '.png',
+                        });
+
+                        wallArray.push(wall);
+
+                        var wallFront = frontLayer.createEntity();
+                        wallFront.size["width"] = BLOCK_RANGE;
+                        wallFront.size["height"] = BLOCK_RANGE;
+
+                        wallFront.pos["x"] = isometricPosition["x"];
+                        wallFront.pos["y"] = isometricPosition["y"];
+
+                        wallFront.opacity = 1;
+
+                        wallFront.asset = new PixelJS.Sprite();
+                        wallFront.asset.prepare({
+                            name: 'wall' + map[i][j] + '.png',
+                        });
+
+                        wallFrontArray.push(wallFront);
+
+                    } else if (map[i][j] == 2) {
+                        var ghostSpawn = itemLayer.createEntity();
+
+                        ghostSpawn.size["width"] = BLOCK_RANGE;
+                        ghostSpawn.size["height"] = BLOCK_RANGE;
+
+                        var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
+
+                        ghostSpawn.pos["x"] = isometricPosition["x"];
+                        ghostSpawn.pos["y"] = isometricPosition["y"];
+
+                        ghostSpawn.asset = new PixelJS.Sprite();
+                        ghostSpawn.asset.prepare({
+                            name: 'ghostSpawn.png',
+                        });
+
+                        ghostSpawn.opacity = 0.0;
+                        ghostSpawnArray.push(ghostSpawn);
+                    } else if (map[i][j] == 3) {
+                        var fileSpawn = itemLayer.createEntity();
+
+                        fileSpawn.size["width"] = BLOCK_RANGE;
+                        fileSpawn.size["height"] = BLOCK_RANGE;
+
+                        var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
+
+                        fileSpawn.asset = new PixelJS.Sprite();
+                        fileSpawn.asset.prepare({
+                            name: 'ghostSpawn.png',
+                        });
+
+                        fileSpawn.opacity = 0.0;
+
+                        fileSpawn.pos["x"] = isometricPosition["x"];
+                        fileSpawn.pos["y"] = isometricPosition["y"];
+
+                        fileSpawnArray.push(fileSpawn);
+                    } else if (map[i][j] == 1) {
+                        var playerLayer = game.createLayer('players');
+
+                        var player = new PixelJS.Player();
+                        player.addToLayer(playerLayer);
+
+                        var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
+
+                        player.pos["x"] = isometricPosition["x"];
+                        player.pos["y"] = isometricPosition["y"];
+                        player.size["width"] = PLAYER_RANGE;
+                        player.size["height"] = PLAYER_RANGE;
+                        player.velocity = { x: 100, y: 50 };
+                        player.asset = new PixelJS.AnimatedSprite();
+                        playerLayer.zIndex = 3;
+
+                        player.asset.prepare({
+                            name: 'char.png',
+                            frames: 3,
+                            rows: 8,
+                            speed: 100,
+                            defaultFrame: 1
+                        });
+                    }
+
+                    var fog = fogLayer.createEntity();
+
+                    fog.size["width"] = BLOCK_RANGE;
+                    fog.size["height"] = BLOCK_RANGE;
 
                     var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
 
-                    wall.pos["x"] = isometricPosition["x"];
-                    wall.pos["y"] = isometricPosition["y"];
+                    fog.pos["x"] = isometricPosition["x"];
+                    fog.pos["y"] = isometricPosition["y"];
 
-                    wall.asset = new PixelJS.Sprite();
-                    wall.asset.prepare({
-                        name: 'wall' + map[i][j] + '.png',
+                    fog.visible = true; // WIP, fog disabled at the moment
+                    fog.opacity = 0.5;
+                    fog.asset = new PixelJS.Sprite();
+                    fog.asset.prepare({
+                        name: 'fog.png',
                     });
 
-                    wallArray.push(wall);
+                    fogArray.push(fog);
 
-                    var wallFront = frontLayer.createEntity();
-                    wallFront.size["width"] = BLOCK_RANGE;
-                    wallFront.size["height"] = BLOCK_RANGE;
-
-                    wallFront.pos["x"] = isometricPosition["x"];
-                    wallFront.pos["y"] = isometricPosition["y"];
-
-                    wallFront.opacity = 1;
-
-                    wallFront.asset = new PixelJS.Sprite();
-                    wallFront.asset.prepare({
-                        name: 'wall' + map[i][j] + '.png',
-                    });
-
-                    wallFrontArray.push(wallFront);
-
-                } else if (map[i][j] == 2) {
-                    var ghostSpawn = itemLayer.createEntity();
-
-                    ghostSpawn.size["width"] = BLOCK_RANGE;
-                    ghostSpawn.size["height"] = BLOCK_RANGE;
-
-                    var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
-
-                    ghostSpawn.pos["x"] = isometricPosition["x"];
-                    ghostSpawn.pos["y"] = isometricPosition["y"];
-
-                    ghostSpawn.asset = new PixelJS.Sprite();
-                    ghostSpawn.asset.prepare({
-                        name: 'ghostSpawn.png',
-                    });
-
-                    ghostSpawn.opacity = 0.0;
-                    ghostSpawnArray.push(ghostSpawn);
-                } else if (map[i][j] == 3) {
-                    var fileSpawn = itemLayer.createEntity();
-
-                    fileSpawn.size["width"] = BLOCK_RANGE;
-                    fileSpawn.size["height"] = BLOCK_RANGE;
-
-                    var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
-
-                    fileSpawn.asset = new PixelJS.Sprite();
-                    fileSpawn.asset.prepare({
-                        name: 'ghostSpawn.png',
-                    });
-
-                    fileSpawn.opacity = 0.0;
-
-                    fileSpawn.pos["x"] = isometricPosition["x"];
-                    fileSpawn.pos["y"] = isometricPosition["y"];
-
-                    fileSpawnArray.push(fileSpawn);
-                } else if (map[i][j] == 1) {
-                    var playerLayer = game.createLayer('players');
-
-                    var player = new PixelJS.Player();
-                    player.addToLayer(playerLayer);
-
-                    var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
-
-                    player.pos["x"] = isometricPosition["x"];
-                    player.pos["y"] = isometricPosition["y"];
-                    player.size["width"] = PLAYER_RANGE;
-                    player.size["height"] = PLAYER_RANGE;
-                    player.velocity = { x: 100, y: 50 };
-                    player.asset = new PixelJS.AnimatedSprite();
-                    playerLayer.zIndex = 3;
-
-                    player.asset.prepare({
-                        name: 'char.png',
-                        frames: 3,
-                        rows: 8,
-                        speed: 100,
-                        defaultFrame: 1
-                    });
+                    currentBlockPosX = currentBlockPosX + MAP_BLOCK_SIZE_X;
                 }
 
-                var fog = fogLayer.createEntity();
+                currentBlockPosY = currentBlockPosY + MAP_BLOCK_SIZE_Y;
+                currentBlockPosX = MAP_BLOCK_SIZE_X;
+            }
 
-                fog.size["width"] = BLOCK_RANGE;
-                fog.size["height"] = BLOCK_RANGE;
+            // -- Entities ------------------------------------------------------
 
-                var isometricPosition = convertPositionToIsometric(currentBlockPosX, currentBlockPosY, GRID_OFFSET);
+            var backgroundImg2 = backgroundLayer.createEntity();
 
-                fog.pos["x"] = isometricPosition["x"];
-                fog.pos["y"] = isometricPosition["y"];
+            backgroundImg2.visible = true;
+            backgroundImg2.asset = new PixelJS.Sprite();
+            backgroundImg2.pos = { x: 0, y: 0 - GAME_HEIGHT };
 
-                fog.visible = true; // WIP, fog disabled at the moment
-                fog.opacity = 0.5;
-                fog.asset = new PixelJS.Sprite();
-                fog.asset.prepare({
-                    name: 'fog.png',
+            backgroundImg2.asset.prepare({
+                name: 'background.png'
+            });
+
+            var backgroundImg = backgroundLayer.createEntity();
+
+            backgroundImg.visible = true;
+            backgroundImg.asset = new PixelJS.Sprite();
+            backgroundImg.pos = { x: 0, y: 0 };
+
+            backgroundImg.asset.prepare({
+                name: 'background.png'
+            });
+
+            var guiInfo = guiLayer.createEntity();
+
+            guiInfo.visible = true;
+            guiInfo.asset = new PixelJS.Sprite();
+            guiInfo.pos = { x: 85, y: 110 };
+
+            guiInfo.asset.prepare({
+                name: 'info.png'
+            });
+
+            var guiAlarm = guiLayer.createEntity();
+
+            guiAlarm.visible = false;
+            guiAlarm.asset = new PixelJS.Sprite();
+            guiAlarm.pos = { x: 160, y: 0 };
+
+            guiAlarm.asset.prepare({
+                name: 'alarm.png'
+            });
+
+            var floorImg = guiLayer.createEntity();
+
+            floorImg.visible = true;
+            floorImg.asset = new PixelJS.Sprite();
+            floorImg.pos = { x: 88, y: 40 };
+
+            floorImg.asset.prepare({
+                name: 'floorImg.png'
+            });
+
+            for (var i=0; i < NUM_GHOSTS; i++) {
+                var ghost = enemyLayer.createEntity();
+
+                ghost.visible = false;
+                ghost.asset = new PixelJS.AnimatedSprite();
+                ghost.pos = { x: -10000, y: -10000 };
+                ghost.velocity = { x: 100, y: 50 };
+                ghost.size["width"] = PLAYER_RANGE;
+                ghost.size["height"] = PLAYER_RANGE;
+                ghost.opacity = 0;
+                ghost.angriness = 0;
+
+                ghost.asset.prepare({
+                    name: 'ghost.png',
+                    frames: 6,
+                    rows: 1,
+                    speed: 60,
+                    defaultFrame: 1
                 });
 
-                fogArray.push(fog);
-
-                currentBlockPosX = currentBlockPosX + MAP_BLOCK_SIZE_X;
+                ghostArray.push(ghost);
             }
 
-            currentBlockPosY = currentBlockPosY + MAP_BLOCK_SIZE_Y;
-            currentBlockPosX = MAP_BLOCK_SIZE_X;
-        }
+            ghostSpawner = setInterval(function() {
+                if (currentAmountOfGhosts < amountOfGhosts) {
+                    var ghost = spawnGhost(ghostSpawnArray, player);
 
-        // -- Entities ------------------------------------------------------
-
-        var backgroundImg2 = backgroundLayer.createEntity();
-
-        backgroundImg2.visible = true;
-        backgroundImg2.asset = new PixelJS.Sprite();
-        backgroundImg2.pos = { x: 0, y: 0 - GAME_HEIGHT };
-
-        backgroundImg2.asset.prepare({
-            name: 'background.png'
-        });
-
-        var backgroundImg = backgroundLayer.createEntity();
-
-        backgroundImg.visible = true;
-        backgroundImg.asset = new PixelJS.Sprite();
-        backgroundImg.pos = { x: 0, y: 0 };
-
-        backgroundImg.asset.prepare({
-            name: 'background.png'
-        });
-
-        var guiInfo = guiLayer.createEntity();
-
-        guiInfo.visible = true;
-        guiInfo.asset = new PixelJS.Sprite();
-        guiInfo.pos = { x: 85, y: 110 };
-
-        guiInfo.asset.prepare({
-            name: 'info.png'
-        });
-
-        var guiAlarm = guiLayer.createEntity();
-
-        guiAlarm.visible = false;
-        guiAlarm.asset = new PixelJS.Sprite();
-        guiAlarm.pos = { x: 160, y: 0 };
-
-        guiAlarm.asset.prepare({
-            name: 'alarm.png'
-        });
-
-        var floorImg = guiLayer.createEntity();
-
-        floorImg.visible = true;
-        floorImg.asset = new PixelJS.Sprite();
-        floorImg.pos = { x: 88, y: 40 };
-
-        floorImg.asset.prepare({
-            name: 'floorImg.png'
-        });
-
-        for (var i=0; i < NUM_GHOSTS; i++) {
-            var ghost = enemyLayer.createEntity();
-
-            ghost.visible = false;
-            ghost.asset = new PixelJS.AnimatedSprite();
-            ghost.pos = { x: -10000, y: -10000 };
-            ghost.velocity = { x: 100, y: 50 };
-            ghost.size["width"] = PLAYER_RANGE;
-            ghost.size["height"] = PLAYER_RANGE;
-            ghost.opacity = 0;
-            ghost.angriness = 0;
-
-            ghost.asset.prepare({
-                name: 'ghost.png',
-                frames: 6,
-                rows: 1,
-                speed: 60,
-                defaultFrame: 1
-            });
-
-            ghostArray.push(ghost);
-        }
-
-        ghostSpawner = setInterval(function() {
-            if (currentAmountOfGhosts < amountOfGhosts) {
-                var ghost = spawnGhost(ghostSpawnArray, player);
-
-                if (ghost) {
-                    angryGhostArray.push(ghost);
-                    currentAmountOfGhosts++;
-                    getFreeAudio(3).play();
+                    if (ghost) {
+                        angryGhostArray.push(ghost);
+                        currentAmountOfGhosts++;
+                        getFreeAudio(3).play();
+                    }
                 }
+            }, Math.floor((Math.random() * 700) + 200));
+
+            for (var i=0; i < NUM_RADARS; i++) {
+                var radar = itemLayer.createEntity();
+
+                radar.visible = false;
+                radar.asset = new PixelJS.Sprite();
+
+                radar.asset.prepare({
+                    name: 'radar.png'
+                });
+
+                radar.onCollide(function (entity) {
+                    if (radarArray.indexOf(entity) > 0)  {
+                        this.visible = false;
+                    }
+                });
+
+                radarArray.push(radar);
             }
-        }, Math.floor((Math.random() * 700) + 200));
 
-        for (var i=0; i < NUM_RADARS; i++) {
-            var radar = itemLayer.createEntity();
+            var scan = scanLayer.createEntity();
 
-            radar.visible = false;
-            radar.asset = new PixelJS.Sprite();
+            scan.pos.x = player.pos.x;
+            scan.pos.y = player.pos.y;
+            scan.size["width"] = 4;
+            scan.size["height"] = 4;
 
-            radar.asset.prepare({
-                name: 'radar.png'
+            scan.angle = 90 * i;
+            scan.visible = false;
+            scan.asset = new PixelJS.Sprite();
+            scan.asset.prepare({
+                name: 'scan.png',
             });
 
-            radar.onCollide(function (entity) {
-                if (radarArray.indexOf(entity) > 0)  {
-                    this.visible = false;
-                }
-            });
+            // -- Collisions ------------------------------------------------------
 
-            radarArray.push(radar);
-        }
+            playerLayer.registerCollidable(player);
 
-        var scan = scanLayer.createEntity();
-
-        scan.pos.x = player.pos.x;
-        scan.pos.y = player.pos.y;
-        scan.size["width"] = 4;
-        scan.size["height"] = 4;
-
-        scan.angle = 90 * i;
-        scan.visible = false;
-        scan.asset = new PixelJS.Sprite();
-        scan.asset.prepare({
-            name: 'scan.png',
-        });
-
-        // -- Collisions ------------------------------------------------------
-
-        playerLayer.registerCollidable(player);
-
-        wallArray.forEach(function(entry) {
-            itemLayer.registerCollidable(entry);
-        });
-
-        fogArray.forEach(function(entry) {
-            fogLayer.registerCollidable(entry);
-        });
-
-        player.onCollide(function (entity) {
             wallArray.forEach(function(entry) {
-                if (entity === entry) {
-                    var nudged = false;
+                itemLayer.registerCollidable(entry);
+            });
 
-                    if (entry.pos["x"] > player.pos["x"]) {
-                        if (!nudged) {
-                            player.pos["x"] = player.pos["x"] - 3;
-                        } else {
-                            player.pos["x"] = player.pos["x"] - 1.5;
-                        }
-                        nudged = true;
-                    }
+            fogArray.forEach(function(entry) {
+                fogLayer.registerCollidable(entry);
+            });
 
-                    if (entry.pos["x"] < player.pos["x"]) {
-                        if (!nudged) {
-                            player.pos["x"] = player.pos["x"] + 3;
-                        } else {
-                            player.pos["x"] = player.pos["x"] + 1.5;
-                        }
-                        nudged = true;
-                    }
+            player.onCollide(function (entity) {
+                wallArray.forEach(function(entry) {
+                    if (entity === entry) {
+                        var nudged = false;
 
-                    if (entry.pos["y"] > player.pos["y"]) {
-                        if (!nudged) {
-                            player.pos["y"] = player.pos["y"] - 3;
-                        } else {
-                            player.pos["y"] = player.pos["y"] - 1.5;
+                        if (entry.pos["x"] > player.pos["x"]) {
+                            if (!nudged) {
+                                player.pos["x"] = player.pos["x"] - 3;
+                            } else {
+                                player.pos["x"] = player.pos["x"] - 1.5;
+                            }
+                            nudged = true;
                         }
-                        nudged = true;
-                    }
 
-                    if (entry.pos["y"] < player.pos["y"]) {
-                        if (!nudged) {
-                            player.pos["y"] = player.pos["y"] + 3;
-                        } else {
-                            player.pos["y"] = player.pos["y"] + 1.5;
+                        if (entry.pos["x"] < player.pos["x"]) {
+                            if (!nudged) {
+                                player.pos["x"] = player.pos["x"] + 3;
+                            } else {
+                                player.pos["x"] = player.pos["x"] + 1.5;
+                            }
+                            nudged = true;
                         }
-                        nudged = true;
+
+                        if (entry.pos["y"] > player.pos["y"]) {
+                            if (!nudged) {
+                                player.pos["y"] = player.pos["y"] - 3;
+                            } else {
+                                player.pos["y"] = player.pos["y"] - 1.5;
+                            }
+                            nudged = true;
+                        }
+
+                        if (entry.pos["y"] < player.pos["y"]) {
+                            if (!nudged) {
+                                player.pos["y"] = player.pos["y"] + 3;
+                            } else {
+                                player.pos["y"] = player.pos["y"] + 1.5;
+                            }
+                            nudged = true;
+                        }
                     }
+                });
+            });
+
+
+            // -- Additional key events  ------------------------------------------------------
+
+            game.on('keyDown', function (keyCode) {
+                if (keyCode === PixelJS.Keys.Space) {
+                    shootFrom(player);
+                }
+
+                if (keyCode === PixelJS.Keys.Shift) {
+                    var currentlyStandingOn = getNearestPositionInArray(player.pos["x"], player.pos["y"]);
+                    var isometricPosition = convertPositionToIsometric(currentlyStandingOn.x * MAP_BLOCK_SIZE_X, currentlyStandingOn.y * MAP_BLOCK_SIZE_Y, GRID_OFFSET);
+
+                    setItemInMap(currentlyStandingOn.x, currentlyStandingOn.y, map);
+
+                    var radar = setRadarInPosition(isometricPosition.x, isometricPosition.y, 5);
+                    var radarInterval = null;
+
+                    if (radar) {
+                        getFreeAudio(4).play();
+                    }
+                }
+
+                // Toggle debug mode
+                if (keyCode === PixelJS.Keys.D) {
+                    if(debug) {
+                        debug = false;
+                    } else {
+                        debug = true;
+                    }
+                    // Debug radar
+                    for(var i = 0; i < scanArray.length; i++) {
+                        scanArray[i].visible = debug;
+                    }
+                }
+
+                if (keyCode === PixelJS.Keys.R) {
+                    location.reload();
                 }
             });
-        });
 
+            // -- Game loop ------------------------------------------------------
 
-        // -- Additional key events  ------------------------------------------------------
+            spawnFile(fileSpawnArray, player);
 
-        game.on('keyDown', function (keyCode) {
-            if (keyCode === PixelJS.Keys.Space) {
-                shootFrom(player);
+            game.clamp = function(value) {
+                return Math.max(0, Math.min(1, value));
             }
 
-            if (keyCode === PixelJS.Keys.Shift) {
-                var currentlyStandingOn = getNearestPositionInArray(player.pos["x"], player.pos["y"]);
-                var isometricPosition = convertPositionToIsometric(currentlyStandingOn.x * MAP_BLOCK_SIZE_X, currentlyStandingOn.y * MAP_BLOCK_SIZE_Y, GRID_OFFSET);
+            game.smoothStep = function(min, max, value) {
+                var x = game.clamp((value-min)/(max-min));
+                return x*x*(3 - 2*x);
+            };
 
-                setItemInMap(currentlyStandingOn.x, currentlyStandingOn.y, map);
-
-                var radar = setRadarInPosition(isometricPosition.x, isometricPosition.y, 5);
-                var radarInterval = null;
-
-                if (radar) {
-                    getFreeAudio(4).play();
-                }
+            game.distance = function(a,b) {
+                return Math.sqrt((a.pos.x - b.pos.x) * (a.pos.x - b.pos.x) + (a.pos.y - b.pos.y) * (a.pos.y - b.pos.y));
             }
 
-            // Toggle debug mode
-            if (keyCode === PixelJS.Keys.D) {
-                if(debug) {
-                    debug = false;
-                } else {
-                    debug = true;
-                }
-                // Debug radar
-                for(var i = 0; i < scanArray.length; i++) {
-                    scanArray[i].visible = debug;
-                }
+            game.candleLight = function (distance) {
+                return 1 - game.smoothStep(20, Math.sin(game.elapsedTime /(Math.cos(game.elapsedTime / 1000) * 30 + 200)) * 10 + 200, distance);
             }
 
-            if (keyCode === PixelJS.Keys.R) {
-                location.reload();
-            }
-        });
+            game.fogger = function(tile) {
+                var tileBrightness = game.candleLight(game.distance(tile, player));
 
-        // -- Game loop ------------------------------------------------------
+                for (var i=0;i<radarArray.length;i++) {
+                    tileBrightness += game.candleLight(game.distance(radarArray[i], tile));
+                }
 
-        spawnFile(fileSpawnArray, player);
-
-        game.clamp = function(value) {
-            return Math.max(0, Math.min(1, value));
-        }
-
-        game.smoothStep = function(min, max, value) {
-            var x = game.clamp((value-min)/(max-min));
-            return x*x*(3 - 2*x);
-        };
-
-        game.distance = function(a,b) {
-            return Math.sqrt((a.pos.x - b.pos.x) * (a.pos.x - b.pos.x) + (a.pos.y - b.pos.y) * (a.pos.y - b.pos.y));
-        }
-
-        game.candleLight = function (distance) {
-            return 1 - game.smoothStep(20, Math.sin(game.elapsedTime /(Math.cos(game.elapsedTime / 1000) * 30 + 200)) * 10 + 200, distance);
-        }
-
-        game.fogger = function(tile) {
-            var tileBrightness = game.candleLight(game.distance(tile, player));
-
-            for (var i=0;i<radarArray.length;i++) {
-                tileBrightness += game.candleLight(game.distance(radarArray[i], tile));
+                tile.opacity = game.clamp(tileBrightness);
             }
 
-            tile.opacity = game.clamp(tileBrightness);
-        }
+            game.loadAndRun(function (elapsedTime, dt) {
+                game.elapsedTime = elapsedTime;
 
-        game.loadAndRun(function (elapsedTime, dt) {
-            game.elapsedTime = elapsedTime;
-
-            if (gameState) {
-                if (score < 5) {
-                    music1.play();
-                    amountOfGhosts = 1;
-                }
-
-                if (score > 4) {
-                    music1.pause();
-                    music2.play();
-                    amountOfGhosts = 2;
-                }
-
-                if (score > 9) {
-                    music2.pause();
-                    music3.play();
-                    amountOfGhosts = 3;
-                }
-
-                if (score > 19) {
-                    music3.pause();
-                    music4.play();
-                    amountOfGhosts = 4;
-                }
-
-                if (score > 29) {
-                    music4.pause();
-                    music5.play();
-                    amountOfGhosts = 5;
-                }
-
-                if (score > 39) {
-                    music5.pause();
-                    music6.play();
-                    amountOfGhosts = 6;
-                }
-
-                if (score > 44) {
-                    music6.pause();
-                    music7.play();
-                    amountOfGhosts = 7;
-                }
-
-                if (score >= 50) {
-                    music7.pause();
-
-                    if (!progressSaved) {
-                        levelFinished = true;
-                        enterTheVoid(
-                            mapNumber,
-                            wallArray,
-                            wallFrontArray,
-                            ghostArray,
-                            fogArray,
-                            fileArray
-                        );
+                if (gameState) {
+                    if (score < 5) {
+                        music1.play();
+                        amountOfGhosts = 1;
                     }
 
-                    fontSize = Math.floor((Math.random() * 12) + 9);
-
-                    scoreTextLayer.redraw = true;
-
-                    if (unfinishedLevels.length != 0) {
-                        scoreTextLayer.drawText(
-                            "Complete the rest " + unfinishedLevels.length + " levels!",
-                            380,
-                            player.pos.y,
-                            fontSize + 'pt "Courier New", Helvetica, sans-serif',
-                            'white',
-                            'center'
-                        );
-                    } else {
-                        scoreTextLayer.drawText(
-                            "You beat the dragon, gongratulations!",
-                            380,
-                            player.pos.y,
-                            fontSize + 'pt "Courier New", Helvetica, sans-serif',
-                            'white',
-                            'center'
-                        );
-                    }
-                }
-
-                wallArray.map(game.fogger);
-                wallFrontArray.map(game.fogger);
-
-                guiAlarm.visible = false;
-
-                angryGhostArray.forEach(function(ghostEntry) {
-                    if(ghostEntry.angriness >= ANGRINESS_LIMIT) {
-                        moveEntityToTarget(ghostEntry, player);
-                    }
-
-                    if (isGhostNear(ghostEntry, player)) {
-                        if (getFreeRadar()) {
-                            guiAlarm.visible = true;
-
-                            var audio = getFreeAudio(5);
-
-                            if (audio) {
-                                audio.play();
-                            }
-                        }
-                    }
-
-                    bulletArray.forEach(function(bulletEntry) {
-                        if(isEntityTouchingTarget(bulletEntry, ghostEntry, ENEMY_DEATH_RANGE)) {
-                            removeEntity(bulletEntry);
-                            removeEntity(ghostEntry);
-                            getFreeAudio(1).play();
-                            currentAmountOfGhosts--;
-                        };
-                    });
-
-                    if (isEntityTouchingTarget(ghostEntry, player, PLAYER_DEATH_RANGE)) {
-                        clearInterval(ghostSpawner);
-                        gameState = false;
-
-                        gameOverMusic.play();
-
-                        guiAlarm.dispose();
-                        floorImg.dispose();
-
+                    if (score > 4) {
                         music1.pause();
-                        music2.pause();
-                        music3.pause();
-                        music4.pause();
-                        music5.pause();
-                        music6.pause();
-                        music7.pause();
-                        gameOver(
-                            player,
-                            ghostArray,
-                            wallFrontArray,
-                            wallArray,
-                            fogArray,
-                            fileArray
-                        );
-                    };
-                });
+                        music2.play();
+                        amountOfGhosts = 2;
+                    }
 
-                fileArray.forEach(function(fileEntry) {
-                    if(isEntityTouchingTarget(player, fileEntry, BLOCK_RANGE)) {
-                        getFreeAudio(2).play();
-                        removeEntity(fileEntry);
-                        score++;
+                    if (score > 9) {
+                        music2.pause();
+                        music3.play();
+                        amountOfGhosts = 3;
+                    }
+
+                    if (score > 19) {
+                        music3.pause();
+                        music4.play();
+                        amountOfGhosts = 4;
+                    }
+
+                    if (score > 29) {
+                        music4.pause();
+                        music5.play();
+                        amountOfGhosts = 5;
+                    }
+
+                    if (score > 39) {
+                        music5.pause();
+                        music6.play();
+                        amountOfGhosts = 6;
+                    }
+
+                    if (score > 44) {
+                        music6.pause();
+                        music7.play();
+                        amountOfGhosts = 7;
+                    }
+
+                    if (score >= 50) {
+                        music7.pause();
+
+                        if (!progressSaved) {
+                            levelFinished = true;
+                            enterTheVoid(
+                                mapNumber,
+                                wallArray,
+                                wallFrontArray,
+                                ghostArray,
+                                fogArray,
+                                fileArray
+                            );
+                        }
+
+                        fontSize = Math.floor((Math.random() * 12) + 9);
 
                         scoreTextLayer.redraw = true;
 
+                        if (unfinishedLevels.length != 0) {
+                            scoreTextLayer.drawText(
+                                "Complete the rest " + unfinishedLevels.length - 1 + " levels!",
+                                380,
+                                player.pos.y,
+                                fontSize + 'pt "Courier New", Helvetica, sans-serif',
+                                'white',
+                                'center'
+                            );
+                        } else {
+                            scoreTextLayer.drawText(
+                                "You beat the dragon, gongratulations!",
+                                380,
+                                player.pos.y,
+                                fontSize + 'pt "Courier New", Helvetica, sans-serif',
+                                'yellow',
+                                'center'
+                            );
+
+                            backgroundImg.pos.y = 0;
+                            backgroundImg2.pos.y = 0;
+                        }
+                    }
+
+                    wallArray.map(game.fogger);
+                    wallFrontArray.map(game.fogger);
+
+                    guiAlarm.visible = false;
+
+                    angryGhostArray.forEach(function(ghostEntry) {
+                        if(ghostEntry.angriness >= ANGRINESS_LIMIT) {
+                            moveEntityToTarget(ghostEntry, player);
+                        }
+
+                        if (isGhostNear(ghostEntry, player)) {
+                            if (getFreeRadar()) {
+                                guiAlarm.visible = true;
+
+                                var audio = getFreeAudio(5);
+
+                                if (audio) {
+                                    audio.play();
+                                }
+                            }
+                        }
+
+                        bulletArray.forEach(function(bulletEntry) {
+                            if(isEntityTouchingTarget(bulletEntry, ghostEntry, ENEMY_DEATH_RANGE)) {
+                                removeEntity(bulletEntry);
+                                removeEntity(ghostEntry);
+                                getFreeAudio(1).play();
+                                currentAmountOfGhosts--;
+                            };
+                        });
+
+                        if (isEntityTouchingTarget(ghostEntry, player, PLAYER_DEATH_RANGE)) {
+                            clearInterval(ghostSpawner);
+                            gameState = false;
+
+                            gameOverMusic.play();
+
+                            guiAlarm.dispose();
+                            floorImg.dispose();
+
+                            music1.pause();
+                            music2.pause();
+                            music3.pause();
+                            music4.pause();
+                            music5.pause();
+                            music6.pause();
+                            music7.pause();
+                            gameOver(
+                                player,
+                                ghostArray,
+                                wallFrontArray,
+                                wallArray,
+                                fogArray,
+                                fileArray
+                            );
+                        };
+                    });
+
+                    fileArray.forEach(function(fileEntry) {
+                        if(isEntityTouchingTarget(player, fileEntry, BLOCK_RANGE)) {
+                            getFreeAudio(2).play();
+                            removeEntity(fileEntry);
+                            score++;
+
+                            scoreTextLayer.redraw = true;
+
+                            scoreTextLayer.drawText(
+                                score + "/50",
+                                455,
+                                75,
+                                '50pt "Trebuchet MS", Helvetica, sans-serif',
+                                'white',
+                                'center'
+                            );
+
+                            spawnFile(fileSpawnArray, player);
+                        };
+                    });
+
+                    for(var i = 0; i < wallFrontArray.length; i++) {
+                        if (player.pos["y"] + MAP_BLOCK_SIZE_Y / 2 < wallFrontArray[i].pos["y"]) {
+                            wallFrontArray[i].visible = true;
+                        } else {
+                            wallFrontArray[i].visible = false;
+                        }
+                    }
+
+                    var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
+
+                    if (triggerScan) {
+                        setTimeout(function() { setTriggerScan(); }, SCAN_TIMEOUT);
+                    }
+
+                    if ((lastPosition.x != currentPosInArray.x) ||
+                        (lastPosition.y != currentPosInArray.y) || triggerScan) {
+
+                        lastPosition =  currentPosInArray
+                        triggerScan = false;
+
+                        for(var j = 0; j < fogArray.length; j++) {
+                            fogArray[j].opacity = 0.7;
+                        }
+
+                        for(var j = 0; j < ghostArray.length; j++) {
+                            ghostArray[j].opacity = 0;
+                        }
+
+                        for(var j = 0; j < fileArray.length; j++) {
+                            fileArray[j].opacity = 0;
+                        }
+
+                        for(var j = 0; j < radarArray.length; j++) {
+                            if(radarArray[j].pos.x >= 1){
+                                scanArea(
+                                    scan,
+                                    radarArray[j].pos,
+                                    3,
+                                    4,
+                                    fogArray,
+                                    wallArray,
+                                    ghostArray,
+                                    fileArray,
+                                    false
+                                )
+                            }
+                        }
+
+                        scanArea(
+                            scan,
+                            player.pos,
+                            3,
+                            4,
+                            fogArray,
+                            wallArray,
+                            ghostArray,
+                            fileArray,
+                            true
+                        )
+
+                        for(var j = 0; j < ghostArray.length; j++) {
+                            if(ghostArray[j].opacity != 100) {
+                                ghostArray[j].angriness = 0;
+                            }
+                        }
+
+
+                    }
+                }
+
+                backgroundImg.pos.y++;
+                backgroundImg2.pos.y++;
+
+                if (backgroundImg.pos.y === GAME_HEIGHT) {
+                    backgroundImg.pos.y = 0;
+                }
+
+                if (backgroundImg2.pos.y === 0) {
+                    backgroundImg2.pos.y = 0 - GAME_HEIGHT;
+                }
+
+
+                if (!gameState) {
+                    creditsTextLayer.redraw = true;
+
+                    creditsTextLayer.drawText(
+                        getCredits(),
+                        creditsTextLayer.x,
+                        10,
+                        '7pt "Verdana", Helvetica, sans-serif',
+                        'white',
+                        'left'
+                    );
+
+                    scoreTextLayer.redraw = true;
+
+                    var gap = 50 - score;
+
+                    if (!levelFinished) {
                         scoreTextLayer.drawText(
-                            score + "/50",
-                            455,
-                            75,
-                            '50pt "Trebuchet MS", Helvetica, sans-serif',
+                            'You were ' + gap + ' files away from the next level!',
+                            318,
+                            100,
+                            '12pt "Lucida Console", Helvetica, sans-serif',
                             'white',
                             'center'
                         );
 
-                        spawnFile(fileSpawnArray, player);
-                    };
-                });
+                        scoreTextLayer.drawText(
+                            motivations[randomMotivation],
+                            320,
+                            110,
+                            '10pt "Lucida Console", Helvetica, sans-serif',
+                            'yellow',
+                            'center'
+                        );
+                    }
 
-                for(var i = 0; i < wallFrontArray.length; i++) {
-                    if (player.pos["y"] + MAP_BLOCK_SIZE_Y / 2 < wallFrontArray[i].pos["y"]) {
-                        wallFrontArray[i].visible = true;
+                    if (creditsTextLayer.x == -2000) {
+                        creditsTextLayer.x = GAME_WIDTH;
                     } else {
-                        wallFrontArray[i].visible = false;
+                        creditsTextLayer.x--;
                     }
                 }
-
-                var currentPosInArray = getCoordinatesInMapByArrayPosition(player.pos.x, player.pos.y);
-
-                if (triggerScan) {
-                    setTimeout(function() { setTriggerScan(); }, SCAN_TIMEOUT);
-                }
-
-                if ((lastPosition.x != currentPosInArray.x) ||
-                    (lastPosition.y != currentPosInArray.y) || triggerScan) {
-
-                    lastPosition =  currentPosInArray
-                    triggerScan = false;
-
-                    for(var j = 0; j < fogArray.length; j++) {
-                        fogArray[j].opacity = 0.7;
-                    }
-
-                    for(var j = 0; j < ghostArray.length; j++) {
-                        ghostArray[j].opacity = 0;
-                    }
-
-                    for(var j = 0; j < fileArray.length; j++) {
-                        fileArray[j].opacity = 0;
-                    }
-
-                    // @todo there are 3 nested fors at best (== heavy), re-think?
-                    for(var j = 0; j < radarArray.length; j++) {
-                        if(radarArray[j].pos.x >= 1){
-                            scanArea(
-                                scan,
-                                radarArray[j].pos,
-                                3,
-                                4,
-                                fogArray,
-                                wallArray,
-                                ghostArray,
-                                fileArray,
-                                false
-                            )
-                        }
-                    }
-
-                    scanArea(
-                        scan,
-                        player.pos,
-                        3,
-                        4,
-                        fogArray,
-                        wallArray,
-                        ghostArray,
-                        fileArray,
-                        true
-                    )
-
-                    for(var j = 0; j < ghostArray.length; j++) {
-                        if(ghostArray[j].opacity != 100) {
-                            ghostArray[j].angriness = 0;
-                        }
-                    }
-
-
-                }
-            }
-
-            backgroundImg.pos.y++;
-            backgroundImg2.pos.y++;
-
-            if (backgroundImg.pos.y === GAME_HEIGHT) {
-                backgroundImg.pos.y = 0;
-            }
-
-            if (backgroundImg2.pos.y === 0) {
-                backgroundImg2.pos.y = 0 - GAME_HEIGHT;
-            }
-
-
-            if (!gameState) {
-                creditsTextLayer.redraw = true;
-
-                creditsTextLayer.drawText(
-                    getCredits(),
-                    creditsTextLayer.x,
-                    10,
-                    '7pt "Verdana", Helvetica, sans-serif',
-                    'white',
-                    'left'
-                );
-
-                scoreTextLayer.redraw = true;
-
-                var gap = 50 - score;
-
-                if (!levelFinished) {
-                    scoreTextLayer.drawText(
-                        'You were ' + gap + ' files away from the next level!',
-                        318,
-                        100,
-                        '12pt "Lucida Console", Helvetica, sans-serif',
-                        'white',
-                        'center'
-                    );
-
-                    scoreTextLayer.drawText(
-                        motivations[randomMotivation],
-                        320,
-                        110,
-                        '10pt "Lucida Console", Helvetica, sans-serif',
-                        'yellow',
-                        'center'
-                    );
-                }
-
-                if (creditsTextLayer.x == -2000) {
-                    creditsTextLayer.x = GAME_WIDTH;
-                } else {
-                    creditsTextLayer.x--;
-                }
-            }
-        });
+            });
+        }
     }
 }
