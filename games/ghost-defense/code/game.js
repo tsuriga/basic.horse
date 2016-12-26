@@ -179,18 +179,21 @@ document.onreadystatechange = function () {
             var soundThrow = game.createSound('sound-throw' + i);
             var soundGhostKill = game.createSound('sound-ghost-kill' + i);
             var soundScore = game.createSound('sound-score' + i);
+            var soundAppear = game.createSound('sound-appear' + i);
             var soundRadar = game.createSound('sound-radar' + i);
             var soundAlarm = game.createSound('sound-alarm' + i);
 
             soundThrow.prepare({ name: 'throw.ogg' });
             soundGhostKill.prepare({ name: 'ghostKill.ogg' });
             soundScore.prepare({ name: 'score.ogg' });
+            soundAppear.prepare({ name: 'appear.ogg' });
             soundRadar.prepare({ name: 'radar.ogg' });
             soundAlarm.prepare({ name: 'alarm.ogg' });
 
             audioArray[0].push(soundThrow);
             audioArray[1].push(soundGhostKill);
             audioArray[2].push(soundScore);
+            audioArray[3].push(soundAppear);
             audioArray[4].push(soundRadar);
             audioArray[5].push(soundAlarm);
         }
@@ -443,6 +446,7 @@ document.onreadystatechange = function () {
                 if (ghost) {
                     angryGhostArray.push(ghost);
                     currentAmountOfGhosts++;
+                    getFreeAudio(3).play();
                 }
             }
         }, Math.floor((Math.random() * 700) + 200));
