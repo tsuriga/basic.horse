@@ -466,7 +466,7 @@ function setRadarInPosition(posX, posY) {
 
     setTimeout(function() {
         removeEntity(radar);
-    }, 10000);
+    }, 3000);
 
     return radar;
 }

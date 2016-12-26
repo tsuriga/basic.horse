@@ -34,7 +34,6 @@ var currentAmountOfGhosts = 0;
 var score = 0;
 var triggerScan = true;
 var gameState = true;
-var radarTime = 9;
 var lastPosition = {x:0, y:0};
 var fileArray = [];
 var bulletArray = [];
@@ -180,21 +179,18 @@ document.onreadystatechange = function () {
             var soundThrow = game.createSound('sound-throw' + i);
             var soundGhostKill = game.createSound('sound-ghost-kill' + i);
             var soundScore = game.createSound('sound-score' + i);
-            var soundFoot = game.createSound('sound-foot' + i);
             var soundRadar = game.createSound('sound-radar' + i);
             var soundAlarm = game.createSound('sound-alarm' + i);
 
             soundThrow.prepare({ name: 'throw.ogg' });
             soundGhostKill.prepare({ name: 'ghostKill.ogg' });
             soundScore.prepare({ name: 'score.ogg' });
-            soundFoot.prepare({ name: 'foot.ogg' });
             soundRadar.prepare({ name: 'radar.ogg' });
             soundAlarm.prepare({ name: 'alarm.ogg' });
 
             audioArray[0].push(soundThrow);
             audioArray[1].push(soundGhostKill);
             audioArray[2].push(soundScore);
-            audioArray[3].push(soundFoot);
             audioArray[4].push(soundRadar);
             audioArray[5].push(soundAlarm);
         }
@@ -615,12 +611,6 @@ document.onreadystatechange = function () {
             game.elapsedTime = elapsedTime;
 
             if (gameState) {
-                if (player.direction != 0) {
-                    //if (getFreeAudio(3)) {
-                    //    getFreeAudio(3).play();
-                    // }
-                }
-
                 if (score < 5) {
                     music1.play();
                     amountOfGhosts = 1;
