@@ -190,6 +190,9 @@ document.onreadystatechange = function () {
         var gameOverMusic = game.createSound('sound-gameover');
         gameOverMusic.prepare({ name: 'gameover.ogg' });
 
+        var creditsMusic = game.createSound('sound-credits-1');
+        creditsMusic.prepare({ name: 'credits.ogg' });
+
         for (var i=0; i < NUM_AUDIO; i++) {
             var soundThrow = game.createSound('sound-throw' + i);
             var soundGhostKill = game.createSound('sound-ghost-kill' + i);
@@ -929,6 +932,8 @@ document.onreadystatechange = function () {
             });
 
             game.loadAndRun(function (elapsedTime, dt) {
+                creditsMusic.play();
+
                 creditsTextLayer.x--;
                 creditsTextLayer.x--;
 

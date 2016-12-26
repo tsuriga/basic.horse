@@ -515,5 +515,5 @@ function getCredits() {
 }
 
 function getEndingText() {
-    return "T H A N K  Y O U for playing the first game by Basic Horse. Finishing this project was a long and bumpy journey just like this credits roll. It took over an year to get this game finished but it had to be done. With the knowledge and know-how gathered from this project, Basic Horse can create cooler projects with less time. See the latest buzz from our website (basic.horse). If you want to play this game from the start all over again, hit refresh or r.";
+    return "T H A N K  Y O U for playing the first game by Basic Horse. Finishing this project was a long and bumpy journey just like this credits roll. It took over an year to get this game finished but it had to be done. With the knowledge and know-how gathered from this project, Basic Horse can create cooler projects in the future with less time. Watch our website (basic.horse) and if you want to start this game all over again, hit r.";
 }
