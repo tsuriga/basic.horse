@@ -225,8 +225,6 @@ function spawnGhost(spawnPoints, player) /* @todo do not spawn and move ghosts t
             entity.pos.x = spawnPoint.pos.x;
             entity.pos.y = spawnPoint.pos.y;
 
-            console.log("Spawn to " + entity.pos.x + ", " + entity.pos.y);
-
             entity.opacity = 0;
             entity.visible = true;
 

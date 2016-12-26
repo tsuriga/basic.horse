@@ -17,11 +17,11 @@ const PLAYER_RANGE = 15;
 const ALARM_RANGE = 40;
 const PLAYER_DEATH_RANGE = 14;
 const ENEMY_DEATH_RANGE = 25;
-const NUM_BULLETS = 10;
-const NUM_FILES = 2;
-const NUM_AUDIO = 25;
-const NUM_GHOSTS = 5;
-const NUM_RADARS = 1;
+const NUM_BULLETS = 10; /* amount of preloaded assets */
+const NUM_FILES = 2; /* amount of preloaded assets */
+const NUM_AUDIO = 25; /* amount of preloaded assets */
+const NUM_GHOSTS = 10; /* amount of preloaded assets */
+const NUM_RADARS = 1; /* amount of preloaded assets */
 const BULLET_SPEED = 230;
 const SCAN_RESOLUTION = 0.08;
 const SCAN_SPEED = 5;
@@ -29,6 +29,7 @@ const ANGRINESS_STEP = 5;
 const ANGRINESS_LIMIT = 90;
 const SCAN_TIMEOUT = 500;
 
+var amountOfGhosts = 1;
 var score = 0;
 var triggerScan = true;
 var gameState = true;
@@ -439,10 +440,12 @@ document.onreadystatechange = function () {
         }
 
         ghostSpawner = setInterval(function() {
-            var ghost = spawnGhost(ghostSpawnArray, player);
+            if (angryGhostArray.length < amountOfGhosts) {
+                var ghost = spawnGhost(ghostSpawnArray, player);
 
-            if (ghost) {
-                angryGhostArray.push(ghost);
+                if (ghost) {
+                    angryGhostArray.push(ghost);
+                }
             }
         }, Math.floor((Math.random() * 700) + 200));
 
@@ -618,36 +621,43 @@ document.onreadystatechange = function () {
 
                 if (score < 5) {
                     //music1.play();
+                    amountOfGhosts = 1;
                 }
 
                 if (score > 4) {
                     music1.pause();
                     music2.play();
+                    amountOfGhosts = 2;
                 }
 
                 if (score > 9) {
                     music2.pause();
                     music3.play();
+                    amountOfGhosts = 3;
                 }
 
                 if (score > 19) {
                     music3.pause();
                     music4.play();
+                    amountOfGhosts = 4;
                 }
 
                 if (score > 29) {
                     music4.pause();
                     music5.play();
+                    amountOfGhosts = 5;
                 }
 
                 if (score > 39) {
                     music5.pause();
                     music6.play();
+                    amountOfGhosts = 6;
                 }
 
                 if (score > 44) {
                     music6.pause();
                     music7.play();
+                    amountOfGhosts = 7;
                 }
 
                 if (score >= 50) {
