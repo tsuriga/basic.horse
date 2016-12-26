@@ -79,8 +79,6 @@ document.onreadystatechange = function () {
             randomNumber = Math.floor(Math.random() * unfinishedLevels.length) + 0;
             map = maps[unfinishedLevels[randomNumber]];
             mapNumber = unfinishedLevels[randomNumber];
-        } else {
-            alert("As a tribute for the world wide web and it\'s history, the ending of this game is presented by using Javascript alert box. T H A N K  Y O U ! for playing the first game by Basic Horse. Finishing this project was a long and bumpy journey (over an year) but it had to be done. With the knowledge and know-how gathered from this project, Basic Horse can create cooler projects with less time. See the latest buzz from our website (basic.horse). If you want to play this game from the start all over again, clear your cookies. Byee!");
         }
 
         // State variables
@@ -692,13 +690,26 @@ document.onreadystatechange = function () {
                         fontSize = Math.floor((Math.random() * 12) + 9);
 
                         scoreTextLayer.redraw = true;
+                        var levelsLeft = unfinishedLevels.length - 1;
 
-                        if (unfinishedLevels.length != 0) {
+                        if (levelsLeft > 0) {
+
                             scoreTextLayer.drawText(
-                                "Complete the rest " + unfinishedLevels.length + " levels!",
+                                "Complete the rest " + levelsLeft + " levels!",
                                 380,
                                 player.pos.y,
                                 fontSize + 'pt "Courier New", Helvetica, sans-serif',
+                                'white',
+                                'center'
+                            );
+                        }
+
+                        if (levelsLeft == 0) {
+                            scoreTextLayer.drawText(
+                                "You beat the dragon, hit refresh son.",
+                                380,
+                                player.pos.y,
+                                '13pt "Courier New", Helvetica, sans-serif',
                                 'white',
                                 'center'
                             );
@@ -908,6 +919,29 @@ document.onreadystatechange = function () {
                         creditsTextLayer.x--;
                     }
                 }
+            });
+        } else { /* After beating the game */
+            game.on('keyDown', function (keyCode) {
+                if (keyCode === PixelJS.Keys.R) {
+                    document.cookie = "progress=[]";
+                    location.reload();
+                }
+            });
+
+            game.loadAndRun(function (elapsedTime, dt) {
+                creditsTextLayer.x--;
+                creditsTextLayer.x--;
+
+                creditsTextLayer.drawText(
+                    getEndingText(),
+                    creditsTextLayer.x,
+                    280,
+                    '30pt "Verdana", Helvetica, sans-serif',
+                    'white',
+                    'left'
+                );
+                creditsTextLayer.redraw = true;
+
             });
         }
     }

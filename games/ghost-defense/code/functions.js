@@ -513,3 +513,7 @@ function getCredits() {
         If you want to value the work of Olli Suoranta, Juho Saarelainen, consider doing a paypal donation via our website (basic.horse).\
         Special thanks to Mikko Vieru, Tomi Ruusala and Petri Mölläri.";
 }
+
+function getEndingText() {
+    return "T H A N K  Y O U for playing the first game by Basic Horse. Finishing this project was a long and bumpy journey just like this credits roll. It took over an year to get this game finished but it had to be done. With the knowledge and know-how gathered from this project, Basic Horse can create cooler projects with less time. See the latest buzz from our website (basic.horse). If you want to play this game from the start all over again, hit refresh or r.";
+}
