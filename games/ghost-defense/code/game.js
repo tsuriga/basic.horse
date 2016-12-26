@@ -80,11 +80,7 @@ document.onreadystatechange = function () {
             map = maps[unfinishedLevels[randomNumber]];
             mapNumber = unfinishedLevels[randomNumber];
         } else {
-            alert("Thank you for playing the first game of Basic Horse. Finishing this project was a long \
-                   and bumpy journey, but it had to be done. With the knowledge and know-how gathered from this project, \
-                   Basic Horse can create better projects in the future. See the latest buzz from our website basic.horse. \
-                   If you want to play this game from the start all over again, clear your cookies. \
-            ");
+            alert("As a tribute for the world wide web and it\'s history, the ending of this game is presented by using Javascript alert box. T H A N K  Y O U ! for playing the first game by Basic Horse. Finishing this project was a long and bumpy journey (over an year) but it had to be done. With the knowledge and know-how gathered from this project, Basic Horse can create cooler projects with less time. See the latest buzz from our website (basic.horse). If you want to play this game from the start all over again, clear your cookies. Byee!");
         }
 
         // State variables
@@ -698,28 +694,14 @@ document.onreadystatechange = function () {
                         scoreTextLayer.redraw = true;
 
                         if (unfinishedLevels.length != 0) {
-                            var levelsLeft = unfinishedLevels.length() - 1;
-
                             scoreTextLayer.drawText(
-                                "Complete the rest " + levelsLeft + " levels!",
+                                "Complete the rest " + unfinishedLevels.length + " levels!",
                                 380,
                                 player.pos.y,
                                 fontSize + 'pt "Courier New", Helvetica, sans-serif',
                                 'white',
                                 'center'
                             );
-                        } else {
-                            scoreTextLayer.drawText(
-                                "You beat the dragon, gongratulations!",
-                                380,
-                                player.pos.y,
-                                fontSize + 'pt "Courier New", Helvetica, sans-serif',
-                                'yellow',
-                                'center'
-                            );
-
-                            backgroundImg.pos.y = 0;
-                            backgroundImg2.pos.y = 0;
                         }
                     }
 
