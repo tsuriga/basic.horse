@@ -30,6 +30,7 @@ const ANGRINESS_LIMIT = 90;
 const SCAN_TIMEOUT = 500;
 
 var amountOfGhosts = 1;
+var currentAmountOfGhosts = 0;
 var score = 0;
 var triggerScan = true;
 var gameState = true;
@@ -440,11 +441,12 @@ document.onreadystatechange = function () {
         }
 
         ghostSpawner = setInterval(function() {
-            if (angryGhostArray.length < amountOfGhosts) {
+            if (currentAmountOfGhosts < amountOfGhosts) {
                 var ghost = spawnGhost(ghostSpawnArray, player);
 
                 if (ghost) {
                     angryGhostArray.push(ghost);
+                    currentAmountOfGhosts++;
                 }
             }
         }, Math.floor((Math.random() * 700) + 200));
@@ -614,13 +616,13 @@ document.onreadystatechange = function () {
 
             if (gameState) {
                 if (player.direction != 0) {
-                    if (getFreeAudio(3)) {
-                        getFreeAudio(3).play();
-                    }
+                    //if (getFreeAudio(3)) {
+                    //    getFreeAudio(3).play();
+                    // }
                 }
 
                 if (score < 5) {
-                    //music1.play();
+                    music1.play();
                     amountOfGhosts = 1;
                 }
 
@@ -715,6 +717,7 @@ document.onreadystatechange = function () {
                             removeEntity(bulletEntry);
                             removeEntity(ghostEntry);
                             getFreeAudio(1).play();
+                            currentAmountOfGhosts--;
                         };
                     });
 

@@ -193,15 +193,27 @@ function spawnFile(spawnPoints, player)
 {
     var entity = getFreeFile();
 
-    randomFile = Math.floor((Math.random() * spawnPoints.length) + 0);
-    spawnPoint = spawnPoints[randomFile];
+    randomPoint = Math.floor((Math.random() * spawnPoints.length) + 0);
+    spawnPoint = spawnPoints[randomPoint];
 
-    entity.pos.x = spawnPoint.pos.x;
-    entity.pos.y = spawnPoint.pos.y;
+    while (spawnPoint.spawned) {
+        spawnPoint.spawned = false;
 
-    entity.visible = true;
+        randomPoint = Math.floor((Math.random() * spawnPoints.length) + 0);
+        spawnPoint = spawnPoints[randomPoint];
+    }
 
-    return entity;
+    if (entity) {
+        entity.pos.x = spawnPoint.pos.x;
+        entity.pos.y = spawnPoint.pos.y;
+
+        spawnPoint.spawned = true;
+        entity.visible = true;
+
+        return entity;
+    }
+
+    return null;
 }
 
 /**
@@ -211,17 +223,24 @@ function spawnFile(spawnPoints, player)
  * @param object player
  * @return object entity
  */
-function spawnGhost(spawnPoints, player) /* @todo do not spawn and move ghosts too near to other entitis */
+function spawnGhost(spawnPoints, player)
 {
     var entity = getFreeGhost();
 
     randomPoint = Math.floor((Math.random() * spawnPoints.length) + 0);
     spawnPoint = spawnPoints[randomPoint];
 
+    while (spawnPoint.spawned) {
+        spawnPoint.spawned = false;
+
+        randomPoint = Math.floor((Math.random() * spawnPoints.length) + 0);
+        spawnPoint = spawnPoints[randomPoint];
+    }
+
     if (Math.abs(player.pos.x - spawnPoint.pos.x) > 60 &&
         Math.abs(player.pos.y - spawnPoint.pos.y) > 60
     ) {
-        if (entity && !spawnPoint.spawned) {
+        if (entity) {
             entity.pos.x = spawnPoint.pos.x;
             entity.pos.y = spawnPoint.pos.y;
 
