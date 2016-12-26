@@ -735,6 +735,13 @@ document.onreadystatechange = function () {
                         guiAlarm.dispose();
                         floorImg.dispose();
 
+                        music1.pause();
+                        music2.pause();
+                        music3.pause();
+                        music4.pause();
+                        music5.pause();
+                        music6.pause();
+                        music7.pause();
                         gameOver(
                             player,
                             ghostArray,
