@@ -211,7 +211,7 @@ function spawnFile(spawnPoints, player)
  * @param object player
  * @return object entity
  */
-function spawnGhost(spawnPoints, player)
+function spawnGhost(spawnPoints, player) /* @todo do not spawn and move ghosts too near to other entitis */
 {
     var entity = getFreeGhost();
 
@@ -221,15 +221,17 @@ function spawnGhost(spawnPoints, player)
     if (Math.abs(player.pos.x - spawnPoint.pos.x) > 60 &&
         Math.abs(player.pos.y - spawnPoint.pos.y) > 60
     ) {
-        if (entity) {
+        if (entity && !spawnPoint.spawned) {
             entity.pos.x = spawnPoint.pos.x;
             entity.pos.y = spawnPoint.pos.y;
+
+            console.log("Spawn to " + entity.pos.x + ", " + entity.pos.y);
 
             entity.opacity = 0;
             entity.visible = true;
 
-            console.log("SPAWN");
-            console.log(entity)
+            spawnPoint.spawned = true;
+
             return entity;
         }
     }
