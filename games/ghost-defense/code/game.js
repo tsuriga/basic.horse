@@ -697,8 +697,10 @@ document.onreadystatechange = function () {
                         scoreTextLayer.redraw = true;
 
                         if (unfinishedLevels.length != 0) {
+                            var levelsLeft = unfinishedLevels.length() - 1;
+
                             scoreTextLayer.drawText(
-                                "Complete the rest " + unfinishedLevels.length - 1 + " levels!",
+                                "Complete the rest " + levelsLeft + " levels!",
                                 380,
                                 player.pos.y,
                                 fontSize + 'pt "Courier New", Helvetica, sans-serif',
@@ -895,9 +897,9 @@ document.onreadystatechange = function () {
 
                     scoreTextLayer.redraw = true;
 
-                    var gap = 50 - score;
-
                     if (!levelFinished) {
+                        var gap = 50 - score;
+
                         scoreTextLayer.drawText(
                             'You were ' + gap + ' files away from the next level!',
                             318,
