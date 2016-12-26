@@ -142,7 +142,8 @@ document.onreadystatechange = function () {
             "Back in 2013, this game was 3D Puzzle FPS and called 'Trojan Defense'",
             "Fun fact: there once were footstep sounds but they lowered the fps.",
             "Fact: this game had a problematic and complex development history.",
-            "Fun fact: you really should use Linux instead of Windows or OSX"
+            "Fun fact: you really should use Linux instead of Windows or OSX",
+            "Hidden trick: bullets can be left as mines by changing the direction while shooting"
         ]
 
         var randomMotivation = Math.floor(
