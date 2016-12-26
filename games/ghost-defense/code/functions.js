@@ -490,7 +490,7 @@ function saveProgress(mapNumber) {
 
         var progressJson = "progress=" + JSON.stringify(progress);
 
-        document.cookie = progressJson;
+        document.cookie = progressJson + "; expires=Fri, 31 Dec 9999 23:59:59 GMT";
     } else {
         var savedProgressArray = JSON.parse(savedProgress);
 
@@ -498,7 +498,7 @@ function saveProgress(mapNumber) {
             savedProgressArray.push(mapNumber);
             var progressJson = "progress=" + JSON.stringify(savedProgressArray);
 
-            document.cookie = progressJson;
+            document.cookie = progressJson + "; expires=Fri, 31 Dec 9999 23:59:59 GMT";
         }
     }
 

@@ -674,14 +674,25 @@ document.onreadystatechange = function () {
 
                     scoreTextLayer.redraw = true;
 
-                    scoreTextLayer.drawText(
-                        "This is the end, my friend_",
-                        380,
-                        player.pos.y,
-                        fontSize + 'pt "Courier New", Helvetica, sans-serif',
-                        'white',
-                        'center'
-                    );
+                    if (unfinishedLevels.length > 0) {
+                        scoreTextLayer.drawText(
+                            "Complete the rest " + unfinishedLevels.length + " levels!",
+                            380,
+                            player.pos.y,
+                            fontSize + 'pt "Courier New", Helvetica, sans-serif',
+                            'white',
+                            'center'
+                        );
+                    } else {
+                        scoreTextLayer.drawText(
+                            "You beat the dragon, gongratulations!",
+                            380,
+                            player.pos.y,
+                            fontSize + 'pt "Courier New", Helvetica, sans-serif',
+                            'white',
+                            'center'
+                        );
+                    }
                 }
 
                 wallArray.map(game.fogger);
