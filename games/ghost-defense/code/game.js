@@ -34,6 +34,7 @@ var currentAmountOfGhosts = 0;
 var score = 0;
 var triggerScan = true;
 var gameState = true;
+var levelFinished = false;
 var lastPosition = {x:0, y:0};
 var fileArray = [];
 var bulletArray = [];
@@ -123,6 +124,19 @@ document.onreadystatechange = function () {
             "Hunt for the files, not ghosts.",
             "You fight like a dairy farmer.",
             "Now you've been turned into bits and pieces.",
+            "By the way, check out http://basic.horse",
+            "Remember the days when games itself teached you instead of tutorials?",
+            "Bacon is good for me.",
+            "Maybe you should shut down your pc and clean your apartment.",
+            "You don't seem to be a very skilled player.",
+            "2spooky4me.",
+            "Did you know that this game stores level progress on cookies!",
+            "This game took over an year to complete.",
+            "Fun fact: This game uses pixel.js because Olli misheard pixi.js.",
+            "Back in 2013, this game was 3D Puzzle FPS and called 'Trojan Defense'",
+            "Fun fact: there once were footstep sounds but they lowered the fps.",
+            "Fact: this game had a problematic and complex development history.",
+            "Fun fact: you really should use Linux instead of Windows or OSX"
         ]
 
         var randomMotivation = Math.floor(
@@ -660,6 +674,7 @@ document.onreadystatechange = function () {
                     music7.pause();
 
                     if (!progressSaved) {
+                        levelFinished = true;
                         enterTheVoid(
                             mapNumber,
                             wallArray,
@@ -674,7 +689,7 @@ document.onreadystatechange = function () {
 
                     scoreTextLayer.redraw = true;
 
-                    if (unfinishedLevels.length > 0) {
+                    if (unfinishedLevels.length != 0) {
                         scoreTextLayer.drawText(
                             "Complete the rest " + unfinishedLevels.length + " levels!",
                             380,
@@ -873,23 +888,25 @@ document.onreadystatechange = function () {
 
                 var gap = 50 - score;
 
-                scoreTextLayer.drawText(
-                    'You were ' + gap + ' files away from the void!',
-                    318,
-                    100,
-                    '12pt "Lucida Console", Helvetica, sans-serif',
-                    'white',
-                    'center'
-                );
+                if (!levelFinished) {
+                    scoreTextLayer.drawText(
+                        'You were ' + gap + ' files away from the next level!',
+                        318,
+                        100,
+                        '12pt "Lucida Console", Helvetica, sans-serif',
+                        'white',
+                        'center'
+                    );
 
-                scoreTextLayer.drawText(
-                    motivations[randomMotivation],
-                    320,
-                    110,
-                    '10pt "Lucida Console", Helvetica, sans-serif',
-                    'yellow',
-                    'center'
-                );
+                    scoreTextLayer.drawText(
+                        motivations[randomMotivation],
+                        320,
+                        110,
+                        '10pt "Lucida Console", Helvetica, sans-serif',
+                        'yellow',
+                        'center'
+                    );
+                }
 
                 if (creditsTextLayer.x == -2000) {
                     creditsTextLayer.x = GAME_WIDTH;
