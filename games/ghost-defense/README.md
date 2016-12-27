@@ -1,4 +1,3 @@
-Current version: 1.0
+![alt tag](https://raw.githubusercontent.com/basic-horse/primary-projects/master/games/ghost-defense/logo.png?raw=true)
 
-## Key combinations
-**CTRL + F:** Toggle between fullscreen mode.
+Current version: 1.0
