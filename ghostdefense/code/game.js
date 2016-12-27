@@ -133,18 +133,15 @@ document.onreadystatechange = function () {
             "Hunt for the files, not ghosts.",
             "You fight like a dairy farmer.",
             "Now you've been turned into bits and pieces.",
-            "By the way, check out http://basic.horse",
-            "Remember the days when games itself teached you instead of tutorials?",
-            "Bacon is good for me.",
-            "Maybe you should shut down your pc and clean your apartment.",
+            "Maybe you should shut down the pc and clean your apartment.",
             "You don't seem to be a very skilled player.",
             "2spooky4me.",
             "Did you know that this game stores level progress on cookies!",
             "This game took over an year to complete.",
             "Fun fact: This game uses pixel.js because Olli misheard pixi.js.",
-            "Back in 2013, this game was 3D Puzzle FPS and called 'Trojan Defense'",
+            "Back in 2013, this game was 3D Puzzle FPS called 'Trojan Defense'",
             "Fun fact: there once were footstep sounds but they lowered the fps.",
-            "Fact: this game had a problematic and complex development history.",
+            "Fun fact: this game had a problematic and complex development history.",
             "Fun fact: you really should use Linux instead of Windows or OSX",
             "Hidden trick: bullets can be left as mines by changing the direction while shooting"
         ]
@@ -654,7 +651,7 @@ document.onreadystatechange = function () {
                         amountOfGhosts = 2;
                     }
 
-                    if (score > 9) {
+                    if (score > 16) {
                         music2.pause();
                         music3.play();
                         amountOfGhosts = 3;
