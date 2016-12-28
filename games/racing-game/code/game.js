@@ -1,7 +1,12 @@
-var loader, container, camera, controls, scene, renderer;
+var loader, container, camera, controls, scene, renderer, car;
+
 
 init();
-animate();
+
+setInterval(function(){
+    animate();
+    render();
+}, 0.06);
 
 function init() {
     loader = new THREE.JSONLoader();
@@ -35,7 +40,7 @@ function init() {
 
     loader.load('assets/models/track01.js', function (geometry) {
         var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial('0xffffff'));
-        mesh.position.set(9, -2.2, 0);
+        mesh.position.set(9, -5.0, 0);
         mesh.scale.set(3, 3, 3);
         mesh.overdraw = true;
         mesh.material.side = THREE.DoubleSide;
@@ -48,17 +53,18 @@ function init() {
     carTexture = THREE.ImageUtils.loadTexture( "assets/sprite_sheets/p1.png");
     material = new THREE.MeshLambertMaterial({ map : carTexture, transparent: true });
 
-    var car = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.46), material);
+    car = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.46), material);
     car.material.side = THREE.DoubleSide;
     car.position.set(0, 0, 0);
 
     scene.add( car );
-
-    render();
 }
 
 function animate() {
     requestAnimationFrame( animate );
+
+    car.position.y = car.position.y - 0.00005;
+
     controls.update();
 }
 
