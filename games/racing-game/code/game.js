@@ -34,22 +34,25 @@ function init() {
     container.appendChild( renderer.domElement );
 
     loader.load('assets/models/track01.js', function (geometry) {
-        var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial('0xaaafff'));
-        mesh.position.set(0, 0, 0);
+        var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial('0xffffff'));
+        mesh.position.set(9, -2.2, 0);
         mesh.scale.set(3, 3, 3);
         mesh.overdraw = true;
         mesh.material.side = THREE.DoubleSide;
         scene.add(mesh);
     });
 
-    light = new THREE.DirectionalLight( 0xffffff );
-    light.position.set( 1, 1, 1 );
+    light = new THREE.AmbientLight(0xffffff);
     scene.add( light );
 
-    var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-    var cube = new THREE.Mesh( geometry, material );
-    scene.add( cube );
+    carTexture = THREE.ImageUtils.loadTexture( "assets/sprite_sheets/p1.png");
+    material = new THREE.MeshLambertMaterial({ map : carTexture, transparent: true });
+
+    var car = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.46), material);
+    car.material.side = THREE.DoubleSide;
+    car.position.set(0, 0, 0);
+
+    scene.add( car );
 
     render();
 }
