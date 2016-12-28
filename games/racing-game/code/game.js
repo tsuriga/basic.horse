@@ -12,7 +12,6 @@ function init() {
     loader = new THREE.JSONLoader();
 
     camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
-    camera.position.z = 500;
 
     controls = new THREE.TrackballControls( camera );
     controls.rotateSpeed = 1.0;
@@ -28,6 +27,7 @@ function init() {
     scene = new THREE.Scene();
 
     camera.position.z = 5;
+    camera.position.y = 7;
 
     renderer = new THREE.WebGLRenderer( { antialias: false } );
     renderer.setClearColor(0xEEEEEE);
@@ -40,7 +40,7 @@ function init() {
 
     loader.load('assets/models/track01.js', function (geometry) {
         var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial('0xffffff'));
-        mesh.position.set(9, -5.0, 0);
+        mesh.position.set(9, 0, 0);
         mesh.scale.set(3, 3, 3);
         mesh.overdraw = true;
         mesh.material.side = THREE.DoubleSide;
@@ -55,7 +55,7 @@ function init() {
 
     car = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.46), material);
     car.material.side = THREE.DoubleSide;
-    car.position.set(0, 0, 0);
+    car.position.set(0, 5, 0);
 
     scene.add( car );
 }
@@ -63,7 +63,9 @@ function init() {
 function animate() {
     requestAnimationFrame( animate );
 
-    car.position.y = car.position.y - 0.00005;
+    if (car.position.y > 0) {
+        car.position.y = car.position.y - 0.00005;
+    }
 
     controls.update();
 }
