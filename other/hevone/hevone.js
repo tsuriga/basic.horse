@@ -30,7 +30,7 @@
  *      - Install dependencies (npm install <>):
  *          - NodeJS (https://github.com/nodejs/node)
  *          - Telegraf (https://github.com/telegraf/telegraf)
- *      - Add the API Token from your Telegram Bot into func.js file.
+ *      - Add the API Token from your Telegram Bot into this file.
  *      - Check that func.js is in the same folder as this file.
  *
  *  USAGE
@@ -45,7 +45,7 @@
 */
 
 const Telegraf = require('telegraf')
-const bot = new Telegraf("325363173:AAE2SH6N7OyCJeNYIzvflohYs-ZbmLh9aAs")
+const bot = new Telegraf("<INSERT-API-TOKEN-HERE>")
 
 var func = require('./func.js');
 
