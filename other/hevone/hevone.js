@@ -132,7 +132,7 @@ bot.hears(/(?:hevone|horse).*|.*(?:hevone|horse)/i, (ctx) => {
     if (story == 2) ctx.reply("I am hungry, I think I will get some " + func.food());
     if (story == 3) ctx.reply("I wonder if you guys I am " + func.adjective());
     if (story == 4) ctx.reply(func.pastTense() + " I ate " + func.food() + " and drink some " + func.drink());
-    if (story == 5) ctx.reply(func.subject() + " is going to cause problems " + func.futureTense());
+    if (story == 5) ctx.reply(func.subject() + " is interesting " + func.futureTense());
     if (story == 6) ctx.reply("I really like to " + func.verb());
     if (story == 7) ctx.reply("I have commands you know, type /about dude!");
     if (story == 8) ctx.reply("I really need a new " + func.object() + " " + func.emoticon());
