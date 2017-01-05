@@ -25,7 +25,6 @@
  *  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *
  *  "Hevone" v.0.3 Telegram Bot by basic.horse
- *  (This bot doesn't need any kind of access to messages and thus don't store anything)
  *
  *  SETUP
  *      - Install dependencies (npm install <>):
@@ -39,6 +38,8 @@
  *      - Get list of commands by saying "/about" to the bot.
  *
  *  All set!
+ *
+ *  NOTE!: This bot doesn't store any messages.
  *
  *  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 */
