@@ -36,7 +36,7 @@ var getRandomFromArray = function(array) {
 
 module.exports = {
     features: function () {
-        Array.from([
+        return Array.from([
             "List of features (usage: /<command>): ",
             "/about: About this bot",
             "/dice: Throw dice (0-6)",
