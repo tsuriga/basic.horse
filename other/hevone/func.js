@@ -27,158 +27,18 @@
  *  This file contains functions and dictionary for hevone_bot to use.
  */
 
-/* -- Functions -- */
+var http = require('http');
+var util = require('util');
 
-/* Prints quote from api.forismatic.com api */
-function getQuote(ctx) {
-    var options = {
-        host: 'api.forismatic.com',
-        path: '/api/1.0/?method=getQuote&format=json&lang=en',
-    };
-
-    callback = function(response) {
-        var str = '';
-
-        response.on('data', function (chunk) {
-            str += chunk;
-        });
-
-        response.on('end', function () {
-            var quotesRemoved = str.replace(/\\'/g, "");
-            var object = JSON.parse(quotesRemoved);
-
-            var quoteAuthor = (object.quoteAuthor === "") ? "Unknown" : object.quoteAuthor ;
-            var quoteText = util.format('"%s" -%s', object.quoteText, quoteAuthor);
-
-            ctx.reply(quoteText);
-        });
-    }
-
-    http.request(options, callback).end();
-}
-
-/* Prints random movie from random-movie.herokuapp.com api with poster included */
-function getMovie(ctx) {
-    var options = {
-        host: 'random-movie.herokuapp.com',
-        path: '/random'
-    };
-
-    callback = function(response) {
-        var str = '';
-
-        response.on('data', function (chunk) {
-            str += chunk;
-        });
-
-        response.on('end', function () {
-            var object = JSON.parse(str);
-            ctx.reply("kato " + object.Title + ", se on tehty " + object.Year);
-            ctx.reply(object.Poster);
-        });
-    }
-
-    http.request(options, callback).end();
-}
-
-/* Prints random cat image from thecatapi.com api */
-function getCatImage(ctx) {
-    var options = {
-        host: 'thecatapi.com',
-        path: '/api/images/get'
-    };
-
-    callback = function(response) {
-        ctx.reply(response.headers.location);
-    }
-
-    http.request(options, callback).end();
-}
-
-/* Prints random cat fact from catfacts-api.appspot.com api */
-function getCatFact(ctx) {
-    var options = {
-        host: 'catfacts-api.appspot.com',
-        path: '/api/facts'
-    };
-
-    callback = function(response) {
-        var str = '';
-
-        response.on('data', function (chunk) {
-            str += chunk;
-        });
-
-        response.on('end', function () {
-            var object = JSON.parse(str);
-            ctx.reply(object.facts[0]);
-        });
-    };
-
-    http.request(options, callback).end();
-}
-
-/* Prints Chuck Norris joke from api.icndb.com api */
-function getChuckNorrisQuote(ctx) {
-    var options = {
-        host: 'api.icndb.com',
-        path: '/jokes/random',
-    };
-
-    callback = function(response) {
-        var str = '';
-
-        response.on('data', function (chunk) {
-            str += chunk;
-        });
-
-        response.on('end', function () {
-            var object = JSON.parse(str);
-
-            ctx.reply(object.value.joke);
-        });
-    }
-
-    http.request(options, callback).end();
-}
-
-/* Gets random gif from api.giphy.com api */
-function getGif(ctx) {
-    var options = {
-        host: 'api.giphy.com',
-        path: '/v1/gifs/random?api_key=dc6zaTOxFJmzC'
-    };
-
-    callback = function(response) {
-        var str = '';
-
-        response.on('data', function (chunk) {
-            str += chunk;
-        });
-
-        response.on('end', function () {
-            var object = JSON.parse(str);
-            ctx.reply(object.data.image_url);
-        });
-    }
-
-    http.request(options, callback).end();
-}
-
-/* -- Dictionary for words and stuff -- */
 module.exports = {
     features: function () {
-        return "List of features (usage: /<command>): \n/about: About this bot\n/who: Blame someone\n/dice: Throw dice (0-6)\n/pizza: Random Pizza toppings\n/beverage: Random beverage\n/food: Random food\n/drink: Mixes a drink \n/movie: Random movie\n/quote: Random quote\n/cat: Random cat fact with image\n/norris: Random Chuck Norris joke\n/gif: Random gif\n";
+        return "List of features (usage: /<command>): \n/about: About this bot\n/dice: Throw dice (0-6)\n/pizza: Random Pizza toppings\n/beverage: Random beverage\n/food: Random food\n/drink: Mixes a drink \n/movie: Random movie\n/quote: Random quote\n/cat: Random cat fact with image\n/norris: Random Chuck Norris joke\n/gif: Random gif\n";
     },
-    about: function () {
-        return "_/°°¬ -hevone_bot v.0.18 by basic.horse";
-    },
-    person: function () {
-        var persons = [
-        ];
 
-        return persons[Math.floor(Math.random() * persons.length)];
+    about: function () {
+        return "_/°°¬ -hevone_bot v.0.3 by basic.horse";
     },
+
     subject: function () {
         var subjects = [
             "computer science", "politics", "insanity", "careers", "education", "culture", "pop-culture",
@@ -191,6 +51,7 @@ module.exports = {
 
         return subjects[Math.floor(Math.random() * subjects.length)];
     },
+
     object: function () {
         var objects = [
             "ball", "table", "guitar", "bass guitar", "drums", "computer", "gaming console",
@@ -201,6 +62,7 @@ module.exports = {
 
         return objects[Math.floor(Math.random() * objects.length)];
     },
+
     drink: function () {
         var drinks = [
             "whiskey", "beer", "vodka", "milk", "water", "coke", "sprite", "fanta", "kilju", "cider",
@@ -210,6 +72,7 @@ module.exports = {
 
         return drinks[Math.floor(Math.random() * drinks.length)];
     },
+
     food: function () {
         var foods = [
             "pizza", "lasagne", "hamburger", "iskender", "kebab", "macaroni and cheese", "pea soup",
@@ -220,6 +83,7 @@ module.exports = {
 
         return foods[Math.floor(Math.random() * foods.length)];
     },
+
     pizzaTopping: function () {
         var pizzaToppings = [
             "blue cheese", "pepperoni", "aspargus", "chili", "kebab", "mozzarella", "onion", "bacon",
@@ -231,6 +95,7 @@ module.exports = {
 
         return pizzaToppings[Math.floor(Math.random() * pizzaToppings.length)];
     },
+
     adjective: function () {
         var adjectives = [
             "beautiful", "intense", "smart", "funny", "stupid", "disturbing", "offensive", "faschinating",
@@ -239,6 +104,7 @@ module.exports = {
 
         return adjectives[Math.floor(Math.random() * adjectives.length)];
     },
+
     verb: function () {
         var verbs = [
             "fight", "code", "drink", "eat", "sleep", "jog", "paint", "take a shit", "play", "wonder",
@@ -247,6 +113,7 @@ module.exports = {
 
         return verbs[Math.floor(Math.random() * verbs.length)];
     },
+
     pastTense: function () {
         var pastTenses = [
             "yesterday", "couple days ago", "last week", "last month", "last year", "couple of years ago"
@@ -254,6 +121,7 @@ module.exports = {
 
         return pastTenses[Math.floor(Math.random() * pastTenses.length)];
     },
+
     futureTense: function () {
         var futureTenses = [
             "tomorrow", "next week", "after couple of days", "next month", "next year", "after couple of years"
@@ -261,6 +129,7 @@ module.exports = {
 
         return futureTenses[Math.floor(Math.random() * futureTenses.length)];
     },
+
     curse: function () {
         var curses = [
             "shit", "crap", "hell"
@@ -268,6 +137,7 @@ module.exports = {
 
         return curses[Math.floor(Math.random() * curses.length)];
     },
+
     fill: function () {
         var fills = [
             "well", "uh", "umm"
@@ -275,11 +145,148 @@ module.exports = {
 
         return fills[Math.floor(Math.random() * fills.length)];
     },
+
     emoticon: function () {
         var emoticons = [
             ":)", ":|", ":(", ":/", ":P", ";)", ":O"
         ];
 
         return emoticons[Math.floor(Math.random() * emoticons.length)];
+    },
+
+    /* Prints quote from api.forismatic.com api */
+    getQuote: function(ctx) {
+        var options = {
+            host: 'api.forismatic.com',
+            path: '/api/1.0/?method=getQuote&format=json&lang=en',
+        };
+
+        callback = function(response) {
+            var str = '';
+
+            response.on('data', function (chunk) {
+                str += chunk;
+            });
+
+            response.on('end', function () {
+                var quotesRemoved = str.replace(/\\'/g, "");
+                var object = JSON.parse(quotesRemoved);
+
+                var quoteAuthor = (object.quoteAuthor === "") ? "Unknown" : object.quoteAuthor ;
+                var quoteText = util.format('"%s" -%s', object.quoteText, quoteAuthor);
+
+                ctx.reply(quoteText);
+            });
+        }
+
+        http.request(options, callback).end();
+    },
+
+    /* Prints random movie from random-movie.herokuapp.com api with poster included */
+    getMovie: function(ctx) {
+        var options = {
+            host: 'random-movie.herokuapp.com',
+            path: '/random'
+        };
+
+        callback = function(response) {
+            var str = '';
+
+            response.on('data', function (chunk) {
+                str += chunk;
+            });
+
+            response.on('end', function () {
+                var object = JSON.parse(str);
+                ctx.reply("kato " + object.Title + ", se on tehty " + object.Year);
+                ctx.reply(object.Poster);
+            });
+        }
+
+        http.request(options, callback).end();
+    },
+
+    /* Prints random cat image from thecatapi.com api */
+    getCatImage: function(ctx) {
+        var options = {
+            host: 'thecatapi.com',
+            path: '/api/images/get'
+        };
+
+        callback = function(response) {
+            ctx.reply(response.headers.location);
+        }
+
+        http.request(options, callback).end();
+    },
+
+    /* Prints random cat fact from catfacts-api.appspot.com api */
+    getCatFact: function(ctx) {
+        var options = {
+            host: 'catfacts-api.appspot.com',
+            path: '/api/facts'
+        };
+
+        callback = function(response) {
+            var str = '';
+
+            response.on('data', function (chunk) {
+                str += chunk;
+            });
+
+            response.on('end', function () {
+                var object = JSON.parse(str);
+                ctx.reply(object.facts[0]);
+            });
+        };
+
+        http.request(options, callback).end();
+    },
+
+    /* Prints Chuck Norris joke from api.icndb.com api */
+    getChuckNorrisQuote: function(ctx) {
+        var options = {
+            host: 'api.icndb.com',
+            path: '/jokes/random',
+        };
+
+        callback = function(response) {
+            var str = '';
+
+            response.on('data', function (chunk) {
+                str += chunk;
+            });
+
+            response.on('end', function () {
+                var object = JSON.parse(str);
+
+                ctx.reply(object.value.joke);
+            });
+        }
+
+        http.request(options, callback).end();
+    },
+
+    /* Gets random gif from api.giphy.com api */
+    getGif: function(ctx) {
+        var options = {
+            host: 'api.giphy.com',
+            path: '/v1/gifs/random?api_key=dc6zaTOxFJmzC'
+        };
+
+        callback = function(response) {
+            var str = '';
+
+            response.on('data', function (chunk) {
+                str += chunk;
+            });
+
+            response.on('end', function () {
+                var object = JSON.parse(str);
+                ctx.reply(object.data.image_url);
+            });
+        }
+
+        http.request(options, callback).end();
     }
 };

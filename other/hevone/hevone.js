@@ -28,10 +28,10 @@
  *  (This bot doesn't need any kind of access to messages and thus don't store anything)
  *
  *  SETUP
- *      - Install dependencies:
+ *      - Install dependencies (npm install <>):
  *          - NodeJS (https://github.com/nodejs/node)
- *          - Telegraf (https://github.com/influxdata/telegraf)
- *      - Add the API Token from your Telegram Bot into this file at <INSERTAPITOKEN>.
+ *          - Telegraf (https://github.com/telegraf/telegraf)
+ *      - Add the API Token from your Telegram Bot into func.js file.
  *      - Check that func.js is in the same folder as this file.
  *
  *  USAGE
@@ -44,84 +44,69 @@
 */
 
 const Telegraf = require('telegraf')
-const bot = new Telegraf("<INSERTAPITOKEN>")
+const bot = new Telegraf("325363173:AAE2SH6N7OyCJeNYIzvflohYs-ZbmLh9aAs")
 
-var http = require('http');
-var util = require('util');
-var dictionary = require('./func.js');
+var func = require('./func.js');
 
 /* -- Commands -- */
 
 /* Prints about text and command list */
 bot.command(['about', 'about@hevone_bot'], (ctx) => {
-    ctx.reply(dictionary.about() + "\n" + dictionary.features());
+    ctx.reply(func.about() + "\n" + func.features());
 })
-
-/* Blame someone */
-bot.command(['who', 'who@hevone_bot'], (ctx) => {
-    var prefix = Math.floor(Math.random() * 7);
-
-    if (prefix == 0) ctx.reply("possibly " + dictionary.person() + " " + dictionary.emoticon());
-    if (prefix == 1) ctx.reply("definitely not you " + dictionary.emoticon());
-    if (prefix == 2) ctx.reply("definitely " + dictionary.person() + ".");
-    if (prefix == 3) ctx.reply("that one fella " + dictionary.person() + " " + dictionary.curse());
-    if (prefix == 4) ctx.reply("I suppose " + dictionary.person() + " " + dictionary.emoticon());
-    if (prefix == 5) ctx.reply(dictionary.person() + " of course " + dictionary.emoticon());
-    if (prefix == 6) ctx.reply("I think " + dictionary.person());
-}
 
 /* Throw dice 0-6 */
 bot.command(['dice', 'dice@hevone_bot'], (ctx) => {
-    ctx.reply(Math.floor(Math.random() * 7) + " " + dictionary.emoticon());
+    ctx.reply(Math.floor(Math.random() * 7) + " " + func.emoticon());
 })
 
 /* Four pizza toppings */
 bot.command(['pizza', 'pizza@hevone_bot'], (ctx) => {
     ctx.reply(
-        dictionary.pizzaTopping() + ", " + dictionary.pizzaTopping() + ", " +
-        dictionary.pizzaTopping() + " and " + dictionary.pizzaTopping() + " " + dictionary.emoticon()
+        func.pizzaTopping() + ", " + func.pizzaTopping() + ", " +
+        func.pizzaTopping() + " and " + func.pizzaTopping() + " " + func.emoticon()
     );
 })
 
 /* Random beverage */
 bot.command(['beverage', 'beverage@hevone_bot'], (ctx) => {
-    ctx.reply(dictionary.fill() + " try " + dictionary.drink() + " " + dictionary.emoticon());
+    ctx.reply(func.fill() + " try " + func.drink() + " " + func.emoticon());
 })
 
 /* Random food */
 bot.command(['food', 'food@hevone_bot'], (ctx) => {
-    ctx.reply(dictionary.food() + " " + dictionary.emoticon());
+    ctx.reply(func.food() + " " + func.emoticon());
 })
 
 /* Mixes a random drink */
 bot.command(['drink', 'drink@hevone_bot'], (ctx) => {
-    ctx.reply("combine " + dictionary.drink() + " and " + dictionary.drink() + " " + dictionary.emoticon());
+    ctx.reply("combine " + func.drink() + " and " + func.drink() + " " + func.emoticon());
 })
 
 /* Gets random movie with poster */
 bot.command(['movie', 'movie@hevone_bot'], (ctx) => {
-    getMovie(ctx);
+    func.getMovie(ctx);
 })
 
 /* Says random quote */
 bot.command(['quote', 'quote@hevone_bot'], (ctx) => {
-    getQuote(ctx);
+    func.getQuote(ctx);
 })
 
 /* Random cat fact and image */
 bot.command(['cat', 'cat@hevone_bot'], (ctx) => {
-    getCatFact(ctx);
-    getCatImage(ctx);
+    func.getCatFact(ctx);
+    func.getCatImage(ctx);
 })
 
 /* Random Chuck Norris fact/joke */
 bot.command(['norris', 'norris@hevone_bot'], (ctx) => {
-    getChuckNorrisQuote(ctx);
+    func.getChuckNorrisQuote(ctx);
 })
 
 /* Random gif */
 bot.command(['gif', 'gif@hevone_bot'], (ctx) => {
-    getGif(ctx);
+    func.getGif(ctx);
 })
 
 /* -- Hears without mention -- */
@@ -138,21 +123,21 @@ bot.hears(/.*\?t=.*/i, (ctx) => {
 
 /* -- Hears bot name mentioned -- */
 
-/* Talks random things by using dictionary */
+/* Talks random things by using func */
 bot.hears(/(?:hevone|horse).*|.*(?:hevone|horse)/i, (ctx) => {
     var story = Math.floor(Math.random() * 11);
 
-    if (story == 0) ctx.reply(dictionary.person() + " seems " + dictionary.adjective());
-    if (story == 1) ctx.reply("how about talking of " + dictionary.subject());
-    if (story == 2) ctx.reply("I am hungry, I think I will get some " + dictionary.food());
-    if (story == 3) ctx.reply("I wonder if " + dictionary.person() + " thinks that I am " + dictionary.adjective());
-    if (story == 4) ctx.reply(dictionary.pastTense() + " I ate " + dictionary.food() + " and drink some " + dictionary.beverage());
-    if (story == 5) ctx.reply(dictionary.subject() + " is going to cause problems in the " + dictionary.futureTense());
-    if (story == 6) ctx.reply("I really like to " + dictionary.verb());
+    if (story == 0) ctx.reply("You seem " + func.adjective());
+    if (story == 1) ctx.reply("How about talking of " + func.subject());
+    if (story == 2) ctx.reply("I am hungry, I think I will get some " + func.food());
+    if (story == 3) ctx.reply("I wonder if you guys I am " + func.adjective());
+    if (story == 4) ctx.reply(func.pastTense() + " I ate " + func.food() + " and drink some " + func.drink());
+    if (story == 5) ctx.reply(func.subject() + " is going to cause problems " + func.futureTense());
+    if (story == 6) ctx.reply("I really like to " + func.verb());
     if (story == 7) ctx.reply("I have commands you know, type /about dude!");
-    if (story == 8) ctx.reply("I really need a new " + dictionary.object() + " " + dictionary.emoticon());
-    if (story == 9) ctx.reply("Why would not we all eat some " + dictionary.food() + " today " + dictionary.emoticon());
-    if (story == 10) ctx.reply(dictionary.pastTense() + " I broke my " + dictionary.object());
+    if (story == 8) ctx.reply("I really need a new " + func.object() + " " + func.emoticon());
+    if (story == 9) ctx.reply("You guys should eat some " + func.food() + " today " + func.emoticon());
+    if (story == 10) ctx.reply(func.pastTense() + " I broke my " + func.object());
 })
 
 bot.startPolling();
