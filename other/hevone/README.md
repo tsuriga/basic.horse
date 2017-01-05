@@ -1,7 +1,7 @@
 # "Hevone"
 ## Telegram Bot by [basic.horse](http://basic.horse)
 
-Official bot can be found running in telegram as @hevone_bot 
+The official bot can be found running in telegram as @hevone_bot
 
 **NOTE!** This bot doesn't store any messages.
 
