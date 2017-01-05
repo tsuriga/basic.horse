@@ -30,9 +30,26 @@
 var http = require('http');
 var util = require('util');
 
+var getRandomFromArray = function(array) {
+    return array[Math.floor(Math.random() * array.length)]
+};
+
 module.exports = {
     features: function () {
-        return "List of features (usage: /<command>): \n/about: About this bot\n/dice: Throw dice (0-6)\n/pizza: Random Pizza toppings\n/beverage: Random beverage\n/food: Random food\n/drink: Mixes a drink \n/movie: Random movie\n/quote: Random quote\n/cat: Random cat fact with image\n/norris: Random Chuck Norris joke\n/gif: Random gif\n";
+        Array.from([
+            "List of features (usage: /<command>): ",
+            "/about: About this bot",
+            "/dice: Throw dice (0-6)",
+            "/pizza: Random Pizza toppings",
+            "/beverage: Random beverage",
+            "/food: Random food",
+            "/drink: Mixes a drink",
+            "/movie: Random movie",
+            "/quote: Random quote",
+            "/cat: Random cat fact with image",
+            "/norris: Random Chuck Norris joke",
+            "/gif: Random gif",
+        ]).join("\n");
     },
 
     about: function () {
@@ -40,118 +57,94 @@ module.exports = {
     },
 
     subject: function () {
-        var subjects = [
+        return getRandomFromArray([
             "computer science", "politics", "insanity", "careers", "education", "culture", "pop-culture",
             "movies", "games", "handheld games", "programming languages", "php", "nodejs", "rust", "golang",
             "python", "C", "C++", "Pascal", "TurboPascal", "Ruby", "sailing", "boats", "cars", "motorbikes",
             "shopping", "state of tv", "war", "art", "collecting", "cleaning", "drama", "comedy", "nature",
             "sexuality", "identity crisis", "existence", "space", "religion", "engineering", "science", "physics",
             "mathematics", "electricity", "knitting", "clothing", "cooking", "food", "wine", "soft drinks"
-        ];
-
-        return subjects[Math.floor(Math.random() * subjects.length)];
+        ]);
     },
 
     object: function () {
-        var objects = [
+        return getRandomFromArray([
             "ball", "table", "guitar", "bass guitar", "drums", "computer", "gaming console",
             "tree", "bench", "ticket", "car", "motorbike", "bike", "jacket", "pants", "panties",
             "shirt", "fridge", "toilet", "keyboard", "dishwasher", "amp", "mixer", "drink machine",
             "mouse", "pen"
-        ];
-
-        return objects[Math.floor(Math.random() * objects.length)];
+        ]);
     },
 
     drink: function () {
-        var drinks = [
+        return getRandomFromArray([
             "whiskey", "beer", "vodka", "milk", "water", "coke", "sprite", "fanta", "kilju", "cider",
             "cognac", "liqueur", "milkshake", "sake", "salmiakkikossu", "toffee liqueur", "long drink",
             "jäger", "energy drink", "zero coke", "dr.pepper"
-        ];
-
-        return drinks[Math.floor(Math.random() * drinks.length)];
+        ]);
     },
 
     food: function () {
-        var foods = [
+        return getRandomFromArray([
             "pizza", "lasagne", "hamburger", "iskender", "kebab", "macaroni and cheese", "pea soup",
             "bread", "hot wings", "fish soup", "meat pie", "sausage", "grilled cheese", "pasties",
             "meatpie", "fish sticks", "chocolate cake", "steak", "panini", "rice and chicken",
             "meatballs and mash", "hot dog", "mämmi", "sushi"
-        ];
-
-        return foods[Math.floor(Math.random() * foods.length)];
+        ]);
     },
 
     pizzaTopping: function () {
-        var pizzaToppings = [
+        return getRandomFromArray([
             "blue cheese", "pepperoni", "aspargus", "chili", "kebab", "mozzarella", "onion", "bacon",
             "olive", "shrimps", "ham", "turtle dicks", "chicken", "beef", "shells", "cheese",
             "egg", "feta", "salami", "aragula", "tomato", "tuna", "ananas", "mushroom",
             "jalapeno", "peach", "paprika", "goat cheese", "basilica", "corn", "peas", "garlic",
             "BBQ", "sour cream", "taco mayonnaise"
-        ];
-
-        return pizzaToppings[Math.floor(Math.random() * pizzaToppings.length)];
+        ]);
     },
 
     adjective: function () {
-        var adjectives = [
+        return getRandomFromArray([
             "beautiful", "intense", "smart", "funny", "stupid", "disturbing", "offensive", "faschinating",
             "exhausting", "handsome", "intelligent", "artistic", "sexy", "legit", "cumbersome", "talented"
-        ];
-
-        return adjectives[Math.floor(Math.random() * adjectives.length)];
+        ]);
     },
 
     verb: function () {
-        var verbs = [
+        return getRandomFromArray([
             "fight", "code", "drink", "eat", "sleep", "jog", "paint", "take a shit", "play", "wonder",
             "dream", "snore", "watch", "buy", "sell", "imitate", "operate", "love", "hate", "adjust"
-        ];
-
-        return verbs[Math.floor(Math.random() * verbs.length)];
+        ]);
     },
 
     pastTense: function () {
-        var pastTenses = [
+        return getRandomFromArray([
             "yesterday", "couple days ago", "last week", "last month", "last year", "couple years ago"
-        ];
-
-        return pastTenses[Math.floor(Math.random() * pastTenses.length)];
+        ]);
     },
 
     futureTense: function () {
-        var futureTenses = [
+        return getRandomFromArray([
             "tomorrow", "next week", "after couple days", "next month", "next year", "after couple years"
-        ];
-
-        return futureTenses[Math.floor(Math.random() * futureTenses.length)];
+        ]);
     },
 
     curse: function () {
-        var curses = [
+        return getRandomFromArray([
             "shit", "crap", "hell"
-        ];
-
-        return curses[Math.floor(Math.random() * curses.length)];
+        ]);
     },
 
     fill: function () {
-        var fills = [
+        return getRandomFromArray([
             "well", "uh", "umm"
-        ];
-
-        return fills[Math.floor(Math.random() * fills.length)];
+        ]);
     },
 
     emoticon: function () {
-        var emoticons = [
+        return getRandomFromArray([
             ":)", ":|", ":(", ":/", ":P", ";)", ":O"
-        ];
-
-        return emoticons[Math.floor(Math.random() * emoticons.length)];
+        ]);
     },
 
     /* Prints quote from api.forismatic.com api */

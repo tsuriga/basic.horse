@@ -1,16 +1,17 @@
-# *"Hevone" v.0.3 Telegram Bot by basic.horse*
+# "Hevone"
+## Telegram Bot by [basic.horse](http://basic.horse)
 
 The official bot can be found running in telegram as @hevone_bot
 
-## SETUP
-    - Install dependencies (npm install <>):
-        - NodeJS (https://github.com/nodejs/node)
-        - Telegraf (https://github.com/telegraf/telegraf)
-    - Add the API Token from your Telegram Bot into hevone.js file.
-    - Check that func.js is in the same folder as this file.
+**NOTE!** This bot doesn't store any messages.
 
-## USAGE
-    - Launch the bot with "nodejs hevone.js"
-    - Get list of commands by saying "/about" to the bot.
+### SETUP
+1. Install dependencies (npm install <>):
+  * NodeJS (https://github.com/nodejs/node)
+  * Telegraf (https://github.com/telegraf/telegraf)
+3. Add the API Token from your Telegram Bot into func.js file.
+4. Check that func.js is in the same folder as this file.
 
-*NOTE!: This bot doesn't store any messages.*
+### USAGE
+1. Launch the bot with `nodejs hevone.js`.
+2. Get list of commands by saying `/about` to the bot.
