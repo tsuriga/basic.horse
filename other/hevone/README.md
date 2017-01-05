@@ -1,5 +1,7 @@
 "Hevone" v.0.3 Telegram Bot by basic.horse
 
+Official bot can be found running in telegram as @hevone_bot 
+
 *SETUP*
     - Install dependencies (npm install <>):
         - NodeJS (https://github.com/nodejs/node)
