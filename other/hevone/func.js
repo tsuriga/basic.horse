@@ -191,7 +191,7 @@ module.exports = {
 
             response.on('end', function () {
                 var object = JSON.parse(str);
-                ctx.reply("kato " + object.Title + ", se on tehty " + object.Year);
+                ctx.reply(object.Title + ", done in " + object.Year);
                 ctx.reply(object.Poster);
             });
         }
