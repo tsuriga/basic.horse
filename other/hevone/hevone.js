@@ -24,28 +24,15 @@
  *
  *  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *
- *  "Hevone" v.0.3 Telegram Bot by basic.horse
+ *  "Hevone" Telegram Bot by basic.horse
  *
- *  SETUP
- *      - Install dependencies (npm install <>):
- *          - NodeJS (https://github.com/nodejs/node)
- *          - Telegraf (https://github.com/telegraf/telegraf)
- *      - Add the API Token from your Telegram Bot into func.js file.
- *      - Check that func.js is in the same folder as this file.
- *
- *  USAGE
- *      - Launch the bot with "nodejs hevone.js"
- *      - Get list of commands by saying "/about" to the bot.
- *
- *  All set!
- *
- *  NOTE!: This bot doesn't store any messages.
+ *  See README.md for usage instructions.
  *
  *  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 */
 
 const Telegraf = require('telegraf')
-const bot = new Telegraf("325363173:AAE2SH6N7OyCJeNYIzvflohYs-ZbmLh9aAs")
+const bot = new Telegraf("<INSERT-API-TOKEN-HERE>")
 
 var func = require('./func.js');
 
@@ -126,19 +113,20 @@ bot.hears(/.*\?t=.*/i, (ctx) => {
 
 /* Talks random things by using func */
 bot.hears(/(?:hevone|horse).*|.*(?:hevone|horse)/i, (ctx) => {
-    var story = Math.floor(Math.random() * 11);
-
-    if (story == 0) ctx.reply("You seem " + func.adjective());
-    if (story == 1) ctx.reply("Could we talk about " + func.subject());
-    if (story == 2) ctx.reply("I am hungry, I think I will get some " + func.food());
-    if (story == 3) ctx.reply("I wonder if you guys think I am " + func.adjective());
-    if (story == 4) ctx.reply(func.pastTense() + " I ate " + func.food() + " and took some " + func.drink());
-    if (story == 5) ctx.reply(func.subject() + " is interesting " + func.futureTense());
-    if (story == 6) ctx.reply("I really like to " + func.verb());
-    if (story == 7) ctx.reply("I have commands you know, type /about dude!");
-    if (story == 8) ctx.reply("I really need a new " + func.object() + " " + func.emoticon());
-    if (story == 9) ctx.reply("You guys should eat some " + func.food() + " today " + func.emoticon());
-    if (story == 10) ctx.reply(func.pastTense() + " I broke my " + func.object());
+    var replies = [
+        "You seem " + func.adjective(),
+        "Could we talk about " + func.subject(),
+        "I am hungry, I think I will get some " + func.food(),
+        "I wonder if you guys think I am " + func.adjective(),
+        func.pastTense() + " I ate " + func.food() + " and took some " + func.drink(),
+        func.subject() + " is interesting " + func.futureTense(),
+        "I really like to " + func.verb(),
+        "I have commands you know, type /about dude!",
+        "I really need a new " + func.object() + " " + func.emoticon(),
+        "You guys should eat some " + func.food() + " today " + func.emoticon(),
+        func.pastTense() + " I broke my " + func.object()
+    ];
+    ctx.reply(replies[Math.floor(Math.random() * replies.length)]);
 })
 
 bot.startPolling();
