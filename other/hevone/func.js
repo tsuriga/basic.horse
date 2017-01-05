@@ -45,7 +45,7 @@ module.exports = {
             "movies", "games", "handheld games", "programming languages", "php", "nodejs", "rust", "golang",
             "python", "C", "C++", "Pascal", "TurboPascal", "Ruby", "sailing", "boats", "cars", "motorbikes",
             "shopping", "state of tv", "war", "art", "collecting", "cleaning", "drama", "comedy", "nature",
-            "sexuality", "identity", "existence", "space", "religion", "engineering", "science", "physics",
+            "sexuality", "identity crisis", "existence", "space", "religion", "engineering", "science", "physics",
             "mathematics", "electricity", "knitting", "clothing", "cooking", "food", "wine", "soft drinks"
         ];
 
@@ -116,7 +116,7 @@ module.exports = {
 
     pastTense: function () {
         var pastTenses = [
-            "yesterday", "couple days ago", "last week", "last month", "last year", "couple of years ago"
+            "yesterday", "couple days ago", "last week", "last month", "last year", "couple years ago"
         ];
 
         return pastTenses[Math.floor(Math.random() * pastTenses.length)];
@@ -124,7 +124,7 @@ module.exports = {
 
     futureTense: function () {
         var futureTenses = [
-            "tomorrow", "next week", "after couple of days", "next month", "next year", "after couple of years"
+            "tomorrow", "next week", "after couple days", "next month", "next year", "after couple years"
         ];
 
         return futureTenses[Math.floor(Math.random() * futureTenses.length)];

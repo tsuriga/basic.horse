@@ -128,10 +128,10 @@ bot.hears(/(?:hevone|horse).*|.*(?:hevone|horse)/i, (ctx) => {
     var story = Math.floor(Math.random() * 11);
 
     if (story == 0) ctx.reply("You seem " + func.adjective());
-    if (story == 1) ctx.reply("How about talking of " + func.subject());
+    if (story == 1) ctx.reply("Could we talk about " + func.subject());
     if (story == 2) ctx.reply("I am hungry, I think I will get some " + func.food());
-    if (story == 3) ctx.reply("I wonder if you guys I am " + func.adjective());
-    if (story == 4) ctx.reply(func.pastTense() + " I ate " + func.food() + " and drink some " + func.drink());
+    if (story == 3) ctx.reply("I wonder if you guys think I am " + func.adjective());
+    if (story == 4) ctx.reply(func.pastTense() + " I ate " + func.food() + " and took some " + func.drink());
     if (story == 5) ctx.reply(func.subject() + " is interesting " + func.futureTense());
     if (story == 6) ctx.reply("I really like to " + func.verb());
     if (story == 7) ctx.reply("I have commands you know, type /about dude!");
