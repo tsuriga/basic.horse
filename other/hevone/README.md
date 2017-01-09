@@ -1,4 +1,4 @@
-# "Hevone"
+# "hevone"
 ## Telegram Bot by [basic.horse](http://basic.horse)
 
 The official bot can be found running in telegram as @hevone_bot
