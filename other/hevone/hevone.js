@@ -121,11 +121,21 @@ bot.hears(/(?:hevone|horse).*|.*(?:hevone|horse)/i, (ctx) => {
         func.pastTense() + " I ate " + func.food() + " and took some " + func.drink(),
         func.subject() + " is interesting " + func.futureTense(),
         "I really like to " + func.verb(),
+        "Currently I would like to " + func.verb(),
+        "You should " + func.verb() + " and " + func.verb(),
+        "I feel so " + func.adjective() + " now!",
+        "Oh " + func.curse() + " " + func.emoticon(),
+        "I really need to " + func.verb() + " " + func.futureTense() + " " + func.emoticon(),
         "I have commands you know, type /about dude!",
         "I really need a new " + func.object() + " " + func.emoticon(),
         "You guys should eat some " + func.food() + " today " + func.emoticon(),
-        func.pastTense() + " I broke my " + func.object()
+        func.pastTense() + " I broke my " + func.object(),
+        "I think you are not very " + func.adjective() + " " + func.emoticon(),
+        "I used to see you as a " + func.adjective() + " fella!",
+        func.curse() + ", I need some " + func.drink(),
+        "We all should just " + func.verb(),
     ];
+
     ctx.reply(replies[Math.floor(Math.random() * replies.length)]);
 })
 
