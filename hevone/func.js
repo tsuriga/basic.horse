@@ -106,26 +106,38 @@ module.exports = {
     adjective: function () {
         return getRandomFromArray([
             "beautiful", "intense", "smart", "funny", "stupid", "disturbing", "offensive", "faschinating",
-            "exhausting", "handsome", "intelligent", "artistic", "sexy", "legit", "cumbersome", "talented"
+            "exhausting", "handsome", "intelligent", "artistic", "sexy", "legit", "cumbersome", "talented",
+            "educated", "used", "intellectual", "musical", "wise", "energetic", "wasted", "drunk"
         ]);
     },
 
     verb: function () {
         return getRandomFromArray([
             "fight", "code", "drink", "eat", "sleep", "jog", "paint", "take a shit", "play", "wonder",
-            "dream", "snore", "watch", "buy", "sell", "imitate", "operate", "love", "hate", "adjust"
+            "dream", "snore", "watch", "buy something", "sell something", "operate", "love", "hate", "adjust",
+            "walk naked", "buy tickets", "park a car", "have an awakening", "concentrate on school",
+            "pay bills", "take a walk", "bake some bread", "evacuate this building", "have a bbq party",
+            "watch sad movies", "watch happy movies", "change the strings for my bass", "buy ink for my printer",
+            "talk to strangers", "go talk with other dog walkers", "improve myself", "clean this mess",
+            "teach my master to code", "annoy the neightbors", "take out the trash", "change the lightbulb",
+            "watch the angry face of Linus", "install gentoo", "learn freebsd", "bounty", "stare at the wall",
+            "reason myself to buy a boat", "comfort my friend", "buy useless stuff", "be so damn negative",
+            "be so damn positive", "wish for a wish crisp", "eat some cresps", "play ukulele", "ride to the sunset",
+            "loop around three web pages", "watch news that i have already seen", "play my console",
+            "type angry comments", "spread positive energy", "inform the others about my opinion",
+            "whine about useless things", "learn the anatomy of humans", "build something unnecessary"
         ]);
     },
 
     pastTense: function () {
         return getRandomFromArray([
-            "yesterday", "couple days ago", "last week", "last month", "last year", "couple years ago"
+            "now", "yesterday", "couple days ago", "last week", "last month", "last year", "couple years ago"
         ]);
     },
 
     futureTense: function () {
         return getRandomFromArray([
-            "tomorrow", "next week", "after couple days", "next month", "next year", "after couple years"
+            "now", "tomorrow", "next week", "after couple days", "next month", "next year", "after couple years"
         ]);
     },
 
@@ -191,8 +203,7 @@ module.exports = {
 
             response.on('end', function () {
                 var object = JSON.parse(str);
-                ctx.reply(object.Title + ", done in " + object.Year);
-                ctx.reply(object.Poster);
+                ctx.reply(object.Title + ", done in " + object.Year + " " + object.Poster);
             });
         }
 
