@@ -1,0 +1,336 @@
+<!--
+
+MIT License
+
+Copyright (c) 2016 Olli Suoranta (basic.horse)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-->
+
+<html>
+<head>
+    <title>radio radio radio | curated by allformsofpandas</title>
+    <link rel="shortcut icon" href="favicon.png" type="image/png" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="pixijs/pixi.min.js"></script>
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <style>
+        body {
+            background: black;
+            width:100%;
+            text-align: center;
+            overflow: hidden;
+            overflow-x: hidden;
+            font-size: 1.8em;
+
+            margin-top: 0px;
+            margin-right: 0px;
+            margin-bottom: 0px;
+            margin-left: 0px
+        }
+
+        audio {
+            display: none;
+        }
+
+        small {
+            font-size: 0.6em;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="maincanvas"></canvas>
+    <script>
+        function detectmob() {
+            if( navigator.userAgent.match(/Android/i)
+                || navigator.userAgent.match(/webOS/i)
+                || navigator.userAgent.match(/iPhone/i)
+                || navigator.userAgent.match(/iPad/i)
+                || navigator.userAgent.match(/iPod/i)
+                || navigator.userAgent.match(/BlackBerry/i)
+                || navigator.userAgent.match(/Windows Phone/i)
+            ){
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        if (detectmob()) {
+            alert(
+                "'radio radio radio' does not work as intended on mobile devices because autoplay limitations, " +
+                "please use mobile version instead at http://allformsofpandas.com/dev/radio/mobile"
+            );
+        }
+
+        var channels = [
+            "http://ice1.somafm.com/poptron-128-mp3",
+            "http://ice1.somafm.com/thetrip-128-mp3",
+            "http://ice1.somafm.com/cliqhop-128-mp3",
+            "http://ice1.somafm.com/dronezone-128-mp3",
+            "http://streaming.radionomy.com/Pooka",
+            "http://ice1.somafm.com/sonicuniverse-128-mp3",
+            "http://ice1.somafm.com/groovesalad-128-mp3",
+            "http://ice1.somafm.com/lush-128-mp3",
+            "http://ice1.somafm.com/fluid-128-aac",
+            "http://ice1.somafm.com/spacestation-128-mp3",
+            "http://ice1.somafm.com/deepspaceone-128-mp3",
+            "http://ice1.somafm.com/beatblender-128-mp3",
+            "http://ice1.somafm.com/earwaves-128-mp3",
+            "http://ice1.somafm.com/dubstep-128-mp3",
+            "http://ice1.somafm.com/digitalis-128-mp3",
+            "http://ice1.somafm.com/secretagent-128-mp3",
+            "http://ice1.somafm.com/u80s-128-mp3",
+            "http://ice1.somafm.com/7soul-128-mp3",
+            "http://ice1.somafm.com/metal-128-aac",
+        ]
+    </script>
+        <audio crossOrigin="anonymous" id="audioplayer" src="" type="audio/mpeg" data-cast-api-enabled="true" controls />
+
+    <script>
+        var context = new (window.AudioContext || window.webkitAudioContext || window.mozAudioContext)();
+        var audioSource = context.createMediaElementSource(document.getElementById("audioplayer"));
+        var analyser = context.createAnalyser();
+
+        analyser.fftSize = 32;
+        analyser.smoothingTimeConstant = 0.85;
+
+        var bufferLength = analyser.fftSize;
+        var dataArray = new Uint8Array(bufferLength);
+
+        analyser.getByteFrequencyData(dataArray);
+
+        audioSource.connect(analyser);
+        analyser.connect(context.destination);
+
+        const STAGE_WIDTH = 848;
+        const STAGE_HEIGHT = 300;
+
+        var stage = new PIXI.Container();
+        var graphics = new PIXI.Graphics();
+        var pixelateFilter = new PIXI.filters.PixelateFilter();
+        var textFilter = new PIXI.filters.BlurFilter();
+        var lowFreq = null;
+        var middleFreq = null;
+        var highFreq = null;
+        var playerOn = false;
+        var channelText = new PIXI.Text(
+            "",
+            {
+                font:"80px Courier New",
+                fill:"cyan"
+            }
+        );
+        var textIsVisible = false;
+
+        channelText.y = 60;
+
+        stage.addChild(graphics);
+        stage.addChild(channelText);
+
+        var renderer = PIXI.autoDetectRenderer(
+            STAGE_WIDTH,
+            STAGE_HEIGHT,
+            {
+                backgroundColor : 0x000000,
+                antialias: true,
+                view: maincanvas,
+                transparent: true
+            }
+        );
+
+        renderer.view.style.marginTop = window.innerHeight / 2 - renderer.height / 2;
+
+        var currentChannel = 0;
+        var currentChannelName = "";
+
+        document.getElementById("audioplayer").pause();
+
+        $.fn.clickOff = function(callback, selfDestroy) {
+            var clicked = false;
+            var parent = this;
+            var destroy = selfDestroy || true;
+
+            parent.click(function() {
+                clicked = true;
+            });
+
+            $(document).click(function(event) {
+                if (!clicked) {
+                    callback(parent, event);
+                }
+
+                clicked = false;
+            });
+        };
+
+        stage.filters = [pixelateFilter];
+
+        $("#maincanvas").click(function() {
+            textIsVisible = true;
+
+            setTimeout(function(){
+                textIsVisible = false;
+            }, 500);
+
+            playerOn = true;
+
+            if (currentChannel < channels.length - 1) {
+                currentChannel++;
+            } else {
+                currentChannel = 0;
+            }
+
+            document.getElementById("audioplayer").pause();
+            currentChannelName = channels[currentChannel].split("/")[3].split("-")[0];
+
+            $("#audioplayer").attr({
+                "src": channels[currentChannel],
+                "poster": "",
+                "autoplay": "autoplay"
+            })
+
+            effectColor = '0x'+Math.floor(Math.random()*16777215).toString(16);
+        });
+
+        $("#maincanvas").clickOff(function() {
+            textIsVisible = true;
+
+            setTimeout(function(){
+                textIsVisible = false;
+            }, 500);
+
+            playerOn = true;
+
+            if (currentChannel < channels.length + 1) {
+                currentChannel--;
+            } else {
+                currentChannel = channels.length;
+            }
+
+            if (currentChannel < 0) {
+                currentChannel = channels.length - 1;
+            }
+
+            document.getElementById("audioplayer").pause();
+            currentChannelName = channels[currentChannel].split("/")[3].split("-")[0];
+
+            $("#audioplayer").attr({
+                "src": channels[currentChannel],
+                "poster": "",
+                "autoplay": "autoplay"
+            })
+        });
+
+        document.addEventListener("keydown", function(e) {
+            if (e.keyCode == 70) {
+                fullscreenOn = true;
+                var elem = document.documentElement;
+
+                if (!document.fullscreenElement && !document.mozFullScreenElement &&
+                    !document.webkitFullscreenElement && !document.msFullscreenElement ) {
+                    if (elem.requestFullscreen) {
+                        elem.requestFullscreen();
+                    } else if (elem.msRequestFullscreen) {
+                        elem.msRequestFullscreen();
+                    } else if (elem.mozRequestFullScreen) {
+                        elem.mozRequestFullScreen();
+                    } else if (elem.webkitRequestFullscreen) {
+                        elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+                    }
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+            }
+        }, false);
+
+        var effectOpacity = 1;
+        var effectColor = "0xFF00BB";
+
+        var blockWidth = 150;
+        var blockHeight = 30;
+        var blockOffset = 230;
+        var blockLeft = renderer.width / 2 - blockWidth / 2 - blockOffset;
+        var blockCenter = renderer.width / 2 - blockWidth / 2;
+        var blockRight = renderer.width / 2 - blockWidth / 2 + blockOffset;
+
+        animate();
+
+        function animate() {
+            analyser.getByteTimeDomainData(dataArray);
+
+            lowFreq = dataArray[0];
+            middleFreq = dataArray[16];
+            highFreq = dataArray[31];
+
+            graphics.clear();
+
+            if (lowFreq < 80) {
+                effectColor = '0x'+Math.floor(Math.random()*16777215).toString(16);
+            }
+
+            effectOpacity = 1 / lowFreq;
+
+            channelText.text = currentChannelName;
+
+            stage.filters = [pixelateFilter];
+
+            if (textIsVisible) {
+                stage.filters = [textFilter];
+            } else {
+                if (lowFreq == 128 && middleFreq == 128 && highFreq == 128) {
+                    channelText.text = "radio radio radio";
+                } else {
+                    channelText.text = "";
+                }
+
+                graphics.lineStyle(2, effectColor, 1);
+                graphics.beginFill(0xFFFFFF, effectOpacity);
+                graphics.drawRoundedRect(blockLeft, 100, blockWidth, blockHeight +  lowFreq - 100, 10);
+                graphics.endFill();
+
+                graphics.lineStyle(2, effectColor, 1);
+                graphics.beginFill(0xFFFFFF, effectOpacity);
+                graphics.drawRoundedRect(blockCenter, 100, blockWidth, blockHeight +  highFreq - 100, 10);
+                graphics.endFill();
+
+                graphics.lineStyle(2, effectColor, 1);
+                graphics.beginFill(0xFFFFFF, effectOpacity);
+                graphics.drawRoundedRect(blockRight, 100, blockWidth, blockHeight +  middleFreq - 100, 10);
+
+                graphics.rotation = 0;
+                graphics.endFill();
+            }
+
+            requestAnimationFrame(animate);
+            renderer.render(stage);
+        }
+    </script>
+</body>
+</html>
