@@ -54,9 +54,21 @@ SOFTWARE.
         small {
             font-size: 0.6em;
         }
+
+        #logo {
+            opacity: 0.2;
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+        }
+
+        #logo:hover {
+            opacity: 1.0;
+        }
     </style>
 </head>
 <body>
+    <a href="http://basic.horse" target="_blank"><img id="logo" src="bh_logo.png" /></a>
     <canvas id="maincanvas"></canvas>
     <script>
         function detectmob() {
@@ -124,10 +136,12 @@ SOFTWARE.
         const STAGE_WIDTH = 848;
         const STAGE_HEIGHT = 300;
 
-        var stage = new PIXI.Container();
-        var graphics = new PIXI.Graphics();
+        var stage = new PIXI.Stage(0x66FF99, true);
+        var graphicsBar1 = new PIXI.Graphics();
+        var graphicsBar2 = new PIXI.Graphics();
+        var graphicsBar3 = new PIXI.Graphics();
         var pixelateFilter = new PIXI.filters.PixelateFilter();
-        var textFilter = new PIXI.filters.BlurFilter();
+        var textFilter = new PIXI.filters.BloomFilter();
         var lowFreq = null;
         var middleFreq = null;
         var highFreq = null;
@@ -136,14 +150,16 @@ SOFTWARE.
             "",
             {
                 font:"80px Courier New",
-                fill:"cyan"
+                fill:"magenta"
             }
         );
         var textIsVisible = false;
 
-        channelText.y = 60;
+        channelText.y = 100;
 
-        stage.addChild(graphics);
+        stage.addChild(graphicsBar1);
+        stage.addChild(graphicsBar2);
+        stage.addChild(graphicsBar3);
         stage.addChild(channelText);
 
         var renderer = PIXI.autoDetectRenderer(
@@ -164,27 +180,9 @@ SOFTWARE.
 
         document.getElementById("audioplayer").pause();
 
-        $.fn.clickOff = function(callback, selfDestroy) {
-            var clicked = false;
-            var parent = this;
-            var destroy = selfDestroy || true;
-
-            parent.click(function() {
-                clicked = true;
-            });
-
-            $(document).click(function(event) {
-                if (!clicked) {
-                    callback(parent, event);
-                }
-
-                clicked = false;
-            });
-        };
-
         stage.filters = [pixelateFilter];
 
-        $("#maincanvas").click(function() {
+        function hitNext() {
             textIsVisible = true;
 
             setTimeout(function(){
@@ -209,9 +207,18 @@ SOFTWARE.
             })
 
             effectColor = '0x'+Math.floor(Math.random()*16777215).toString(16);
-        });
+        };
 
-        $("#maincanvas").clickOff(function() {
+        function hitPause() {
+            audioPlayer = document.getElementById("audioplayer");
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+            } else {
+                audioPlayer.pause();
+            }
+        }
+
+        function hitPrev() {
             textIsVisible = true;
 
             setTimeout(function(){
@@ -238,7 +245,7 @@ SOFTWARE.
                 "poster": "",
                 "autoplay": "autoplay"
             })
-        });
+        };
 
         document.addEventListener("keydown", function(e) {
             if (e.keyCode == 70) {
@@ -289,7 +296,9 @@ SOFTWARE.
             middleFreq = dataArray[16];
             highFreq = dataArray[31];
 
-            graphics.clear();
+            graphicsBar1.clear();
+            graphicsBar2.clear();
+            graphicsBar3.clear();
 
             if (lowFreq < 80) {
                 effectColor = '0x'+Math.floor(Math.random()*16777215).toString(16);
@@ -305,27 +314,39 @@ SOFTWARE.
                 stage.filters = [textFilter];
             } else {
                 if (lowFreq == 128 && middleFreq == 128 && highFreq == 128) {
-                    channelText.text = "radio radio radio";
+                    channelText.text = "-prev paused next-";
                 } else {
                     channelText.text = "";
                 }
 
-                graphics.lineStyle(2, effectColor, 1);
-                graphics.beginFill(0xFFFFFF, effectOpacity);
-                graphics.drawRoundedRect(blockLeft, 100, blockWidth, blockHeight +  lowFreq - 100, 10);
-                graphics.endFill();
+                graphicsBar1.lineStyle(2, effectColor, 1);
+                graphicsBar1.beginFill(0xFFFFFF, effectOpacity);
+                graphicsBar1.drawRoundedRect(blockLeft, 100, blockWidth, blockHeight +  lowFreq - 100, 10);
+                graphicsBar1.endFill();
+                graphicsBar1.hitArea = new PIXI.Rectangle(blockLeft, 20, blockWidth, 400);
+                graphicsBar1.click = function(data){ hitPrev(); }
 
-                graphics.lineStyle(2, effectColor, 1);
-                graphics.beginFill(0xFFFFFF, effectOpacity);
-                graphics.drawRoundedRect(blockCenter, 100, blockWidth, blockHeight +  highFreq - 100, 10);
-                graphics.endFill();
+                graphicsBar2.lineStyle(2, effectColor, 1);
+                graphicsBar2.beginFill(0xFFFFFF, effectOpacity);
+                graphicsBar2.drawRoundedRect(blockCenter, 100, blockWidth, blockHeight +  highFreq - 100, 10);
+                graphicsBar2.endFill();
+                graphicsBar2.hitArea = new PIXI.Rectangle(blockCenter, 20, blockWidth, 400);
+                graphicsBar2.click = function(data){ hitPause(); }
 
-                graphics.lineStyle(2, effectColor, 1);
-                graphics.beginFill(0xFFFFFF, effectOpacity);
-                graphics.drawRoundedRect(blockRight, 100, blockWidth, blockHeight +  middleFreq - 100, 10);
+                graphicsBar3.lineStyle(2, effectColor, 1);
+                graphicsBar3.beginFill(0xFFFFFF, effectOpacity);
+                graphicsBar3.drawRoundedRect(blockRight, 100, blockWidth, blockHeight +  middleFreq - 100, 10);
+                graphicsBar3.endFill();
+                graphicsBar3.hitArea = new PIXI.Rectangle(blockRight, 20, blockWidth, 400);
+                graphicsBar3.click = function(data){ hitNext(); }
 
-                graphics.rotation = 0;
-                graphics.endFill();
+                graphicsBar1.rotation = 0;
+                graphicsBar2.rotation = 0;
+                graphicsBar3.rotation = 0;
+
+                graphicsBar1.interactive = true;
+                graphicsBar2.interactive = true;
+                graphicsBar3.interactive = true;
             }
 
             requestAnimationFrame(animate);
