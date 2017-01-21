@@ -55,20 +55,38 @@ SOFTWARE.
             font-size: 0.6em;
         }
 
-        #logo {
+        #information {
             opacity: 0.2;
             position: absolute;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            width: 100%;
             bottom: 5px;
-            right: 5px;
         }
 
-        #logo:hover {
+        #information p {
+            color: white;
+            font-size: 10px;
+            font-family: Arial;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        #information a {
+            color: white;
+        }
+
+        #information:hover {
             opacity: 1.0;
         }
     </style>
 </head>
 <body>
-    <a href="http://basic.horse" target="_blank"><img id="logo" src="bh_logo.png" /></a>
+    <div id="information">
+        <a href="http://basic.horse" target="_blank"><img src="bh_logo.png" /></a>
+        <p>radio stations provided by <a href="http://somafm.com" target="_blank">http://somafm.com/</a> and <a href="http://pooka.rocks/" target="_blank">http://pooka.rocks/</a></p>
+    </div>
     <canvas id="maincanvas"></canvas>
     <script>
         function detectmob() {
@@ -93,25 +111,41 @@ SOFTWARE.
         }
 
         var channels = [
-            "http://ice1.somafm.com/poptron-128-mp3",
-            "http://ice1.somafm.com/thetrip-128-mp3",
-            "http://ice1.somafm.com/cliqhop-128-mp3",
-            "http://ice1.somafm.com/dronezone-128-mp3",
-            "http://streaming.radionomy.com/Pooka",
-            "http://ice1.somafm.com/sonicuniverse-128-mp3",
-            "http://ice1.somafm.com/groovesalad-128-mp3",
-            "http://ice1.somafm.com/lush-128-mp3",
-            "http://ice1.somafm.com/fluid-128-aac",
-            "http://ice1.somafm.com/spacestation-128-mp3",
-            "http://ice1.somafm.com/deepspaceone-128-mp3",
-            "http://ice1.somafm.com/beatblender-128-mp3",
-            "http://ice1.somafm.com/earwaves-128-mp3",
-            "http://ice1.somafm.com/dubstep-128-mp3",
-            "http://ice1.somafm.com/digitalis-128-mp3",
-            "http://ice1.somafm.com/secretagent-128-mp3",
-            "http://ice1.somafm.com/u80s-128-mp3",
-            "http://ice1.somafm.com/7soul-128-mp3",
-            "http://ice1.somafm.com/metal-128-aac",
+            ["http://ice1.somafm.com/poptron-128-mp3", "Poptron"],
+            ["http://ice1.somafm.com/thetrip-128-mp3", "The Trip"],
+            ["http://ice1.somafm.com/cliqhop-128-mp3", "Cliqhop IDM"],
+            ["http://ice1.somafm.com/dronezone-128-mp3", "Drone Zone"],
+            ["http://streaming.radionomy.com/Pooka", "Pooka"],
+            ["http://ice1.somafm.com/sonicuniverse-128-mp3", "Sonic Universe"],
+            ["http://www.deliancourt.org:8000/stream.ogg", "Nectarine"],
+            ["http://ice1.somafm.com/groovesalad-128-mp3", "Groove Salad"],
+            ["http://ice1.somafm.com/lush-128-mp3", "Lush"],
+            ["http://ice1.somafm.com/fluid-128-aac", "Fluid"],
+            ["http://ice1.somafm.com/spacestation-128-mp3", "Space Station Soma"],
+            ["http://ice1.somafm.com/deepspaceone-128-mp3", "Deep Space One"],
+            ["http://ice1.somafm.com/beatblender-128-mp3", "Beat Blender"],
+            ["http://ice1.somafm.com/earwaves-128-mp3", "Earwaves"],
+            ["http://ice1.somafm.com/dubstep-128-mp3", "Dub Step Beyond"],
+            ["http://ice1.somafm.com/digitalis-128-mp3", "Digitalis"],
+            ["http://ice1.somafm.com/secretagent-128-mp3", "Secret Agent"],
+            ["http://ice1.somafm.com/u80s-128-mp3", "Underground 80s"],
+            ["http://ice1.somafm.com/7soul-128-mp3", "Seven Inch Soul"],
+            ["http://ice1.somafm.com/metal-128-aac", "Metal Detector"],
+            ["http://ice1.somafm.com/illstreet-128-mp3", "Illinois Street Lounge"],
+            ["http://ice1.somafm.com/seventies-128-mp3", "Left Coast 70s"],
+            ["http://ice1.somafm.com/thistle-128-mp3", "ThistleRadio"],
+            ["http://ice1.somafm.com/folkfwd-128-mp3", "Folk Forward"],
+            ["http://ice1.somafm.com/bootliquor-128-mp3", "Boot Liquor"],
+            ["http://ice1.somafm.com/suburbsofgoa-128-mp3", "Suburbs of Goa"],
+            ["http://ice1.somafm.com/silent-128-mp3", "The Silent Channel"],
+            ["http://ice1.somafm.com/defcon-128-mp3", "DEF CON Radio"],
+            ["http://ice1.somafm.com/missioncontrol-128-mp3", "Mission Control"],
+            ["http://ice1.somafm.com/sf1033-128-mp3", "SF 10-33"],
+            ["http://ice1.somafm.com/indiepop-128-mp3", "Indie Pop Rocks!"],
+            ["http://ice1.somafm.com/bagel-128-mp3", "BAGeL Radio"],
+            ["http://ice1.somafm.com/covers-128-mp3", "Covers"],
+            ["http://ice1.somafm.com/doomed-128-mp3", "Doomed"],
+            ["http://ice1.somafm.com/brfm-128-mp3", "Black Rock FM"]
         ]
     </script>
         <audio crossOrigin="anonymous" id="audioplayer" src="" type="audio/mpeg" data-cast-api-enabled="true" controls />
@@ -174,12 +208,47 @@ SOFTWARE.
 
         renderer.view.style.marginTop = window.innerHeight / 2 - renderer.height / 2;
 
-        var currentChannel = 0;
-        var currentChannelName = "";
-
         document.getElementById("audioplayer").pause();
 
         stage.filters = [pixelateFilter];
+
+        function getCookie(name) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+
+            if (parts.length == 2) {
+                return parts.pop().split(";").shift();
+            }
+        }
+
+        function saveChannel(channelNumber) {
+            var savedChannel = getCookie("channel");
+
+            if (savedChannel === undefined) {
+                var channelJson = "channel=" + channelNumber;
+
+                document.cookie = channelJson + "; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+            } else {
+                var channelJson = "channel=" + channelNumber;
+
+                document.cookie = channelJson + "; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+            }
+
+            channelSaved = true;
+        }
+
+        var savedChannel = getCookie("channel");
+
+        if (savedChannel) {
+            currentChannel = savedChannel - 1;
+            hitNext();
+        } else {
+            var currentChannel = 0;
+        }
+
+        console.log(savedChannel);
+
+        var currentChannelName = "";
 
         function hitNext() {
             textIsVisible = true;
@@ -197,13 +266,15 @@ SOFTWARE.
             }
 
             document.getElementById("audioplayer").pause();
-            currentChannelName = channels[currentChannel].split("/")[3].split("-")[0];
+            currentChannelName = channels[currentChannel][1];
 
             $("#audioplayer").attr({
-                "src": channels[currentChannel],
+                "src": channels[currentChannel][0],
                 "poster": "",
                 "autoplay": "autoplay"
             })
+
+            saveChannel(currentChannel);
 
             effectColor = '0x'+Math.floor(Math.random()*16777215).toString(16);
         };
@@ -237,13 +308,15 @@ SOFTWARE.
             }
 
             document.getElementById("audioplayer").pause();
-            currentChannelName = channels[currentChannel].split("/")[3].split("-")[0];
+            currentChannelName = channels[currentChannel][1];
 
             $("#audioplayer").attr({
-                "src": channels[currentChannel],
+                "src": channels[currentChannel][0],
                 "poster": "",
                 "autoplay": "autoplay"
             })
+
+            saveChannel(currentChannel);
         };
 
         document.addEventListener("keydown", function(e) {
