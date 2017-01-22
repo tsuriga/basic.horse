@@ -34,6 +34,7 @@ SOFTWARE.
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <style>
         body {
+            font-family: Courier New;
             background: black;
             width:100%;
             text-align: center;
@@ -55,6 +56,15 @@ SOFTWARE.
             font-size: 0.6em;
         }
 
+        a {
+            color: LightGray;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: green;
+        }
+
         #information {
             opacity: 0.2;
             position: absolute;
@@ -68,12 +78,7 @@ SOFTWARE.
         #information p {
             color: white;
             font-size: 10px;
-            font-family: Courier New;
             font-weight: bold;
-        }
-
-        #information a {
-            color: white;
         }
 
         #information:hover {
@@ -83,11 +88,58 @@ SOFTWARE.
         #shareChannel {
             color: yellow;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: none;
+        }
+
+        .modal-content {
+            background-color: black;
+            font-size: 13px;
+            color: green;
+            margin: 8% auto;
+            padding: 20px;
+            border: 1px solid green;
+            width: 600px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        ul {
+            list-style-type: none;
+        }
     </style>
 </head>
 <body>
+    <div id="channelListModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <ul id="channelListContainer"></ul>
+        </div>
+    </div>
+
     <div id="information">
-        <p>"radio radio radio" by <a href="http://basic.horse" target="_blank">basic.horse</a> © 2017</p>
+        <p>"radio radio radio" by <a href="http://basic.horse" target="_blank">basic.horse</a> © 2017 - <a href="#" id="showChannelListModal">show channels</a></p>
         <p>share current station: <a href="#" id="shareChannel"></a></p>
         <p>radio stations provided by <a href="http://somafm.com" target="_blank">http://somafm.com/</a> and <a href="http://pooka.rocks/" target="_blank">http://pooka.rocks/</a></p>
     </div>
@@ -149,7 +201,7 @@ SOFTWARE.
             ["http://ice1.somafm.com/covers-128-mp3", "Covers"],
             ["http://ice1.somafm.com/doomed-128-mp3", "Doomed"],
             ["http://ice1.somafm.com/brfm-128-mp3", "Black Rock FM"]
-        ]
+        ];
     </script>
         <audio crossOrigin="anonymous" id="audioplayer" src="" type="audio/mpeg" data-cast-api-enabled="true" controls />
 
@@ -292,6 +344,32 @@ SOFTWARE.
 
         var currentChannelName = "";
 
+        function selectChannel(channel) {
+            textIsVisible = true;
+
+            setTimeout(function(){
+                textIsVisible = false;
+            }, 500);
+
+            playerOn = true;
+
+            currentChannel = channel;
+
+            document.getElementById("audioplayer").pause();
+            currentChannelName = channels[channel][1];
+
+            $("#audioplayer").attr({
+                "src": channels[currentChannel][0],
+                "poster": "",
+                "autoplay": "autoplay"
+            })
+
+            updateShareLink();
+            saveChannel(currentChannel);
+
+            effectColor = '0x'+Math.floor(Math.random()*16777215).toString(16);
+        }
+
         function hitNext() {
             textIsVisible = true;
 
@@ -365,6 +443,38 @@ SOFTWARE.
             updateShareLink();
             saveChannel(currentChannel);
         };
+
+        var modal = document.getElementById('channelListModal');
+        var btn = document.getElementById("showChannelListModal");
+        var span = document.getElementsByClassName("close")[0];
+
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        var htmlForChannelList='';
+        var count = 0;
+
+        channels.forEach(function(element) {
+            htmlForChannelList +=
+                "<li><a href='#' onclick='selectChannel(" +
+                    count + ")'>" + element[1] + " (" + element[0] + ")</a></li>";
+
+            count++;
+        });
+
+        document.getElementById('channelListContainer').innerHTML += htmlForChannelList;
+
 
         document.addEventListener("keydown", function(e) {
             if (e.keyCode == 70) {
