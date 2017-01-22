@@ -276,15 +276,17 @@ SOFTWARE.
         var urlChannel = getURLParameter('channel');
         var savedChannel = getCookie("channel");
 
-        if (urlChannel == "") {
-            if (savedChannel) {
-                currentChannel = savedChannel - 1;
-                hitNext();
-            } else {
-                currentChannel = 0;
-                hitNext();
-            }
-        } else {
+        if (savedChannel != null && urlChannel == null) {
+            currentChannel = savedChannel - 1;
+            hitNext();
+        }
+
+        if (savedChannel == null && urlChannel == null) {
+            currentChannel = 0;
+            hitNext();
+        }
+
+        if (savedChannel =! null && urlChannel != null) {
             currentChannel = urlChannel - 1;
             hitNext();
         }
@@ -315,8 +317,8 @@ SOFTWARE.
                 "autoplay": "autoplay"
             })
 
-            saveChannel(currentChannel);
             updateShareLink();
+            saveChannel(currentChannel);
 
             effectColor = '0x'+Math.floor(Math.random()*16777215).toString(16);
         };
@@ -361,8 +363,8 @@ SOFTWARE.
                 "autoplay": "autoplay"
             })
 
-            saveChannel(currentChannel);
             updateShareLink();
+            saveChannel(currentChannel);
         };
 
         document.addEventListener("keydown", function(e) {
