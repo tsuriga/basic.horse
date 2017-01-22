@@ -80,11 +80,16 @@ SOFTWARE.
         #information:hover {
             opacity: 1.0;
         }
+
+        #shareChannel {
+            color: yellow;
+        }
     </style>
 </head>
 <body>
     <div id="information">
         <a href="http://basic.horse" target="_blank"><img src="bh_logo.png" /></a>
+        <p>share current station: <a href="" onclick="return false" id="shareChannel"></span></p>
         <p>radio stations provided by <a href="http://somafm.com" target="_blank">http://somafm.com/</a> and <a href="http://pooka.rocks/" target="_blank">http://pooka.rocks/</a></p>
     </div>
     <canvas id="maincanvas"></canvas>
@@ -221,6 +226,12 @@ SOFTWARE.
         graphicsBar2.filters = [pixelateFilter];
         graphicsBar3.filters = [pixelateFilter];
 
+        function getURLParameter(name) {
+            return decodeURIComponent(
+                (new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) ||
+                [null, ''])[1].replace(/\+/g, '%20')) || null;
+        }
+
         function getCookie(name) {
             var value = "; " + document.cookie;
             var parts = value.split("; " + name + "=");
@@ -246,17 +257,32 @@ SOFTWARE.
             channelSaved = true;
         }
 
-        var savedChannel = getCookie("channel");
-
-        if (savedChannel) {
-            currentChannel = savedChannel - 1;
-            hitNext();
-        } else {
-            currentChannel = 0;
-            hitNext();
+        function copyToClipboard(text) {
+            window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
         }
 
-        console.log(savedChannel);
+        function updateShareLink() {
+            var currentUrl = location.protocol + '//' + location.host + location.pathname;
+            var shareLink = currentUrl + "?channel=" + currentChannel;
+
+            document.getElementById("shareChannel").innerHTML = shareLink;
+        }
+
+        var urlChannel = getURLParameter('channel');
+        var savedChannel = getCookie("channel");
+
+        if (urlChannel == "") {
+            if (savedChannel) {
+                currentChannel = savedChannel - 1;
+                hitNext();
+            } else {
+                currentChannel = 0;
+                hitNext();
+            }
+        } else {
+            currentChannel = urlChannel - 1;
+            hitNext();
+        }
 
         var currentChannelName = "";
 
@@ -285,6 +311,7 @@ SOFTWARE.
             })
 
             saveChannel(currentChannel);
+            updateShareLink();
 
             effectColor = '0x'+Math.floor(Math.random()*16777215).toString(16);
         };
@@ -330,6 +357,7 @@ SOFTWARE.
             })
 
             saveChannel(currentChannel);
+            updateShareLink();
         };
 
         document.addEventListener("keydown", function(e) {
