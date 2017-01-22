@@ -89,7 +89,7 @@ SOFTWARE.
 <body>
     <div id="information">
         <a href="http://basic.horse" target="_blank"><img src="bh_logo.png" /></a>
-        <p>share current station: <a href="" onclick="return false" id="shareChannel"></span></p>
+        <p>share current station: <a href="#" id="shareChannel"></span></p>
         <p>radio stations provided by <a href="http://somafm.com" target="_blank">http://somafm.com/</a> and <a href="http://pooka.rocks/" target="_blank">http://pooka.rocks/</a></p>
     </div>
     <canvas id="maincanvas"></canvas>
@@ -261,11 +261,16 @@ SOFTWARE.
             window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
         }
 
-        function updateShareLink() {
+        function getShareLink() {
             var currentUrl = location.protocol + '//' + location.host + location.pathname;
-            var shareLink = currentUrl + "?channel=" + currentChannel;
+            return shareLink = currentUrl + "?channel=" + currentChannel;
+        }
 
-            document.getElementById("shareChannel").innerHTML = shareLink;
+        function updateShareLink() {
+            var link = getShareLink();
+
+            document.getElementById("shareChannel").innerHTML = link;
+            document.getElementById("shareChannel").href = link;
         }
 
         var urlChannel = getURLParameter('channel');
