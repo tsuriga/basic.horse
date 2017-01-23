@@ -1,0 +1,101 @@
+<!--
+
+MIT License
+
+Copyright (c) 2017 Olli Suoranta (basic.horse)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-->
+
+<html>
+    <head>
+        <title>parallax mouse test | by basic.horse</title>
+        <link rel="shortcut icon" href="favicon.png" type="image/png" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <script src="../vendor/pixijs/pixi.min.js"></script>
+        <meta name="viewport" content="width=device-width">
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <style>
+
+        </style>
+    </head>
+    <body>
+        <script>
+            const backgroundParallaxAmount = 200;
+            const middlegroundParallaxAmount = 80;
+            const foregroundParallaxAmount = 6;
+
+            var renderer = PIXI.autoDetectRenderer(800, 600, {backgroundColor : 0x111111});
+
+            document.body.appendChild(renderer.view);
+
+            var stage = new PIXI.Container();
+
+            var backgroundTexture = PIXI.Texture.fromImage('background.png');
+            var middlegroundTexture = PIXI.Texture.fromImage('middleground.png');
+            var foregroundTexture = PIXI.Texture.fromImage('foreground.png');
+
+            var background = new PIXI.Sprite(backgroundTexture);
+            var middleground = new PIXI.Sprite(middlegroundTexture);
+            var foreground = new PIXI.Sprite(foregroundTexture);
+
+            background.anchor.x = 0.5;
+            background.anchor.y = 0.5;
+            middleground.anchor.x = 0.5;
+            middleground.anchor.y = 0.5;
+            foreground.anchor.x = 0.5;
+            foreground.anchor.y = 0.5;
+
+            background.position.x = renderer.width / 2;
+            background.position.y = renderer.height / 2;
+            middleground.position.x = renderer.width / 2;
+            middleground.position.y = renderer.height / 2;
+            foreground.position.x = renderer.width / 2;
+            foreground.position.y = renderer.height / 2;
+
+            stage.addChild(background);
+            stage.addChild(middleground);
+            stage.addChild(foreground);
+
+            stage.interactive = true;
+
+            stage.mousemove = function(mouseData){
+                var positionX = mouseData.data.getLocalPosition(stage).x;
+                var positionY = mouseData.data.getLocalPosition(stage).y;
+
+                background.position.x = positionX / backgroundParallaxAmount + renderer.width / 2;
+                background.position.y = positionY / backgroundParallaxAmount + renderer.height / 2;
+
+                middleground.position.x = positionX / middlegroundParallaxAmount + renderer.width / 2;
+                middleground.position.y = positionY / middlegroundParallaxAmount + renderer.height / 2;
+
+                foreground.position.x = positionX / foregroundParallaxAmount + renderer.width / 2;
+                foreground.position.y = positionY / foregroundParallaxAmount + renderer.height / 2;
+            }
+
+            animate();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                renderer.render(stage);
+            }
+        </script>
+    </body>
+</html>
