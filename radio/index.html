@@ -52,6 +52,18 @@ SOFTWARE.
             display: none;
         }
 
+        audio::-internal-media-controls-download-button {
+            display:none;
+        }
+
+        audio::-webkit-media-controls-enclosure {
+            overflow:hidden;
+        }
+
+        audio::-webkit-media-controls-panel {
+            width: calc(100% + 30px); /* Adjust as needed */
+        }
+
         small {
             font-size: 0.6em;
         }
@@ -160,12 +172,6 @@ SOFTWARE.
             }
         }
 
-        if (detectmob()) {
-            alert(
-                "This page does not work as intended on mobile devices because of autoplay limitations."
-            );
-        }
-
         var channels = [
             ["http://ice1.somafm.com/poptron-128-mp3", "Poptron"],
             ["http://ice1.somafm.com/thetrip-128-mp3", "The Trip"],
@@ -247,6 +253,7 @@ SOFTWARE.
                 fill:"white"
             }
         );
+
         var textIsVisible = false;
 
         infoText.y = 125;
@@ -272,6 +279,30 @@ SOFTWARE.
         renderer.view.style.marginTop = window.innerHeight / 2 - renderer.height / 2;
 
         document.getElementById("audioplayer").pause();
+
+        if (detectmob()) {
+            var audioPlayerWidth = "200px";
+
+            document.getElementById('information').style.display = 'none';
+            document.getElementById('audioplayer').style.display = 'block';
+            document.getElementById('audioplayer').style.width = audioPlayerWidth;
+            document.getElementById('audioplayer').style.background = "black";
+
+            var mobileText = new PIXI.Text(
+                "",
+                {
+                    font:"20px Courier New",
+                    fill:"white"
+                }
+            );
+
+            mobileText.y = 95;
+            mobileText.anchor.x = 0.5;
+            mobileText.x = STAGE_WIDTH / 2;
+            mobileText.text = "(running in mobile mode => no autoplay)";
+
+            stage.addChild(mobileText);
+        }
 
         graphicsBar1.filters = [pixelateFilter];
         graphicsBar2.filters = [pixelateFilter];
@@ -583,6 +614,7 @@ SOFTWARE.
                 graphicsBar1.endFill();
                 graphicsBar1.hitArea = new PIXI.Rectangle(blockLeft, 20, blockWidth, 400);
                 graphicsBar1.click = function(data){ hitPrev(); }
+                graphicsBar1.tap = function(data){ hitPrev(); }
                 graphicsBar1.mouseover = function(data) { mouseOnBar1 = true; };
                 graphicsBar1.mouseout = function(data) { mouseOnBar1 = false; };
 
@@ -592,6 +624,7 @@ SOFTWARE.
                 graphicsBar2.endFill();
                 graphicsBar2.hitArea = new PIXI.Rectangle(blockCenter, 20, blockWidth, 400);
                 graphicsBar2.click = function(data){ hitPause(); }
+                graphicsBar2.tap = function(data){ hitPause(); }
                 graphicsBar2.mouseover = function(data) { mouseOnBar2 = true; };
                 graphicsBar2.mouseout = function(data) { mouseOnBar2 = false; };
 
@@ -601,6 +634,7 @@ SOFTWARE.
                 graphicsBar3.endFill();
                 graphicsBar3.hitArea = new PIXI.Rectangle(blockRight, 20, blockWidth, 400);
                 graphicsBar3.click = function(data){ hitNext(); }
+                graphicsBar3.tap = function(data){ hitNext(); }
                 graphicsBar3.mouseover = function(data) { mouseOnBar3 = true; };
                 graphicsBar3.mouseout = function(data) { mouseOnBar3 = false; };
 
