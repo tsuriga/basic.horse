@@ -127,6 +127,8 @@ SOFTWARE.
 
         ul {
             list-style-type: none;
+            margin: 0;
+            padding: 0;
         }
     </style>
 </head>
@@ -561,8 +563,13 @@ SOFTWARE.
                 }
 
                 if (mouseOnBar1) {
-                    infoText.text = "previous (" + channels[currentChannel - 1][1] + ")";
                     graphicsBar1.filters = [rgbSplitFilter, pixelateFilter];
+
+                    if (currentChannel - 1 < 0) {
+                        infoText.text = "prev (" + channels[channels.length - 1][1] + ")";
+                    } else {
+                        infoText.text = "prev (" + channels[currentChannel - 1][1] + ")";
+                    }
                 }
 
                 if (mouseOnBar2) {
@@ -575,8 +582,13 @@ SOFTWARE.
                 }
 
                 if (mouseOnBar3) {
-                    infoText.text = "next (" + channels[currentChannel + 1][1] + ")";
                     graphicsBar3.filters = [rgbSplitFilter, pixelateFilter];
+
+                    if (currentChannel + 1 > channels.length - 1) {
+                        infoText.text = "next (" + channels[0][1] + ")";
+                    } else {
+                        infoText.text = "next (" + channels[currentChannel + 1][1] + ")";
+                    }
                 }
 
                 graphicsBar1.interactive = true;
