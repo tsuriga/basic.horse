@@ -139,7 +139,7 @@ SOFTWARE.
     </div>
 
     <div id="information">
-        <p>"radio radio radio" by <a href="http://basic.horse" target="_blank">basic.horse</a> © 2017 - <a href="#" id="showChannelListModal">show channels</a></p>
+        <p>"radio radio radio" by <a href="http://basic.horse" target="_blank">basic.horse</a> © 2017 - <a href="#" id="showChannelListModal">show channels</a> - <a href="#" id="hideFooter">hide</a></p>
         <p>share current station: <a href="#" id="shareChannel"></a></p>
         <p>radio stations provided by <a href="http://somafm.com" target="_blank">http://somafm.com/</a> and <a href="http://pooka.rocks/" target="_blank">http://pooka.rocks/</a></p>
     </div>
@@ -444,21 +444,27 @@ SOFTWARE.
             saveChannel(currentChannel);
         };
 
-        var modal = document.getElementById('channelListModal');
-        var btn = document.getElementById("showChannelListModal");
+        var modalElement = document.getElementById('channelListModal');
+        var informationElement = document.getElementById('information');
+        var btnShowChannelList = document.getElementById("showChannelListModal");
+        var btnHideFooter = document.getElementById("hideFooter");
         var span = document.getElementsByClassName("close")[0];
 
-        btn.onclick = function() {
-            modal.style.display = "block";
+        btnShowChannelList.onclick = function() {
+            modalElement.style.display = "block";
+        }
+
+        btnHideFooter.onclick = function() {
+            informationElement.style.display = "none";
         }
 
         span.onclick = function() {
-            modal.style.display = "none";
+            modalElement.style.display = "none";
         }
 
         window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
+            if (event.target == modalElement) {
+                modalElement.style.display = "none";
             }
         }
 
