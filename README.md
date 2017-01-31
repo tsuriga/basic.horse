@@ -1,7 +1,7 @@
 # Official GitHub repository of http://basic.horse
 
 ## master (branch)
-This is where the ongoing development is happening.
+Ongoing development and prototyping happening under this branch.
 
 ## gh-pages (branch)
-"Finished" projects end up in this branch along with the main website.
+Production branch including the website and finished products.
