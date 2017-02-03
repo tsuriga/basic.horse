@@ -49,11 +49,12 @@ module.exports = {
             "/cat: Random cat fact with image",
             "/norris: Random Chuck Norris joke",
             "/gif: Random gif",
+            "/mustanaamio: Truths from the jungle in Finnish"
         ]).join("\n");
     },
 
     about: function () {
-        return "_/°°¬ -hevone_bot v.0.3 by basic.horse";
+        return "_/°°¬ -hevone_bot v.0.5 by basic.horse";
     },
 
     subject: function () {
@@ -156,6 +157,34 @@ module.exports = {
     emoticon: function () {
         return getRandomFromArray([
             ":)", ":|", ":(", ":/", ":P", ";)", ":O"
+        ]);
+    },
+
+    mustanaamio: function () {
+        return getRandomFromArray([
+            "Et koskaan löydä Mustanaamiota - hän löytää sinut.",
+            "Herätä pimeässä ja nähdä Mustanaamio - mikä kaamea kohtalo konnille.",
+            "Herätä pimeässä ja nähdä Mustanaamion kasvot - mikä kaamea kohtalo konnalle.",
+            "Joka näkee Mustanaamion kasvot ilman naamiota, häntä kohtaa kaamea kuolema",
+            "Joka näkee Mustanaamion kasvot, häntä kohtaa kauhea kuolema.",
+            "Kun konna näkee Mustanaamion kasvot ilman naamiota, hän kohtaa kauhean kuoleman.",
+            "Kun Mustanaamio kysyy, silloin vastataan.",
+            "Kun Mustanaamio liikkuu, on salamakin hidas kuin etana.",
+            "Kun Mustanaamio on vihainen, vapisee viidakkokin.",
+            "Kun Mustanaamio toimii, on salamakin hidas kuin etana.",
+            "Mustanaamio ei liikoja lavertele, mutta hänellä on Salomonin viisaus.",
+            "Mustanaamio hiipii äänettömästi kuin viidakkokissa.",
+            "Mustanaamio liikkuu viidakossa nopeammin kuin helikopteri ilmassa",
+            "Mustanaamio on kova koville.",
+            "Mustanaamiolla on kymmenen tiikerin voimat.",
+            "Mustanaamiolla on tuhat silmää ja tuhat korvaa.",
+            "Mustanaamion katse jähmettää tiikerinkin.",
+            "Mustanaamion ääni saa veren hyytymään.",
+            "Toisinaan Mustanaamio poistuu viidakosta ja liikkuu kaupungissa kuin kuka tahansa meistä.",
+            "Toisinaan Mustanaamio poistuu viidakosta ja liikkuu kaupunkien kaduilla kuin kuka tahansa meistä.",
+            "Älä koskaan tähtää Mustanaamiota aseella.",
+            "Mustanaamion raivo on kuin hirmumyrsky.",
+            "Mustanaamion nyrkit ovat terästä"
         ]);
     },
 
@@ -292,5 +321,5 @@ module.exports = {
         }
 
         http.request(options, callback).end();
-    }
+    },
 };

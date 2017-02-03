@@ -32,7 +32,7 @@
 */
 
 const Telegraf = require('telegraf')
-const bot = new Telegraf("<INSERT-API-TOKEN-HERE>")
+const bot = new Telegraf("INSERT-API-TOKEN-HERE")
 
 var func = require('./func.js');
 
@@ -95,6 +95,11 @@ bot.command(['norris', 'norris@hevone_bot'], (ctx) => {
 /* Random gif */
 bot.command(['gif', 'gif@hevone_bot'], (ctx) => {
     func.getGif(ctx);
+})
+
+/* Truths from the jungle */
+bot.command(['mustanaamio', 'mustanaamio@hevone_bot'], (ctx) => {
+    ctx.reply(func.mustanaamio());
 })
 
 /* -- Hears without mention -- */
