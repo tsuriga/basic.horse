@@ -34,6 +34,7 @@ SOFTWARE.
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <style>
         body {
+            font-family: Courier New;
             background: black;
             width:100%;
             text-align: center;
@@ -54,11 +55,107 @@ SOFTWARE.
         small {
             font-size: 0.6em;
         }
+
+        a {
+            color: LightGray;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: green;
+        }
+
+        #information {
+            opacity: 0.2;
+            position: absolute;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            width: 100%;
+            bottom: 5px;
+        }
+
+        #information p {
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        #information:hover {
+            opacity: 0.8;
+        }
+
+        #shareChannel {
+            color: yellow;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: none;
+        }
+
+        .modal-content {
+            background-color: black;
+            font-size: 13px;
+            color: green;
+            margin: 8% auto;
+            padding: 20px;
+            border: 1px solid green;
+            width: 600px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
     </style>
 </head>
 <body>
+    <div id="channelListModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <ul id="channelListContainer"></ul>
+        </div>
+    </div>
+
+    <div id="information">
+        <p>"radio radio radio" by <a href="http://basic.horse" target="_blank">basic.horse</a> © 2017 - <a href="#" id="showChannelListModal">show channels</a> - <a href="#" id="hideFooter">hide</a></p>
+        <p>share current station: <a href="#" id="shareChannel"></a></p>
+        <p>radio stations provided by <a href="http://somafm.com" target="_blank">http://somafm.com/</a> and <a href="http://pooka.rocks/" target="_blank">http://pooka.rocks/</a></p>
+    </div>
     <canvas id="maincanvas"></canvas>
     <script>
+        /* Google Analytics */
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-74308678-2', 'auto');
+        ga('send', 'pageview');
+
         function detectmob() {
             if( navigator.userAgent.match(/Android/i)
                 || navigator.userAgent.match(/webOS/i)
@@ -76,32 +173,46 @@ SOFTWARE.
 
         if (detectmob()) {
             alert(
-                "'radio radio radio' does not work as intended on mobile devices because autoplay limitations, " +
-                "please use mobile version instead at http://allformsofpandas.com/dev/radio/mobile"
+                "This page does not work as intended on mobile devices because of autoplay limitations."
             );
         }
 
         var channels = [
-            "http://ice1.somafm.com/poptron-128-mp3",
-            "http://ice1.somafm.com/thetrip-128-mp3",
-            "http://ice1.somafm.com/cliqhop-128-mp3",
-            "http://ice1.somafm.com/dronezone-128-mp3",
-            "http://streaming.radionomy.com/Pooka",
-            "http://ice1.somafm.com/sonicuniverse-128-mp3",
-            "http://ice1.somafm.com/groovesalad-128-mp3",
-            "http://ice1.somafm.com/lush-128-mp3",
-            "http://ice1.somafm.com/fluid-128-aac",
-            "http://ice1.somafm.com/spacestation-128-mp3",
-            "http://ice1.somafm.com/deepspaceone-128-mp3",
-            "http://ice1.somafm.com/beatblender-128-mp3",
-            "http://ice1.somafm.com/earwaves-128-mp3",
-            "http://ice1.somafm.com/dubstep-128-mp3",
-            "http://ice1.somafm.com/digitalis-128-mp3",
-            "http://ice1.somafm.com/secretagent-128-mp3",
-            "http://ice1.somafm.com/u80s-128-mp3",
-            "http://ice1.somafm.com/7soul-128-mp3",
-            "http://ice1.somafm.com/metal-128-aac",
-        ]
+            ["http://ice1.somafm.com/poptron-128-mp3", "Poptron"],
+            ["http://ice1.somafm.com/thetrip-128-mp3", "The Trip"],
+            ["http://ice1.somafm.com/cliqhop-128-mp3", "Cliqhop IDM"],
+            ["http://ice1.somafm.com/dronezone-128-mp3", "Drone Zone"],
+            ["http://streaming.radionomy.com/Pooka", "Pooka"],
+            ["http://ice1.somafm.com/sonicuniverse-128-mp3", "Sonic Universe"],
+            ["http://ice1.somafm.com/groovesalad-128-mp3", "Groove Salad"],
+            ["http://ice1.somafm.com/lush-128-mp3", "Lush"],
+            ["http://ice1.somafm.com/fluid-128-aac", "Fluid"],
+            ["http://ice1.somafm.com/spacestation-128-mp3", "Space Station Soma"],
+            ["http://ice1.somafm.com/deepspaceone-128-mp3", "Deep Space One"],
+            ["http://ice1.somafm.com/beatblender-128-mp3", "Beat Blender"],
+            ["http://ice1.somafm.com/earwaves-128-mp3", "Earwaves"],
+            ["http://ice1.somafm.com/dubstep-128-mp3", "Dub Step Beyond"],
+            ["http://ice1.somafm.com/digitalis-128-mp3", "Digitalis"],
+            ["http://ice1.somafm.com/secretagent-128-mp3", "Secret Agent"],
+            ["http://ice1.somafm.com/u80s-128-mp3", "Underground 80s"],
+            ["http://ice1.somafm.com/7soul-128-mp3", "Seven Inch Soul"],
+            ["http://ice1.somafm.com/metal-128-aac", "Metal Detector"],
+            ["http://ice1.somafm.com/illstreet-128-mp3", "Illinois Street Lounge"],
+            ["http://ice1.somafm.com/seventies-128-mp3", "Left Coast 70s"],
+            ["http://ice1.somafm.com/thistle-128-mp3", "ThistleRadio"],
+            ["http://ice1.somafm.com/folkfwd-128-mp3", "Folk Forward"],
+            ["http://ice1.somafm.com/bootliquor-128-mp3", "Boot Liquor"],
+            ["http://ice1.somafm.com/suburbsofgoa-128-mp3", "Suburbs of Goa"],
+            ["http://ice1.somafm.com/silent-128-mp3", "The Silent Channel"],
+            ["http://ice1.somafm.com/defcon-128-mp3", "DEF CON Radio"],
+            ["http://ice1.somafm.com/missioncontrol-128-mp3", "Mission Control"],
+            ["http://ice1.somafm.com/sf1033-128-mp3", "SF 10-33"],
+            ["http://ice1.somafm.com/indiepop-128-mp3", "Indie Pop Rocks!"],
+            ["http://ice1.somafm.com/bagel-128-mp3", "BAGeL Radio"],
+            ["http://ice1.somafm.com/covers-128-mp3", "Covers"],
+            ["http://ice1.somafm.com/doomed-128-mp3", "Doomed"],
+            ["http://ice1.somafm.com/brfm-128-mp3", "Black Rock FM"]
+        ];
     </script>
         <audio crossOrigin="anonymous" id="audioplayer" src="" type="audio/mpeg" data-cast-api-enabled="true" controls />
 
@@ -124,27 +235,39 @@ SOFTWARE.
         const STAGE_WIDTH = 848;
         const STAGE_HEIGHT = 300;
 
-        var stage = new PIXI.Container();
-        var graphics = new PIXI.Graphics();
+        var stage = new PIXI.Stage(0x66FF99, true);
+        var graphicsBar1 = new PIXI.Graphics();
+        var graphicsBar2 = new PIXI.Graphics();
+        var graphicsBar3 = new PIXI.Graphics();
         var pixelateFilter = new PIXI.filters.PixelateFilter();
-        var textFilter = new PIXI.filters.BlurFilter();
+        var rgbSplitFilter = new PIXI.filters.RGBSplitFilter();
+
         var lowFreq = null;
         var middleFreq = null;
         var highFreq = null;
         var playerOn = false;
-        var channelText = new PIXI.Text(
+
+        var mouseOnBar1 = false;
+        var mouseOnBar2 = false;
+        var mouseOnBar3 = false;
+
+        var infoText = new PIXI.Text(
             "",
             {
-                font:"80px Courier New",
-                fill:"cyan"
+                font:"40px Courier New",
+                fill:"white"
             }
         );
         var textIsVisible = false;
 
-        channelText.y = 60;
+        infoText.y = 125;
+        infoText.anchor.x = 0.5;
+        infoText.x = STAGE_WIDTH / 2;
 
-        stage.addChild(graphics);
-        stage.addChild(channelText);
+        stage.addChild(graphicsBar1);
+        stage.addChild(graphicsBar2);
+        stage.addChild(graphicsBar3);
+        stage.addChild(infoText);
 
         var renderer = PIXI.autoDetectRenderer(
             STAGE_WIDTH,
@@ -159,32 +282,106 @@ SOFTWARE.
 
         renderer.view.style.marginTop = window.innerHeight / 2 - renderer.height / 2;
 
-        var currentChannel = 0;
-        var currentChannelName = "";
-
         document.getElementById("audioplayer").pause();
 
-        $.fn.clickOff = function(callback, selfDestroy) {
-            var clicked = false;
-            var parent = this;
-            var destroy = selfDestroy || true;
+        graphicsBar1.filters = [pixelateFilter];
+        graphicsBar2.filters = [pixelateFilter];
+        graphicsBar3.filters = [pixelateFilter];
 
-            parent.click(function() {
-                clicked = true;
-            });
+        function getURLParameter(name) {
+            return decodeURIComponent(
+                (new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) ||
+                [null, ''])[1].replace(/\+/g, '%20')) || null;
+        }
 
-            $(document).click(function(event) {
-                if (!clicked) {
-                    callback(parent, event);
-                }
+        function getCookie(name) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
 
-                clicked = false;
-            });
-        };
+            if (parts.length == 2) {
+                return parts.pop().split(";").shift();
+            }
+        }
 
-        stage.filters = [pixelateFilter];
+        function saveChannel(channelNumber) {
+            var savedChannel = getCookie("channel");
 
-        $("#maincanvas").click(function() {
+            if (savedChannel === undefined) {
+                var channelJson = "channel=" + channelNumber;
+
+                document.cookie = channelJson + "; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+            } else {
+                var channelJson = "channel=" + channelNumber;
+
+                document.cookie = channelJson + "; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+            }
+
+            channelSaved = true;
+        }
+
+        function copyToClipboard(text) {
+            window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
+        }
+
+        function getShareLink() {
+            var currentUrl = location.protocol + '//' + location.host + location.pathname;
+            return shareLink = currentUrl + "?channel=" + currentChannel;
+        }
+
+        function updateShareLink() {
+            var link = getShareLink();
+
+            document.getElementById("shareChannel").innerHTML = link;
+            document.getElementById("shareChannel").href = link;
+        }
+
+        var urlChannel = getURLParameter('channel');
+        var savedChannel = getCookie("channel");
+
+        if (savedChannel != null && urlChannel == null) {
+            currentChannel = savedChannel - 1;
+            hitNext();
+        }
+
+        if (savedChannel == null && urlChannel == null) {
+            currentChannel = 0;
+            hitNext();
+        }
+
+        if (savedChannel =! null && urlChannel != null) {
+            currentChannel = urlChannel - 1;
+            hitNext();
+        }
+
+        var currentChannelName = "";
+
+        function selectChannel(channel) {
+            textIsVisible = true;
+
+            setTimeout(function(){
+                textIsVisible = false;
+            }, 500);
+
+            playerOn = true;
+
+            currentChannel = channel;
+
+            document.getElementById("audioplayer").pause();
+            currentChannelName = channels[channel][1];
+
+            $("#audioplayer").attr({
+                "src": channels[currentChannel][0],
+                "poster": "",
+                "autoplay": "autoplay"
+            })
+
+            updateShareLink();
+            saveChannel(currentChannel);
+
+            effectColor = '0x'+Math.floor(Math.random()*16777215).toString(16);
+        }
+
+        function hitNext() {
             textIsVisible = true;
 
             setTimeout(function(){
@@ -200,18 +397,33 @@ SOFTWARE.
             }
 
             document.getElementById("audioplayer").pause();
-            currentChannelName = channels[currentChannel].split("/")[3].split("-")[0];
+            currentChannelName = channels[currentChannel][1];
 
             $("#audioplayer").attr({
-                "src": channels[currentChannel],
+                "src": channels[currentChannel][0],
                 "poster": "",
                 "autoplay": "autoplay"
             })
 
-            effectColor = '0x'+Math.floor(Math.random()*16777215).toString(16);
-        });
+            updateShareLink();
+            saveChannel(currentChannel);
 
-        $("#maincanvas").clickOff(function() {
+            effectColor = '0x'+Math.floor(Math.random()*16777215).toString(16);
+        };
+
+        function hitPause() {
+            audioPlayer = document.getElementById("audioplayer");
+
+            if (audioPlayer.paused) {
+                playerOn = true;
+                audioPlayer.play();
+            } else {
+                playerOn = false;
+                audioPlayer.pause();
+            }
+        }
+
+        function hitPrev() {
             textIsVisible = true;
 
             setTimeout(function(){
@@ -231,14 +443,55 @@ SOFTWARE.
             }
 
             document.getElementById("audioplayer").pause();
-            currentChannelName = channels[currentChannel].split("/")[3].split("-")[0];
+            currentChannelName = channels[currentChannel][1];
 
             $("#audioplayer").attr({
-                "src": channels[currentChannel],
+                "src": channels[currentChannel][0],
                 "poster": "",
                 "autoplay": "autoplay"
             })
+
+            updateShareLink();
+            saveChannel(currentChannel);
+        };
+
+        var modalElement = document.getElementById('channelListModal');
+        var informationElement = document.getElementById('information');
+        var btnShowChannelList = document.getElementById("showChannelListModal");
+        var btnHideFooter = document.getElementById("hideFooter");
+        var span = document.getElementsByClassName("close")[0];
+
+        btnShowChannelList.onclick = function() {
+            modalElement.style.display = "block";
+        }
+
+        btnHideFooter.onclick = function() {
+            informationElement.style.display = "none";
+        }
+
+        span.onclick = function() {
+            modalElement.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modalElement) {
+                modalElement.style.display = "none";
+            }
+        }
+
+        var htmlForChannelList='';
+        var count = 0;
+
+        channels.forEach(function(element) {
+            htmlForChannelList +=
+                "<li><a href='#' onclick='selectChannel(" +
+                    count + ")'>" + element[1] + " (" + element[0] + ")</a></li>";
+
+            count++;
         });
+
+        document.getElementById('channelListContainer').innerHTML += htmlForChannelList;
+
 
         document.addEventListener("keydown", function(e) {
             if (e.keyCode == 70) {
@@ -289,7 +542,9 @@ SOFTWARE.
             middleFreq = dataArray[16];
             highFreq = dataArray[31];
 
-            graphics.clear();
+            graphicsBar1.clear();
+            graphicsBar2.clear();
+            graphicsBar3.clear();
 
             if (lowFreq < 80) {
                 effectColor = '0x'+Math.floor(Math.random()*16777215).toString(16);
@@ -297,35 +552,88 @@ SOFTWARE.
 
             effectOpacity = 1 / lowFreq;
 
-            channelText.text = currentChannelName;
+            infoText.text = currentChannelName;
 
-            stage.filters = [pixelateFilter];
+            graphicsBar1.filters = [pixelateFilter];
+            graphicsBar2.filters = [pixelateFilter];
+            graphicsBar3.filters = [pixelateFilter];
 
-            if (textIsVisible) {
-                stage.filters = [textFilter];
-            } else {
+            if (!textIsVisible) {
                 if (lowFreq == 128 && middleFreq == 128 && highFreq == 128) {
-                    channelText.text = "radio radio radio";
+                    infoText.text = "radio radio radio";
                 } else {
-                    channelText.text = "";
+                    infoText.text = "";
                 }
 
-                graphics.lineStyle(2, effectColor, 1);
-                graphics.beginFill(0xFFFFFF, effectOpacity);
-                graphics.drawRoundedRect(blockLeft, 100, blockWidth, blockHeight +  lowFreq - 100, 10);
-                graphics.endFill();
+                if (!playerOn) {
+                    infoText.text = channels[currentChannel][1] + " (paused)";
+                } else {
+                    infoText.text = "";
+                }
 
-                graphics.lineStyle(2, effectColor, 1);
-                graphics.beginFill(0xFFFFFF, effectOpacity);
-                graphics.drawRoundedRect(blockCenter, 100, blockWidth, blockHeight +  highFreq - 100, 10);
-                graphics.endFill();
+                if (mouseOnBar1) {
+                    graphicsBar1.filters = [rgbSplitFilter, pixelateFilter];
 
-                graphics.lineStyle(2, effectColor, 1);
-                graphics.beginFill(0xFFFFFF, effectOpacity);
-                graphics.drawRoundedRect(blockRight, 100, blockWidth, blockHeight +  middleFreq - 100, 10);
+                    if (currentChannel - 1 < 0) {
+                        infoText.text = "prev (" + channels[channels.length - 1][1] + ")";
+                    } else {
+                        infoText.text = "prev (" + channels[currentChannel - 1][1] + ")";
+                    }
+                }
 
-                graphics.rotation = 0;
-                graphics.endFill();
+                if (mouseOnBar2) {
+                    if (playerOn) {
+                        infoText.text = "pause (" + channels[currentChannel][1] + ")";
+                    } else {
+                        infoText.text = "play (" + channels[currentChannel][1] + ")";
+                    }
+                    graphicsBar2.filters = [rgbSplitFilter, pixelateFilter];
+                }
+
+                if (mouseOnBar3) {
+                    graphicsBar3.filters = [rgbSplitFilter, pixelateFilter];
+
+                    if (currentChannel + 1 > channels.length - 1) {
+                        infoText.text = "next (" + channels[0][1] + ")";
+                    } else {
+                        infoText.text = "next (" + channels[currentChannel + 1][1] + ")";
+                    }
+                }
+
+                graphicsBar1.interactive = true;
+                graphicsBar2.interactive = true;
+                graphicsBar3.interactive = true;
+
+                graphicsBar1.lineStyle(2, effectColor, 1);
+                graphicsBar1.beginFill(0xFFFFFF, effectOpacity);
+                graphicsBar1.drawRoundedRect(blockLeft, 100, blockWidth, blockHeight +  lowFreq - 100, 10);
+                graphicsBar1.endFill();
+                graphicsBar1.hitArea = new PIXI.Rectangle(blockLeft, 20, blockWidth, 400);
+                graphicsBar1.click = function(data){ hitPrev(); }
+                graphicsBar1.mouseover = function(data) { mouseOnBar1 = true; };
+                graphicsBar1.mouseout = function(data) { mouseOnBar1 = false; };
+
+                graphicsBar2.lineStyle(2, effectColor, 1);
+                graphicsBar2.beginFill(0xFFFFFF, effectOpacity);
+                graphicsBar2.drawRoundedRect(blockCenter, 100, blockWidth, blockHeight +  highFreq - 100, 10);
+                graphicsBar2.endFill();
+                graphicsBar2.hitArea = new PIXI.Rectangle(blockCenter, 20, blockWidth, 400);
+                graphicsBar2.click = function(data){ hitPause(); }
+                graphicsBar2.mouseover = function(data) { mouseOnBar2 = true; };
+                graphicsBar2.mouseout = function(data) { mouseOnBar2 = false; };
+
+                graphicsBar3.lineStyle(2, effectColor, 1);
+                graphicsBar3.beginFill(0xFFFFFF, effectOpacity);
+                graphicsBar3.drawRoundedRect(blockRight, 100, blockWidth, blockHeight +  middleFreq - 100, 10);
+                graphicsBar3.endFill();
+                graphicsBar3.hitArea = new PIXI.Rectangle(blockRight, 20, blockWidth, 400);
+                graphicsBar3.click = function(data){ hitNext(); }
+                graphicsBar3.mouseover = function(data) { mouseOnBar3 = true; };
+                graphicsBar3.mouseout = function(data) { mouseOnBar3 = false; };
+
+                graphicsBar1.rotation = 0;
+                graphicsBar2.rotation = 0;
+                graphicsBar3.rotation = 0;
             }
 
             requestAnimationFrame(animate);
