@@ -2,7 +2,7 @@
  *
  *  MIT License
  *
- *  Copyright (c) 2016 Olli Suoranta (http://basic.horse)
+ *  Copyright (c) 2016-2017 Olli Suoranta (http://basic.horse)
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -31,10 +31,11 @@
  *  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 */
 
-const Telegraf = require('telegraf')
-const bot = new Telegraf("INSERT-API-TOKEN-HERE")
-
+var config = require('./config.js');
 var func = require('./func.js');
+
+const Telegraf = require('telegraf');
+const bot = new Telegraf(config.apikey);
 
 /* -- Commands -- */
 
@@ -92,6 +93,11 @@ bot.command(['norris', 'norris@hevone_bot'], (ctx) => {
     func.getChuckNorrisQuote(ctx);
 })
 
+/* Ask if you should something */
+bot.command(['ask', 'ask@hevone_bot'], (ctx) => {
+    ctx.reply(func.ask());
+})
+
 /* Random gif */
 bot.command(['gif', 'gif@hevone_bot'], (ctx) => {
     func.getGif(ctx);
@@ -114,34 +120,9 @@ bot.hears(/.*\?t=.*/i, (ctx) => {
     ctx.reply("Link contains timestamp!");
 })
 
-/* -- Hears bot name mentioned -- */
-
-/* Talks random things by using func */
-bot.hears(/(?:hevone|horse).*|.*(?:hevone|horse)/i, (ctx) => {
-    var replies = [
-        "You seem " + func.adjective(),
-        "Could we talk about " + func.subject(),
-        "I am hungry, I think I will get some " + func.food(),
-        "I wonder if you guys think I am " + func.adjective(),
-        func.pastTense() + " I ate " + func.food() + " and took some " + func.drink(),
-        func.subject() + " is interesting " + func.futureTense(),
-        "I really like to " + func.verb(),
-        "Currently I would like to " + func.verb(),
-        "You should " + func.verb() + " and " + func.verb(),
-        "I feel so " + func.adjective() + " now!",
-        "Oh " + func.curse() + " " + func.emoticon(),
-        "I really need to " + func.verb() + " " + func.futureTense() + " " + func.emoticon(),
-        "I have commands you know, type /about dude!",
-        "I really need a new " + func.object() + " " + func.emoticon(),
-        "You guys should eat some " + func.food() + " today " + func.emoticon(),
-        func.pastTense() + " I broke my " + func.object(),
-        "I think you are not very " + func.adjective() + " " + func.emoticon(),
-        "I used to see you as a " + func.adjective() + " fella!",
-        func.curse() + ", I need some " + func.drink(),
-        "We all should just " + func.verb(),
-    ];
-
-    ctx.reply(replies[Math.floor(Math.random() * replies.length)]);
+/* Posts Skull Trumpet video if hears something related to skeletons */
+bot.hears(/value for life/i, (ctx) => {
+    ctx.reply("VALUE FOR SOCIETY!");
 })
 
 bot.startPolling();

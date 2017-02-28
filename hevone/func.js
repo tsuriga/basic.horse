@@ -2,7 +2,7 @@
  *
  *  MIT License
  *
- *  Copyright (c) 2016 Olli Suoranta (http://basic.horse)
+ *  Copyright (c) 2016-2017 Olli Suoranta (http://basic.horse)
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -37,19 +37,20 @@ var getRandomFromArray = function(array) {
 module.exports = {
     features: function () {
         return Array.from([
-            "List of features (usage: /<command>): ",
-            "/about: About this bot",
-            "/dice: Throw dice (0-6)",
-            "/pizza: Random Pizza toppings",
-            "/beverage: Random beverage",
-            "/food: Random food",
-            "/drink: Mixes a drink",
-            "/movie: Random movie",
-            "/quote: Random quote",
-            "/cat: Random cat fact with image",
-            "/norris: Random Chuck Norris joke",
-            "/gif: Random gif",
-            "/mustanaamio: Truths from the jungle in Finnish"
+            "List of features (usage: /<command>) ",
+            "about - About this bot",
+            "dice - Throw dice (0-6)",
+            "pizza - Random Pizza toppings",
+            "beverage - Random beverage",
+            "food - Random food",
+            "drink - Mixes a drink",
+            "movie - Random movie",
+            "quote - Random quote",
+            "cat - Random cat fact with image",
+            "norris - Random Chuck Norris joke",
+            "gif - Random gif",
+            "mustanaamio - Truths from the jungle in Finnish",
+            "ask - Yes or No?"
         ]).join("\n");
     },
 
@@ -157,6 +158,12 @@ module.exports = {
     emoticon: function () {
         return getRandomFromArray([
             ":)", ":|", ":(", ":/", ":P", ";)", ":O"
+        ]);
+    },
+
+    ask: function () {
+        return getRandomFromArray([
+           "yes!", "no!"
         ]);
     },
 
@@ -316,7 +323,7 @@ module.exports = {
 
             response.on('end', function () {
                 var object = JSON.parse(str);
-                ctx.reply(object.data.image_url);
+                ctx.reply(object.data.fixed_height_downsampled_url);
             });
         }
 
