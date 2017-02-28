@@ -323,7 +323,7 @@ module.exports = {
 
             response.on('end', function () {
                 var object = JSON.parse(str);
-                ctx.reply(object.data.fixed_height_downsampled_url);
+                ctx.reply(object.data.image_url);
             });
         }
 
