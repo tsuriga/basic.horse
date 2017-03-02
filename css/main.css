@@ -9,7 +9,7 @@ body {
     font-family: "VT323", "Courier New", monospace !important;
     font-size: 2.2em;
 
-    background: url(../images/bg.jpg) no-repeat center center fixed;
+    background: url(../images/radio.jpg) no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -24,8 +24,15 @@ p {
 }
 
 a {
-    color: silver;
+    color: yellow;
     text-decoration: none;
+}
+
+div {
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.2);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
 }
 
 #paypalForm {
@@ -33,36 +40,24 @@ a {
     margin-left: 30px;
 }
 
-#image {
-    overflow: hidden;
-}
-
-#image img {
-    width: 120%;
-    height: 120%;
-    margin-bottom: -10px;
-}
-
 #logo {
     width: 80%;
     margin: 15px;
 }
 
-#header {
-    background-color: rgb(0, 0, 0);
-    background-color: rgba(0, 0, 0, 0.2);
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+#header img {
+    width: 40%;
+    min-width: 220px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #info, #releases, #people {
     text-align: center;
-    background: black;
+    line-height: 20px;
 }
 
 #footer {
-    text-align: right;
-    background: black;
     line-height: 0.9;
 }
 
@@ -71,10 +66,6 @@ a {
         margin-bottom: 0px;
         margin-right: 10px;
     }
-}
-
-.close:hover {
-    opacity: 0.8;
 }
 
 .tight {
