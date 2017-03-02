@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>basic drum machine | by basic.horse</title>
+        <script src="../../vendor/pixi.min.js"></script>
+    </head>
+    <style>
+        body {
+            background-color: black;
+        }
+
+        canvas {
+            border: solid 2px cyan;
+            margin: 25px;
+        }
+    </style>
+    <body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript">
+        // Preload assets
+        var textureMachineShell = PIXI.Texture.fromImage('./shell.png');
+        var texturePatternButton = PIXI.Texture.fromImage('./pattern-button.png');
+
+        const STAGE_WIDTH = 800;
+        const STAGE_HEIGHT = 600;
+
+        var stage = new PIXI.Stage(0x66FF99, true);
+        var patternSteps = 16;
+        var patternButtonSpacing = 44;
+
+        var renderer = PIXI.autoDetectRenderer(
+            STAGE_WIDTH,
+            STAGE_HEIGHT,
+            {
+                backgroundColor : 0x000000,
+                antialias: true,
+                view: canvas,
+                transparent: true
+            }
+        );
+
+        function changeButtonState(clickedButton) {
+/*
+            if (clickedButton.state) {
+                clickedButton.state = false;
+            } else {
+                clickedButton.state = true;
+            }
+
+            console.log(" state changed to " + clickedButton.state);
+*/
+        }
+
+        var background = new PIXI.Sprite(textureMachineShell);
+
+        background.position.x = 0;
+        background.position.y = 50;
+
+        stage.addChild(background);
+
+        for (var i = 0; i < patternSteps; i++) {
+            var patternButton = new PIXI.Sprite(texturePatternButton);
+
+            patternButton.position.x = 50 + i * patternButtonSpacing;
+            patternButton.position.y = 300;
+
+            patternButton.interactive = true;
+            patternButton.buttonMode = true;
+            patternButton.click = function(clickedButton) { console.log(clickedButton); };
+
+            stage.addChild(patternButton);
+        }
+
+        animate();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(stage);
+        }
+    </script>
+    </body>
+</html>
