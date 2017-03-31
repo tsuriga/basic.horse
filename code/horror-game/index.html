@@ -2,69 +2,62 @@
 <html>
     <head>
         <meta charset="UTF-8" />
-        <title>(horror game) | a game by basic.horse</title>
+        <title>(horror game) | by basic.horse</title>
         <script src="../../vendor/phaser.min.js"></script>
-    </head>
-    <style>
-        body {
-            background-color: black;
-        }
 
-        canvas {
-            border: solid 2px cyan;
-            width: 100%;
-            margin-top: 25px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-    </style>
+        <style>
+            body {
+                background: black;
+            }
+
+            canvas {
+                border: dashed 1px gray;
+            }
+        </style>
+    </head>
     <body>
+
     <script type="text/javascript">
 
-        const GAME_WIDTH = 320;
-        const GAME_HEIGHT = 200;
+    var player;
 
-        window.onload = function() {
-            var game = new Phaser.Game(
-                GAME_WIDTH,
-                GAME_HEIGHT,
-                Phaser.AUTO,
-                '',
-                {
-                    preload: preload,
-                    create: create,
-                    update: update
-                }
-            );
+    window.onload = function() {
+        var game = new Phaser.Game(320, 200, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
-            function preload () {
-                game.load.spritesheet('player_debug', 'assets/sprite_sheets/player_debug.png', 30, 30);
+        function preload () {
+            game.load.image('background0', './assets/backgrounds/debugB.png');
+            game.load.image('player', './assets/sprite_sheets/player.png');
+        }
+
+        function create () {
+            var background0 = game.add.sprite(game.world.centerX, game.world.centerY, 'background0');
+            background0.anchor.setTo(0.5, 0.5);
+
+            player = game.add.sprite(game.world.centerX, game.world.centerY, 'player');
+            game.physics.enable(player, Phaser.Physics.ARCADE);
+
+            player.anchor.setTo(0.5, 0.8);
+            player.body.setSize(20, 60);
+        }
+
+        function update() {
+            if (Phaser.Rectangle.contains(player.body, game.input.x, game.input.y))
+            {
+                player.body.velocity.setTo(0, 0);
             }
 
-            function create () {
-                game.physics.startSystem(Phaser.Physics.ARCADE);
-                cursors = game.input.keyboard.createCursorKeys();
-
-                player = game.add.sprite(100, 100, 'player_debug');
-                player.anchor.set(0.5);
-
-                game.physics.arcade.enable(player);
+            if (game.input.mousePointer.isDown) {
+                var position = game.input.mousePointer.position;
+                game.physics.arcade.moveToPointer(player, 50);
             }
+        }
 
-            function update() {
-                if (cursors.left.isDown) {
-                    player.angle -= 1;
-                } else if (cursors.right.isDown) {
-                    player.angle += 1;
-                } else if (cursors.up.isDown) {
-                    player.body.velocity.y = -200;
-                } else if (cursors.down.isDown) {
-                    player.body.velocity.y = 200;
-                } else {
-                    player.animations.stop();
-                }
-            }
-        };
+        function render() {
+            game.debug.body(player);
+
+        }
+    };
     </script>
+
     </body>
 </html>
