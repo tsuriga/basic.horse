@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>I gotta pee | by basic.horse</title>
+        <script src="../../vendor/phaser.min.js"></script>
+
+        <style>
+            body {
+                background: black;
+            }
+
+            canvas {
+                border: dashed 1px gray;
+            }
+        </style>
+    </head>
+    <body>
+
+    <script type="text/javascript">
+
+    var player, cursor, walls;
+
+    window.onload = function() {
+        var game = new Phaser.Game(640, 480, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+        function preload () {
+            game.load.spritesheet('player', './player_spritesheet.png', 21, 44);
+            game.load.image('wall', './wall1.png');
+        }
+
+        function create () {
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+            game.world.enableBody = true;
+
+            this.cursor = game.input.keyboard.createCursorKeys();
+
+            this.walls = game.add.group();
+            this.player = game.add.sprite(game.world.centerX, game.world.centerY, 'player');
+            this.player.animations.add('walk');
+
+            this.player.body.gravity.y = 400;
+
+            var level = [
+                'xxxxxxxxxxxxxxxxxxx',
+                'x                 x',
+                'x                 x',
+                'x                 x',
+                'x                 x',
+                'x                 x',
+                'xxxxx             x',
+                'x                 x',
+                'x                 x',
+                'xxxxxx            x',
+                'x             xxxxx',
+                'x       x      x  x',
+                'xxxxxxxxxxxxxxxxxxx',
+            ];
+
+            for (var i = 0; i < level.length; i++) {
+                for (var j = 0; j < level[i].length; j++) {
+
+                    if (level[i][j] == 'x') {
+                        var wall = game.add.sprite(30+30*j, 30+30*i, 'wall');
+                        this.walls.add(wall);
+                        wall.body.moves = false;
+                        wall.body.setSize(32,32);
+                    }
+                }
+            }
+        }
+
+        function update() {
+            game.physics.arcade.collide(this.player, this.walls);
+
+            if (this.cursor.left.isDown) {
+                this.player.body.velocity.x = -200;
+                this.player.animations.play('walk', 8, true);
+            } else if (this.cursor.right.isDown) {
+                this.player.body.velocity.x = 200;
+                this.player.animations.play('walk', 8, true);
+            } else {
+                this.player.body.velocity.x = 0;
+                this.player.animations.stop('walk', 8, true);
+            }
+
+            if (this.cursor.up.isDown && this.player.body.touching.down) {
+                this.player.body.velocity.y = -250;
+            }
+        }
+    };
+    </script>
+
+    </body>
+</html>
