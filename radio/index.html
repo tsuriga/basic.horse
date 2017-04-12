@@ -647,6 +647,26 @@ SOFTWARE.
             requestAnimationFrame(animate);
             renderer.render(stage);
         }
+
+        document.onkeydown = checkKey;
+
+        function checkKey(e) {
+            e = e || window.event;
+
+            if (e.keyCode == '38') {
+                hitPause();
+            }
+            else if (e.keyCode == '40') {
+                hitPause();
+            }
+            else if (e.keyCode == '37') {
+                hitPrev();
+            }
+            else if (e.keyCode == '39') {
+                hitNext();
+            }
+
+        }
     </script>
 </body>
 </html>
