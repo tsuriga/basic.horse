@@ -375,8 +375,8 @@ module.exports = {
 
         let parsedDate = chrono.parseDate(dateString);
 
-        if ((_.isString(parsedDate) && parsedDate.toLowerCase() === 'invalid date') || !_.isString(parsedDate)) {
-            return ctx.reply(`Sorry, I don't understand what you mean by *'${dateString}* :(`);
+        if ((_.isString(parsedDate) && parsedDate.toLowerCase() === 'invalid date') || parsedDate === null) {
+            return ctx.reply(`Sorry, I don't understand what you mean by *'${dateString}'* :(`, Extra.markdown());
         }
 
         const remindTime = moment(parsedDate).format('x');
@@ -476,7 +476,7 @@ module.exports = {
                 JSON.stringify(this.timers)
             );
 
-            console.log('Reminders saved');
+            console.log(`${this.timers.length} reminders saved`);
         } catch (e) {
             console.log('Could not save reminders');
         }
