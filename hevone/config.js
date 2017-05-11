@@ -1,5 +1,9 @@
-var config = {};
+const pjson = require('./package.json');
 
-config.apikey = "INSERT-API-TOKEN-HERE";
+let config = {};
+
+config.version = pjson.version;
+config.dataDir = 'data';
+config.apikey = 'INSERT-API-TOKEN-HERE';
 
 module.exports = config;

@@ -31,11 +31,16 @@
  *  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 */
 
-var config = require('./config.js');
-var func = require('./func.js');
-
+const process = require('process');
 const Telegraf = require('telegraf');
+
+const config = require('./config.js');
+const func = require('./func.js');
+
 const bot = new Telegraf(config.apikey);
+
+let isInitialized = false;
+let isReminderSaveDone = false;
 
 /* -- Commands -- */
 
@@ -108,6 +113,11 @@ bot.command(['mustanaamio', 'mustanaamio@hevone_bot'], (ctx) => {
     ctx.reply(func.mustanaamio());
 })
 
+/* Reminder service */
+bot.command(['remind', 'remind@hevone_bot'], (ctx) => {
+    func.remind(ctx);
+})
+
 /* -- Hears without mention -- */
 
 /* Posts Skull Trumpet video if hears something related to skeletons */
@@ -124,5 +134,24 @@ bot.hears(/.*\?t=.*/i, (ctx) => {
 bot.hears(/value for life/i, (ctx) => {
     ctx.reply("VALUE FOR SOCIETY!");
 })
+
+/* Load and save timers on start and exit respectively */
+
+if (!func.loadReminders(bot)) {
+    process.exit(1);
+}
+
+const quitBot = () => {
+    if (!isReminderSaveDone) {
+        func.saveReminders();
+        isReminderSaveDone = true;
+    }
+
+    process.exit(0);
+}
+process.on('exit', quitBot);
+process.on('SIGTERM', quitBot);
+process.on('SIGINT', quitBot);
+process.on('SIGHUP', quitBot);
 
 bot.startPolling();

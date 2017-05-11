@@ -27,14 +27,40 @@
  *  This file contains functions and dictionary for hevone_bot to use.
  */
 
-var http = require('http');
-var util = require('util');
+const http = require('http');
+const util = require('util');
+const path = require('path');
+const fs = require('fs');
 
-var getRandomFromArray = function(array) {
+const Extra = require('telegraf').Extra;
+const moment = require('moment');
+const chrono = require('chrono-node');
+const _ = require('lodash');
+
+const config = require('./config');
+
+const getRandomFromArray = function(array) {
     return array[Math.floor(Math.random() * array.length)]
 };
 
+
 module.exports = {
+    /**
+     * @typedef {Object} Timer
+     * @property {string} chatId - Channel to send the reminder to
+     * @property {number} remindTime - Reminder firing time
+     * @property {string} message - Reminder message
+     */
+
+    /** @type {Timer[]} */
+    timers: [],
+
+    /** @type {number[]} */
+    timerIds: [],
+
+    /** @type {Telegraf} */
+    bot: null,
+
     features: function () {
         return Array.from([
             "List of features (usage: /<command>) ",
@@ -50,12 +76,14 @@ module.exports = {
             "norris - Random Chuck Norris joke",
             "gif - Random gif",
             "mustanaamio - Truths from the jungle in Finnish",
-            "ask - Yes or No?"
+            "ask - Yes or No?",
+            "remind <time> -> <message> - Sets a reminder to chat participants",
+            "    e.g. remind 17.7.2017 18.00 -> Scooter's gig",
         ]).join("\n");
     },
 
     about: function () {
-        return "_/°°¬ -hevone_bot v.0.5 by basic.horse";
+        return `_/°°¬ -hevone_bot v.${config.version} by basic.horse`;
     },
 
     subject: function () {
@@ -329,4 +357,129 @@ module.exports = {
 
         http.request(options, callback).end();
     },
+
+    /**
+     * Reminds chat participants about something at given time
+     * Note: messages are not persisted over restarts
+     */
+    remind: function (ctx) {
+        let [dateString, notifyMessage] = (ctx.message && ctx.message.text) ?
+            ctx.message.text.split('->') : [null, null];
+
+        dateString = (dateString || '').replace('/remind', '').trim();
+        notifyMessage = (notifyMessage || '').trim();
+
+        if (!dateString || !notifyMessage) {
+            return;
+        }
+
+        let parsedDate = chrono.parseDate(dateString);
+
+        if (!parsedDate || parsedDate === 'Invalid Date') {
+            return ctx.reply(`Sorry, I don't understand what you mean by *'${dateString}* :(`);
+        }
+
+        const remindTime = moment(parsedDate).format('x');
+        const waitTime = remindTime - (new Date().getTime());
+        const remindTimeFormatted = moment(parsedDate).format('Y-MM-DD H:mm:ss');
+
+        if (this.addReminder(ctx.message.chat.id, remindTime, notifyMessage)) {
+            const timeToReminder = moment.duration(waitTime, 'milliseconds').humanize();
+
+            ctx.reply(
+                `Okay, reminding you about *${notifyMessage}* in *~${timeToReminder} (${remindTimeFormatted})*`,
+                Extra.markdown()
+            );
+        } else {
+            const timeToReminder = moment.duration(waitTime, 'milliseconds').humanize(true);
+
+            ctx.reply(`*'${dateString}' (${remindTimeFormatted})*  was already *~${timeToReminder}*`, Extra.markdown());
+        }
+    },
+
+    /**
+     * Loads in reminders from the reminder file. Typically called during startup.
+     *
+     * @param {Telegraf} bot
+     * @return {boolean}
+     */
+    loadReminders: function (bot) {
+      console.log('Loading reminders');
+
+        this.bot = bot;
+        let timers = [];
+
+        try {
+            timers = JSON.parse(fs.readFileSync(path.join(config.dataDir, 'reminders.json')));
+        } catch (e) {
+            console.log('Could not load in reminders');
+
+            return false;
+        }
+
+        _.each(timers, (timer) => {
+            const waitTime = timer.remindTime - (new Date().getTime());
+            const remindTimeFormatted = moment(timer.remindTime, 'x').format('Y-MM-DD H:mm:ss');
+
+            if (this.addReminder(timer.chatId, timer.remindTime, timer.message)) {
+                const timeToReminder = moment.duration(waitTime, 'milliseconds').humanize();
+
+                console.log(`-- Loaded in a reminder that alerts in ~${timeToReminder} (${remindTimeFormatted})`);
+            } else {
+                const timeToReminder = moment.duration(waitTime, 'milliseconds').humanize(true);
+
+                console.log(
+                    '-- Skipped loading in a reminder because it passed already ' +
+                    `~${timeToReminder} (${remindTimeFormatted})`
+                );
+            }
+        });
+
+        console.log(`Finished loading ${timers.length} timers`);
+
+        return true;
+    },
+
+    /**
+     * Adds a reminder
+     *
+     * @param {string} chatId - Chat identifier
+     * @param {number} remindTime - UNIX timestamp in milliseconds for when to send out the reminder
+     * @param {string} message - Reminder message
+     * @return {boolean}
+     */
+    addReminder: function (chatId, remindTime, message) {
+        const waitTime = remindTime - (new Date().getTime());
+
+        if (waitTime < 0) {
+            return false;
+        }
+
+        const timerIndex = this.timers.length;
+        this.timers.push({chatId, remindTime, message});
+
+        setTimeout(
+            () => {
+                this.timers.splice(timerIndex, 1);
+                this.bot.telegram.sendMessage(chatId, `*Reminder:* ${message}`, Extra.markdown());
+            },
+            waitTime
+        );
+
+        return true;
+    },
+
+    /* Saves reminders to disk */
+    saveReminders: function () {
+        try {
+            fs.writeFileSync(
+                path.join(config.dataDir, 'reminders.json'),
+                JSON.stringify(this.timers)
+            );
+
+            console.log('Reminders saved');
+        } catch (e) {
+            console.log('Could not save reminders');
+        }
+    }
 };
