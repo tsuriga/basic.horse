@@ -375,7 +375,7 @@ module.exports = {
 
         let parsedDate = chrono.parseDate(dateString);
 
-        if (!parsedDate || parsedDate.toLowerCase() === 'invalid date') {
+        if ((_.isString(parsedDate) && parsedDate.toLowerCase() === 'invalid date') || !_.isString(parsedDate)) {
             return ctx.reply(`Sorry, I don't understand what you mean by *'${dateString}* :(`);
         }
 
