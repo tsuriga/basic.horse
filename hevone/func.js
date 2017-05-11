@@ -401,20 +401,19 @@ module.exports = {
      * Loads in reminders from the reminder file. Typically called during startup.
      *
      * @param {Telegraf} bot
-     * @return {boolean}
      */
     loadReminders: function (bot) {
-      console.log('Loading reminders');
+        console.log('Loading reminders');
 
         this.bot = bot;
+
         let timers = [];
+        let timerLoadCount = 0;
 
         try {
             timers = JSON.parse(fs.readFileSync(path.join(config.dataDir, 'reminders.json')));
         } catch (e) {
-            console.log('Could not load in reminders');
-
-            return false;
+            timers = [];
         }
 
         _.each(timers, (timer) => {
@@ -422,6 +421,8 @@ module.exports = {
             const remindTimeFormatted = moment(timer.remindTime, 'x').format('Y-MM-DD H:mm:ss');
 
             if (this.addReminder(timer.chatId, timer.remindTime, timer.message)) {
+                timerLoadCount++;
+
                 const timeToReminder = moment.duration(waitTime, 'milliseconds').humanize();
 
                 console.log(`-- Loaded in a reminder that alerts in ~${timeToReminder} (${remindTimeFormatted})`);
@@ -435,9 +436,7 @@ module.exports = {
             }
         });
 
-        console.log(`Finished loading ${timers.length} timers`);
-
-        return true;
+        console.log(`Finished loading in ${timerLoadCount} active timers`);
     },
 
     /**

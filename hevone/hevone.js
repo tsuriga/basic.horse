@@ -137,9 +137,7 @@ bot.hears(/value for life/i, (ctx) => {
 
 /* Load and save timers on start and exit respectively */
 
-if (!func.loadReminders(bot)) {
-    process.exit(1);
-}
+func.loadReminders(bot);
 
 const quitBot = () => {
     if (!isReminderSaveDone) {
